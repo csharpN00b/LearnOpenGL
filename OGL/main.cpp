@@ -7,10 +7,11 @@
 GLFWwindow* initOpenGL(); // initialize OpenGL and create window
 
 unsigned int createShader();
-void inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
+int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
 
 void processWindowInput(GLFWwindow*);
 void framebuffer_size_callback(GLFWwindow*, int, int);
+
 
 int main()
 {
@@ -20,7 +21,7 @@ int main()
 
 	unsigned int shaderProgram = createShader();
 	unsigned int VAO{}, VBO{}, EBO{};
-	inputVertexData(VAO, VBO, EBO);
+	int count = inputVertexData(VAO, VBO, EBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -35,7 +36,8 @@ int main()
 		
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawArrays(GL_TRIANGLES, 0, count);
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -43,6 +45,7 @@ int main()
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 	glDeleteProgram(shaderProgram);
 
 	glfwTerminate();
@@ -131,24 +134,43 @@ unsigned int createShader()
 	return shaderProgram;
 }
 
-void inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO)
+int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO)
 {
 	float vertices[] =
 	{
 		-0.5f, -0.5f, 0.0f,
 		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f,
+		0.5f, 0.5f, 0.0f,
+		-0.5f, 0.5f, 0.0f,
+	};
+
+	unsigned int indices[] =
+	{
+		0, 1, 2,
+		2, 3, 0,
 	};
 
 	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
 	glBindVertexArray(VAO);
 
-	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	//return sizeof(vertices) / sizeof(vertices[0]) / 3; // call glDrawArrays
+	return sizeof(indices) / sizeof(indices[0]);
+
 }
 
 void processWindowInput(GLFWwindow* window)
