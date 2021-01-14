@@ -4,14 +4,18 @@
 #include <iostream>
 #include <map>
 
+#include "Shader.h"
+
 GLFWwindow* initOpenGL(); // initialize OpenGL and create window
 
+void RenderScene(GLFWwindow* window);
 unsigned int createShader();
 int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
 
 void processWindowInput(GLFWwindow*);
 void framebuffer_size_callback(GLFWwindow*, int, int);
 
+#define USE_SHADER_CLASS 1
 
 int main()
 {
@@ -19,36 +23,14 @@ int main()
 	if (window == nullptr)
 		return -1;
 
-	unsigned int shaderProgram = createShader();
-	unsigned int VAO{}, VBO{}, EBO{};
-	int count = inputVertexData(VAO, VBO, EBO);
+	/*int nrAttributes;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;*/
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	while (!glfwWindowShouldClose(window))
-	{
-		processWindowInput(window);
-
-		glClearColor(0.0, 1.0, 0.0, 0.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		
-		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, count);
-		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-	glDeleteProgram(shaderProgram);
+	RenderScene(window);
 
 	glfwTerminate();
+	
 	return 0;
 }
 
@@ -77,6 +59,78 @@ GLFWwindow* initOpenGL()
 
 	return window;
 }
+
+#if USE_SHADER_CLASS
+void RenderScene(GLFWwindow* window)
+{
+	Shader shaderProgram("Assert/vs.glsl", "Assert/fs.glsl");
+	if (!shaderProgram.IsValid())
+	{
+		std::cout << "Invalid Shader Program!" << std::endl;
+		return;
+	}
+
+
+	unsigned int VAO{}, VBO{}, EBO{};
+	int count = inputVertexData(VAO, VBO, EBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	while (!glfwWindowShouldClose(window))
+	{
+		processWindowInput(window);
+
+		glClearColor(0.0, 1.0, 0.0, 0.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		shaderProgram.Use();
+		glBindVertexArray(VAO);
+		//glDrawArrays(GL_TRIANGLES, 0, count);
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+}
+#else
+void RenderScene(GLFWwindow* window)
+{
+	unsigned int shaderProgram = createShader();
+	unsigned int VAO{}, VBO{}, EBO{};
+	int count = inputVertexData(VAO, VBO, EBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	while (!glfwWindowShouldClose(window))
+	{
+		processWindowInput(window);
+
+		glClearColor(0.0, 1.0, 0.0, 0.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
+		//glDrawArrays(GL_TRIANGLES, 0, count);
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+	glDeleteProgram(shaderProgram);
+}
+#endif
 
 void checkShaderCompileError(unsigned int shaderId, GLenum type)
 {
