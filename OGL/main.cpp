@@ -86,6 +86,10 @@ void RenderScene(GLFWwindow* window)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		shaderProgram.Use();
+		float timeValue = glfwGetTime();
+		float offset = sin(timeValue);
+		shaderProgram.SetUniform("offset", offset);
+
 		glBindVertexArray(VAO);
 		//glDrawArrays(GL_TRIANGLES, 0, count);
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
@@ -102,6 +106,8 @@ void RenderScene(GLFWwindow* window)
 void RenderScene(GLFWwindow* window)
 {
 	unsigned int shaderProgram = createShader();
+	int offsetLocation = glGetUniformLocation(shaderProgram, "offset");
+
 	unsigned int VAO{}, VBO{}, EBO{};
 	int count = inputVertexData(VAO, VBO, EBO);
 
@@ -117,6 +123,10 @@ void RenderScene(GLFWwindow* window)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(shaderProgram);
+		float timeValue = glfwGetTime();
+		float offset = sin(timeValue);
+		glUniform1f(offsetLocation, offset);
+
 		glBindVertexArray(VAO);
 		//glDrawArrays(GL_TRIANGLES, 0, count);
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
@@ -157,15 +167,17 @@ unsigned int createShader()
 
 	const char* vs = "#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
+		"uniform float offset;\n"
 		"void main()\n"
 		"{\n"
-		"gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"gl_Position = vec4(aPos.x + offset, aPos.y, aPos.z, 1.0);\n"
 		"}\n\0";
 	const char* fs = "#version 330 core\n"
 		"out vec4 FragColor;\n"
+		"uniform float offset;\n"
 		"void main()\n"
 		"{\n"
-		"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+		"FragColor = vec4(offset, 0.5f, 0.2f, 1.0f);\n"
 		"}\n\0";
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vs, nullptr);

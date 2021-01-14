@@ -10,9 +10,11 @@ public:
 	bool IsValid();
 
 	void Use();
+	void SetUniform(const std::string& name, float value);
 private:
 	bool CheckShaderCompileError(unsigned int shaderId, GLenum type);
 
 private:
 	unsigned int m_Id;
+	std::map<std::string, int> m_uniforms;
 };

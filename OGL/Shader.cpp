@@ -127,12 +127,30 @@ bool Shader::CheckShaderCompileError(unsigned int shaderId, GLenum type)
 
 bool Shader::IsValid()
 {
-	return m_Id;
+	return m_Id > 0;
 }
 
 void Shader::Use()
 {
 	glUseProgram(m_Id);
+}
+
+void Shader::SetUniform(const std::string& name, float value)
+{
+	auto it = m_uniforms.find(name);
+	if (it == m_uniforms.end())
+	{
+		m_uniforms[name] = glGetUniformLocation(m_Id, name.c_str());
+	}
+
+	int location = m_uniforms[name];
+	if (location == -1)
+	{
+		std::cout << "invalid uniform: " << name << std::endl;
+		return;
+	}
+	
+	glUniform1f(m_uniforms[name], value);
 }
 
 
