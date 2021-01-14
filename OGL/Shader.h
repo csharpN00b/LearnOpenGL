@@ -16,5 +16,5 @@ private:
 
 private:
 	unsigned int m_Id;
-	std::map<std::string, int> m_uniforms;
+	std::unordered_map<std::string, int> m_uniforms;
 };

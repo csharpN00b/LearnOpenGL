@@ -1,12 +1,13 @@
 #include <glad/glad.h>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <iostream>
 #include <fstream>
 
+#include "Base.h"
 #include "Shader.h"
 
-static std::map<GLenum, std::string> s_ShaderName =
+static std::unordered_map<GLenum, std::string> s_ShaderName =
 {
 	{GL_VERTEX_SHADER, "VertexShader"},
 	{GL_FRAGMENT_SHADER, "FragmentShader"},
@@ -27,7 +28,7 @@ static std::string ReadFileAsString(const std::string& filepath)
 	}
 	else
 	{
-		std::cout << "Could not open file " << filepath << std::endl;
+		PRINT("Could not open file {}\n", filepath);
 	}
 
 	return result;
@@ -67,7 +68,7 @@ Shader::Shader(const std::string& vsPath, const std::string& fsPath) : m_Id(0)
 Shader::Shader(const std::string& vsPath, const std::string& fsPath, const std::string& gsPath) : m_Id(0)
 {
 	auto vsStr = ReadFileAsString(vsPath);
-	auto fsStr = ReadFileAsString(vsPath);
+	auto fsStr = ReadFileAsString(fsPath);
 	auto gsStr = ReadFileAsString(gsPath);
 
 	const char* vsCode = vsStr.c_str();
@@ -118,7 +119,7 @@ bool Shader::CheckShaderCompileError(unsigned int shaderId, GLenum type)
 	if (!success)
 	{
 		glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::" << s_ShaderName[type] << "::COMPILATION_FAILED\n" << infoLog << std::endl;
+		PRINT("ERROR::SHADER::{0}::COMPILATION_FAILED\n{1}\n", s_ShaderName[type], infoLog);
 		return false;
 	}
 
@@ -146,7 +147,7 @@ void Shader::SetUniform(const std::string& name, float value)
 	int location = m_uniforms[name];
 	if (location == -1)
 	{
-		std::cout << "invalid uniform: " << name << std::endl;
+		PRINT("invalid uniform: {}\n", name);
 		return;
 	}
 	
