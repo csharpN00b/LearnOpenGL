@@ -13,6 +13,7 @@ public:
 	void SetUniform(const std::string& name, float value);
 private:
 	bool CheckShaderCompileError(unsigned int shaderId, GLenum type);
+	bool CheckProgramLinkError(unsigned int programId);
 
 private:
 	unsigned int m_Id;

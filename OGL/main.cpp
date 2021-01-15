@@ -1,9 +1,9 @@
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 
 GLFWwindow* initOpenGL(); // initialize OpenGL and create window
-void RenderScene(GLFWwindow* window);
+void RenderScene0(GLFWwindow* window); // not using shader class
+void RenderScene(GLFWwindow* window); // using shader class
 
 int main()
 {

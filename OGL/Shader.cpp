@@ -1,7 +1,6 @@
 #include <glad/glad.h>
 #include <unordered_map>
 #include <string>
-#include <iostream>
 #include <fstream>
 
 #include "Base.h"
@@ -59,8 +58,13 @@ Shader::Shader(const std::string& vsPath, const std::string& fsPath) : m_Id(0)
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 
+	glDetachShader(shaderProgram, vertexShader);
+	glDetachShader(shaderProgram, fragmentShader);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+
+	if (!CheckProgramLinkError(shaderProgram))
+		return;
 
 	m_Id = shaderProgram;
 }
@@ -99,9 +103,15 @@ Shader::Shader(const std::string& vsPath, const std::string& fsPath, const std::
 	glAttachShader(shaderProgram, geometryShader);
 	glLinkProgram(shaderProgram);
 
+	glDetachShader(shaderProgram, vertexShader);
+	glDetachShader(shaderProgram, fragmentShader);
+	glDetachShader(shaderProgram, geometryShader);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 	glDeleteShader(geometryShader);
+
+	if (!CheckProgramLinkError(shaderProgram))
+		return;
 
 	m_Id = shaderProgram;
 }
@@ -120,6 +130,21 @@ bool Shader::CheckShaderCompileError(unsigned int shaderId, GLenum type)
 	{
 		glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
 		PRINT("ERROR::SHADER::{0}::COMPILATION_FAILED\n{1}\n", s_ShaderName[type], infoLog);
+		return false;
+	}
+
+	return true;
+}
+
+bool Shader::CheckProgramLinkError(unsigned int programId)
+{
+	int success{};
+	char infoLog[512];
+	glGetProgramiv(programId, GL_LINK_STATUS, &success);
+	if (!success) 
+	{
+		glGetProgramInfoLog(programId, 512, NULL, infoLog);
+		PRINT("ERROR::SHADER::Program::LINK_FAILED\n{1}\n", infoLog);
 		return false;
 	}
 

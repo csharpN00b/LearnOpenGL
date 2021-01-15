@@ -6,13 +6,14 @@
 #include "Base.h"
 #include "Shader.h"
 
-#define USE_SHADER_CLASS 1
 
-unsigned int createShader();
 int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
-
 void processWindowInput(GLFWwindow*);
-void framebuffer_size_callback(GLFWwindow*, int, int);
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
 
 GLFWwindow* initOpenGL()
 {
@@ -44,7 +45,6 @@ GLFWwindow* initOpenGL()
 	return window;
 }
 
-#if USE_SHADER_CLASS
 void RenderScene(GLFWwindow* window)
 {
 	Shader shaderProgram("Assert/vs.glsl", "Assert/fs.glsl");
@@ -104,103 +104,6 @@ void RenderScene(GLFWwindow* window)
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 }
-#else
-void RenderScene(GLFWwindow* window)
-{
-	unsigned int shaderProgram = createShader();
-	int offsetLocation = glGetUniformLocation(shaderProgram, "offset");
-
-	unsigned int VAO{}, VBO{}, EBO{};
-	int count = inputVertexData(VAO, VBO, EBO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	while (!glfwWindowShouldClose(window))
-	{
-		processWindowInput(window);
-
-		glClearColor(0.0, 1.0, 0.0, 0.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glUseProgram(shaderProgram);
-		float timeValue = glfwGetTime();
-		float offset = sin(timeValue);
-		glUniform1f(offsetLocation, offset);
-
-		glBindVertexArray(VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, count);
-		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-	glDeleteProgram(shaderProgram);
-}
-#endif
-
-void checkShaderCompileError(unsigned int shaderId, GLenum type)
-{
-	static std::unordered_map<GLenum, std::string> shaderName =
-	{
-		{GL_VERTEX_SHADER, "VertexShader"},
-		{GL_FRAGMENT_SHADER, "FragmentShader"},
-		{GL_GEOMETRY_SHADER, "GeometryShader"},
-	};
-
-	int success;
-	char infoLog[512];
-	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
-		PRINT("ERROR::SHADER::{0}::::COMPILATION_FAILED\n{1}\n", shaderName[type], infoLog);
-	}
-}
-
-unsigned int createShader()
-{
-	unsigned int vertexShader{}, fragmentShader{}, shaderProgram{};
-
-	const char* vs = "#version 330 core\n"
-		"layout (location = 0) in vec3 aPos;\n"
-		"uniform float offset;\n"
-		"void main()\n"
-		"{\n"
-		"gl_Position = vec4(aPos.x + offset, aPos.y, aPos.z, 1.0);\n"
-		"}\n\0";
-	const char* fs = "#version 330 core\n"
-		"out vec4 FragColor;\n"
-		"uniform float offset;\n"
-		"void main()\n"
-		"{\n"
-		"FragColor = vec4(offset, 0.5f, 0.2f, 1.0f);\n"
-		"}\n\0";
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vs, nullptr);
-	glCompileShader(vertexShader);
-	checkShaderCompileError(vertexShader, GL_VERTEX_SHADER);
-
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fs, nullptr);
-	glCompileShader(fragmentShader);
-	checkShaderCompileError(fragmentShader, GL_FRAGMENT_SHADER);
-
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	return shaderProgram;
-}
 
 int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO)
 {
@@ -251,7 +154,152 @@ void processWindowInput(GLFWwindow* window)
 	}
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+
+#pragma region without shader class
+
+bool checkShaderCompileError(unsigned int shaderId, GLenum type)
 {
-	glViewport(0, 0, width, height);
+	static std::unordered_map<GLenum, std::string> shaderName =
+	{
+		{GL_VERTEX_SHADER, "VertexShader"},
+		{GL_FRAGMENT_SHADER, "FragmentShader"},
+		{GL_GEOMETRY_SHADER, "GeometryShader"},
+	};
+
+	int success;
+	char infoLog[512];
+	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
+		PRINT("ERROR::SHADER::{0}::COMPILATION_FAILED\n{1}\n", shaderName[type], infoLog);
+		return false;
+	}
+	return true;
 }
+
+unsigned int createShader()
+{
+	unsigned int vertexShader{}, fragmentShader{}, shaderProgram{};
+
+	const char* vs = R"(
+	#version 330 core
+
+	layout (location = 0) in vec3 aPos;
+	layout (location = 1) in vec3 aColor;
+	out vec3 color;
+	uniform float offset;
+
+	void main()
+	{
+		gl_Position = vec4(aPos.x + offset, aPos.y, aPos.z, 1.0);
+		color = aColor;
+	}
+)";
+	const char* fs = R"(
+	#version 330 core
+
+	in vec3 color;
+	out vec4 FragColor;
+	uniform float offset;
+
+	void main()
+	{
+		FragColor = vec4(color, 1.0f);
+	}
+)";
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vs, nullptr);
+	glCompileShader(vertexShader);
+	if (!checkShaderCompileError(vertexShader, GL_VERTEX_SHADER))
+		return -1;
+
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fs, nullptr);
+	glCompileShader(fragmentShader);
+	if (!checkShaderCompileError(fragmentShader, GL_FRAGMENT_SHADER))
+		return -1;
+
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	int success{};
+	char infoLog[512];
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success)
+	{
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		PRINT("ERROR::SHADER::{0}::LINK_FAILED\n{1}\n", infoLog);
+		return -1;
+	}
+
+	return shaderProgram;
+}
+
+void RenderScene0(GLFWwindow* window)
+{
+	unsigned int shaderProgram = createShader();
+	if (shaderProgram <= 0)
+		return;
+
+	int offsetLocation = glGetUniformLocation(shaderProgram, "offset");
+
+	unsigned int VAO{}, VBO{}, EBO{};
+	int count = inputVertexData(VAO, VBO, EBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	float speed = 0.5f;
+	float offset{};
+	float lastTime{};
+
+	while (!glfwWindowShouldClose(window))
+	{
+		processWindowInput(window);
+
+		glClearColor(0.0, 1.0, 0.0, 0.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		//float timeValue = glfwGetTime();
+		//float offset = sin(timeValue);
+
+		float time = glfwGetTime();
+		if (lastTime > 0)
+		{
+			float timespan = time - lastTime;
+			offset += speed * timespan;
+
+			if (offset > 0.5f || offset < -0.5f)
+			{
+				speed = -speed;
+				offset = offset > 0 ? 0.5f : -0.5f;
+			}
+		}
+		lastTime = time;
+
+		glUseProgram(shaderProgram);
+
+		glUniform1f(offsetLocation, offset);
+
+		glBindVertexArray(VAO);
+		//glDrawArrays(GL_TRIANGLES, 0, count);
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+	glDeleteProgram(shaderProgram);
+}
+
+#pragma endregion
