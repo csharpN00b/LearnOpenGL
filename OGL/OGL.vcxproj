@@ -87,6 +87,7 @@
     <ClCompile Include="GLFuncs.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="test\TestMath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\vendor\glad\glad.vcxproj">
@@ -99,6 +100,8 @@
   <ItemGroup>
     <ClInclude Include="Base.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="FMT.h" />
+    <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assert\fs.glsl" />

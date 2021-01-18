@@ -1,7 +1,3 @@
 #pragma once
 
-#define FMT_HEADER_ONLY
-#include "fmt/format.h"
-
-#define PRINT fmt::print
-//#define MSG(msg) std::cout<<msg<<std::endl;
+inline bool IsEqual(float a, float b) { return fabs(a - b) < 0.0001f; }
