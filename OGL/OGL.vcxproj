@@ -104,8 +104,8 @@
     <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assert\fs.glsl" />
-    <None Include="Assert\vs.glsl" />
+    <None Include="Assert\shaders\fs.glsl" />
+    <None Include="Assert\shaders\vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

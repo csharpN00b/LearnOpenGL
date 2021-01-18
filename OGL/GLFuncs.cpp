@@ -25,7 +25,7 @@ GLFWwindow* initOpenGL()
 	GLFWwindow* window = glfwCreateWindow(800, 600, "GLFWwindow", nullptr, nullptr);
 	if (window == nullptr)
 	{
-		PRINT("failed to create GLFW Window!\n");
+		PRINT("Failed to create GLFW window!\n");
 		glfwTerminate();
 		return nullptr;
 	}
@@ -34,7 +34,7 @@ GLFWwindow* initOpenGL()
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		PRINT("failed to initialize GLAD!\n");
+		PRINT("Failed to initialize GLAD!\n");
 		return nullptr;
 	}
 
@@ -47,10 +47,10 @@ GLFWwindow* initOpenGL()
 
 void RenderScene(GLFWwindow* window)
 {
-	Shader shaderProgram("Assert/vs.glsl", "Assert/fs.glsl");
+	Shader shaderProgram("Assert/shaders/vs.glsl", "Assert/shaders/fs.glsl");
 	if (!shaderProgram.IsValid())
 	{
-		PRINT("Invalid Shader Program!\n");
+		PRINT("Invalid shader program!\n");
 		return;
 	}
 
@@ -157,31 +157,37 @@ void processWindowInput(GLFWwindow* window)
 
 #pragma region without shader class
 
-bool checkShaderCompileError(unsigned int shaderId, GLenum type)
+static std::unordered_map<GLenum, std::string> ShaderName =
 {
-	static std::unordered_map<GLenum, std::string> shaderName =
-	{
-		{GL_VERTEX_SHADER, "VertexShader"},
-		{GL_FRAGMENT_SHADER, "FragmentShader"},
-		{GL_GEOMETRY_SHADER, "GeometryShader"},
-	};
+	{GL_VERTEX_SHADER, "VERTEX"},
+	{GL_FRAGMENT_SHADER, "FRAGMENT"},
+	{GL_GEOMETRY_SHADER, "GEOMETRY"},
+};
+
+unsigned int CompileShader(unsigned int type, const char* sourceCode)
+{
+	unsigned int shader = glCreateShader(type);
+	glShaderSource(shader, 1, &sourceCode, nullptr);
+	glCompileShader(shader);
 
 	int success;
-	char infoLog[512];
-	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
-		glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
-		PRINT("ERROR::SHADER::{0}::COMPILATION_FAILED\n{1}\n", shaderName[type], infoLog);
-		return false;
+		int length;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+		char* infoLog = (char*)alloca(length*sizeof(char));
+		glGetShaderInfoLog(shader, 512, NULL, infoLog);
+		PRINT("Faild to compile {0} shader!\n{1}\n", ShaderName[type], infoLog);
+		glDeleteShader(shader);
+		return -1;
 	}
-	return true;
+
+	return shader;
 }
 
-unsigned int createShader()
+unsigned int CreateShader()
 {
-	unsigned int vertexShader{}, fragmentShader{}, shaderProgram{};
-
 	const char* vs = R"(
 	#version 330 core
 
@@ -194,8 +200,8 @@ unsigned int createShader()
 	{
 		gl_Position = vec4(aPos.x + offset, aPos.y, aPos.z, 1.0);
 		color = aColor;
-	}
-)";
+	})";
+
 	const char* fs = R"(
 	#version 330 core
 
@@ -206,21 +212,15 @@ unsigned int createShader()
 	void main()
 	{
 		FragColor = vec4(color, 1.0f);
-	}
-)";
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vs, nullptr);
-	glCompileShader(vertexShader);
-	if (!checkShaderCompileError(vertexShader, GL_VERTEX_SHADER))
-		return -1;
+	})";
 
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fs, nullptr);
-	glCompileShader(fragmentShader);
-	if (!checkShaderCompileError(fragmentShader, GL_FRAGMENT_SHADER))
-		return -1;
+	unsigned int vertexShader = CompileShader(GL_VERTEX_SHADER, vs);
+	//assert(vertexShader > 0);
 
-	shaderProgram = glCreateProgram();
+	unsigned int fragmentShader = CompileShader(GL_FRAGMENT_SHADER, fs);
+	//assert(fragmentShader > 0);
+
+	unsigned int shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
@@ -229,12 +229,14 @@ unsigned int createShader()
 	glDeleteShader(fragmentShader);
 
 	int success{};
-	char infoLog[512];
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success)
 	{
+		int length;
+		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &length);
+		char* infoLog = (char*)alloca(length * sizeof(char));
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		PRINT("ERROR::SHADER::{0}::LINK_FAILED\n{1}\n", infoLog);
+		PRINT("Failed to link shader program!\n{1}\n", infoLog);
 		return -1;
 	}
 
@@ -243,7 +245,7 @@ unsigned int createShader()
 
 void RenderScene0(GLFWwindow* window)
 {
-	unsigned int shaderProgram = createShader();
+	unsigned int shaderProgram = CreateShader();
 	if (shaderProgram <= 0)
 		return;
 

@@ -43,7 +43,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assert\vs.glsl" />
-    <None Include="Assert\fs.glsl" />
+    <None Include="Assert\shaders\fs.glsl" />
+    <None Include="Assert\shaders\vs.glsl" />
   </ItemGroup>
 </Project>
