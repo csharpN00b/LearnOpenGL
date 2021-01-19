@@ -5,14 +5,6 @@
 class Matrix3x3
 {
 public:
-	/*
-	* 构造函数
-	* 单位矩阵 identity matrix
-	* 转置 transposed matrix
-	* 标量和矩阵乘法
-	* 向量与矩阵的乘法
-	* 矩阵乘法
-	*/
 	Matrix3x3()
 	{
 		m11 = 1.0f; m12 = 0.0f; m13 = 0.0f;

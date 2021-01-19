@@ -18,30 +18,30 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="GLFuncs.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="test\TestMath.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\Shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Base.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="FMT.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Matrix3x3.h">
+    <ClInclude Include="Math\Vector3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Matrix3x3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
