@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base.h" />
+    <ClInclude Include="Matrix3x3.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="FMT.h" />
     <ClInclude Include="Vector3.h" />

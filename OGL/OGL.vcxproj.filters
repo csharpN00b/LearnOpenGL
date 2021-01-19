@@ -41,6 +41,9 @@
     <ClInclude Include="FMT.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Matrix3x3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assert\shaders\fs.glsl" />

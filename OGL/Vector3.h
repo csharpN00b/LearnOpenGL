@@ -5,7 +5,11 @@
 class Vector3
 {
 public:
-	Vector3(float nx = 0.0f, float ny = 0.0f, float nz = 0.0f) 
+	Vector3()
+		: x(0.0f), y(0.0f), z(0.0f)
+	{}
+
+	Vector3(float nx, float ny, float nz) 
 		: x(nx), y(ny), z(nz)
 	{}
 
@@ -41,7 +45,6 @@ public:
 	}
 
 public:
-
 	Vector3 operator-() const { return Vector3(-x, -y, -z); }
 
 	Vector3 operator+(const Vector3& obj) const { return Vector3(x + obj.x, y + obj.y, z + obj.z); }
@@ -94,6 +97,8 @@ public:
 	float x, y, z;
 };
 
+// non-member functions
+// may be used in vector expression
 
 inline Vector3 CrossProduct(const Vector3& v1, const Vector3& v2)
 {
@@ -112,4 +117,4 @@ inline float Distance(const Vector3& v1, const Vector3& v2)
 	return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-//extern const Vector3 ZeroVector;
+//extern const Vector3 kZeroVector;

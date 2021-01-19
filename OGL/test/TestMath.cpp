@@ -1,5 +1,6 @@
 #include "../FMT.h"
 #include "../Vector3.h"
+#include "../Matrix3x3.h"
 
 #define PRINT_VEC(vec) fmt::print("{3}: [{0}, {1}, {2}]\n", vec.x, vec.y, vec.z, #vec)
 
@@ -20,6 +21,10 @@ void TestVector3()
 	v9 /= 2;
 	Vector3 v10(v9);
 
+	Matrix3x3 matrix;
+	auto v11 = matrix * v10;
+
+	PRINT_VEC(v11);
 	PRINT_VEC(v10);
 	PRINT_VEC(v9);
 	PRINT_VEC(v8);
@@ -40,5 +45,7 @@ void TestVector3()
 	v8.normalize();
 	PRINT("v8.normalize(): ");
 	PRINT_VEC(v8);
+
+
 
 }
