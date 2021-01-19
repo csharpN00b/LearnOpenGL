@@ -5,64 +5,38 @@ VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OGL", "OGL\OGL.vcxproj", "{6599AB51-AF02-434C-9816-BD7234FEBC2B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "vendor\glfw\glfw.vcxproj", "{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "OGL\vendor\glfw\glfw.vcxproj", "{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glad", "vendor\glad\glad.vcxproj", "{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glad", "OGL\vendor\glad\glad.vcxproj", "{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
-		MinSizeRel|x64 = MinSizeRel|x64
-		MinSizeRel|x86 = MinSizeRel|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-		RelWithDebInfo|x64 = RelWithDebInfo|x64
-		RelWithDebInfo|x86 = RelWithDebInfo|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.Debug|x64.ActiveCfg = Debug|x64
 		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.Debug|x64.Build.0 = Debug|x64
 		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.Debug|x86.ActiveCfg = Debug|x64
-		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.MinSizeRel|x64.ActiveCfg = Debug|x64
-		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.MinSizeRel|x64.Build.0 = Debug|x64
-		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.MinSizeRel|x86.ActiveCfg = Debug|x64
-		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.MinSizeRel|x86.Build.0 = Debug|x64
 		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.Release|x64.ActiveCfg = Release|x64
 		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.Release|x64.Build.0 = Release|x64
 		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.Release|x86.ActiveCfg = Release|x64
-		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.RelWithDebInfo|x64.ActiveCfg = Release|x64
-		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.RelWithDebInfo|x64.Build.0 = Release|x64
-		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.RelWithDebInfo|x86.ActiveCfg = Debug|x64
-		{6599AB51-AF02-434C-9816-BD7234FEBC2B}.RelWithDebInfo|x86.Build.0 = Debug|x64
 		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.Debug|x64.ActiveCfg = Debug|x64
 		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.Debug|x64.Build.0 = Debug|x64
 		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.Debug|x86.ActiveCfg = Debug|x64
-		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.MinSizeRel|x64.ActiveCfg = MinSizeRel|x64
-		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.MinSizeRel|x64.Build.0 = MinSizeRel|x64
-		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.MinSizeRel|x86.ActiveCfg = MinSizeRel|x64
 		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.Release|x64.ActiveCfg = Release|x64
 		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.Release|x64.Build.0 = Release|x64
 		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.Release|x86.ActiveCfg = Release|x64
-		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|x64
-		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.RelWithDebInfo|x64.Build.0 = RelWithDebInfo|x64
-		{FCB385BB-9EC0-3DF1-9EAA-D090441F36AF}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|x64
 		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.Debug|x64.ActiveCfg = Debug|x64
 		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.Debug|x64.Build.0 = Debug|x64
 		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.Debug|x86.ActiveCfg = Debug|Win32
 		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.Debug|x86.Build.0 = Debug|Win32
-		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.MinSizeRel|x64.ActiveCfg = Debug|x64
-		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.MinSizeRel|x64.Build.0 = Debug|x64
-		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.MinSizeRel|x86.ActiveCfg = Debug|Win32
-		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.MinSizeRel|x86.Build.0 = Debug|Win32
 		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.Release|x64.ActiveCfg = Release|x64
 		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.Release|x64.Build.0 = Release|x64
 		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.Release|x86.ActiveCfg = Release|Win32
 		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.Release|x86.Build.0 = Release|Win32
-		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.RelWithDebInfo|x64.ActiveCfg = Release|x64
-		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.RelWithDebInfo|x64.Build.0 = Release|x64
-		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.RelWithDebInfo|x86.ActiveCfg = Release|Win32
-		{F46DDCCF-8AFE-4FAB-B64A-F68054BE23D1}.RelWithDebInfo|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

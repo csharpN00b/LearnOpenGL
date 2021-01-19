@@ -59,7 +59,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\glfw\include;$(SolutionDir)vendor\glad\include;$(SolutionDir)vendor\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)OGL\vendor\glfw\include;$(SolutionDir)OGL\vendor\glad\include;$(SolutionDir)OGL\vendor\fmt\include;$(SolutionDir)OGL\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -74,7 +74,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\glfw\include;$(SolutionDir)vendor\glad\include;$(SolutionDir)vendor\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)OGL\vendor\glfw\include;$(SolutionDir)OGL\vendor\glad\include;$(SolutionDir)OGL\vendor\fmt\include;$(SolutionDir)OGL\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -84,29 +84,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GLFuncs.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Renderer\Shader.cpp" />
-    <ClCompile Include="test\TestMath.cpp" />
+    <ClCompile Include="src\GLFuncs.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Renderer\Shader.cpp" />
+    <ClCompile Include="src\test\TestMath.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\vendor\glad\glad.vcxproj">
+    <ProjectReference Include="vendor\glad\glad.vcxproj">
       <Project>{f46ddccf-8afe-4fab-b64a-f68054be23d1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\vendor\glfw\glfw.vcxproj">
+    <ProjectReference Include="vendor\glfw\glfw.vcxproj">
       <Project>{fcb385bb-9ec0-3df1-9eaa-d090441f36af}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Base.h" />
-    <ClInclude Include="Math\Matrix3x3.h" />
-    <ClInclude Include="Renderer\Shader.h" />
-    <ClInclude Include="FMT.h" />
-    <ClInclude Include="Math\Vector3.h" />
+    <ClInclude Include="src\Base.h" />
+    <ClInclude Include="src\Math\Matrix3x3.h" />
+    <ClInclude Include="src\Renderer\Shader.h" />
+    <ClInclude Include="src\FMT.h" />
+    <ClInclude Include="src\Math\Vector3.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assert\shaders\fs.glsl" />
-    <None Include="Assert\shaders\vs.glsl" />
+    <None Include="asserts\shaders\fs.glsl" />
+    <None Include="asserts\shaders\vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
