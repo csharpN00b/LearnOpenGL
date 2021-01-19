@@ -2,19 +2,22 @@
 
 #include <unordered_map>
 
-class Shader
+namespace Logl
 {
-public:
-	Shader(const std::string& vsPath, const std::string& fsPath);
-	Shader(const std::string& vsPath, const std::string& fsPath, const std::string& gsPath);
-	~Shader();
+	class Shader
+	{
+	public:
+		Shader(const std::string& vsPath, const std::string& fsPath);
+		Shader(const std::string& vsPath, const std::string& fsPath, const std::string& gsPath);
+		~Shader();
 
-	bool IsValid();
+		bool IsValid();
 
-	void Use();
-	void SetUniform(const std::string& name, float value);
+		void Use();
+		void SetUniform(const std::string& name, float value);
 
-private:
-	unsigned int m_Id;
-	std::unordered_map<std::string, int> m_uniforms;
-};
+	private:
+		unsigned int m_Id;
+		std::unordered_map<std::string, int> m_uniforms;
+	};
+}
