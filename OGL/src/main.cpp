@@ -1,5 +1,7 @@
 #include <GLFW/glfw3.h>
 
+#include "FMT.h"
+
 namespace Logl
 {
 
@@ -8,15 +10,19 @@ namespace Logl
 	void RenderScene(GLFWwindow* window); // using shader class
 
 	void TestVector3();
+	void TestMatrix4f();
 }
 
 #define TEST 0
+void TestGLM();
 
 
 int main()
 {
 #if TEST
-	Logl::TestVector3();
+	//Logl::TestVector3();
+	Logl::TestMatrix4f();
+	TestGLM();
 #else
 
 	GLFWwindow* window = Logl::initOpenGL();
