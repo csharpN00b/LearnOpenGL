@@ -17,17 +17,12 @@ namespace Logl
 			: x(vector.x), y(vector.y), z(vector.z), w(1.0f)
 		{
 		}
+
+		float operator*(const vec4& v2)
+		{
+			return x * v2.x + y * v2.y + z * v2.z + w * v2.w;
+		}
 	};
-
-	inline float operator*(const vec4& v1, const vec4& v2)
-	{
-		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
-	}
-
-	inline float operator*(const vec4& v, const float& val)
-	{
-		return v.x * val + v.y * val + v.z * val + v.w * val;
-	}
 
 
 	class Matrix4f
