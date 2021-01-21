@@ -59,7 +59,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)OGL\vendor\glfw\include;$(SolutionDir)OGL\vendor\glad\include;$(SolutionDir)OGL\vendor\fmt\include;$(SolutionDir)OGL\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)OGL\vendor\glfw\include;$(SolutionDir)OGL\vendor\glad\include;$(SolutionDir)OGL\vendor\fmt\include;$(SolutionDir)OGL\vendor\glm;$(SolutionDir)OGL\vendor\stb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -74,7 +74,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)OGL\vendor\glfw\include;$(SolutionDir)OGL\vendor\glad\include;$(SolutionDir)OGL\vendor\fmt\include;$(SolutionDir)OGL\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)OGL\vendor\glfw\include;$(SolutionDir)OGL\vendor\glad\include;$(SolutionDir)OGL\vendor\fmt\include;$(SolutionDir)OGL\vendor\glm;$(SolutionDir)OGL\vendor\stb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -87,6 +87,7 @@
     <ClCompile Include="src\GLFuncs.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
+    <ClCompile Include="src\STB.cpp" />
     <ClCompile Include="src\test\TestGLM.cpp" />
     <ClCompile Include="src\test\TestMath.cpp" />
   </ItemGroup>
@@ -106,8 +107,10 @@
     <ClInclude Include="src\Math\Vector3.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="asserts\shaders\fs.glsl" />
-    <None Include="asserts\shaders\vs.glsl" />
+    <None Include="asserts\shaders\basic_fs.glsl" />
+    <None Include="asserts\shaders\tex_fs.glsl" />
+    <None Include="asserts\shaders\tex_vs.glsl" />
+    <None Include="asserts\shaders\basic_vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

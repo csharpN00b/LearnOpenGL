@@ -152,6 +152,18 @@ namespace Logl
 
 	void Shader::SetUniform(const std::string& name, float value)
 	{
+		auto location = GetUniformLocation(name);
+		glUniform1f(m_uniforms[name], value);
+	}
+
+	void Shader::SetUniform(const std::string& name, int value)
+	{
+		auto location = GetUniformLocation(name);
+		glUniform1i(m_uniforms[name], value);
+	}
+
+	int Shader::GetUniformLocation(const std::string& name)
+	{
 		auto it = m_uniforms.find(name);
 		if (it == m_uniforms.end())
 		{
@@ -163,10 +175,8 @@ namespace Logl
 		{
 			PRINT("Invalid uniform: {}\n", name);
 			__debugbreak();
-			return;
+
 		}
-
-		glUniform1f(m_uniforms[name], value);
+		return location;
 	}
-
 }

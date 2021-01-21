@@ -5,9 +5,9 @@
 namespace Logl
 {
 
-	GLFWwindow* initOpenGL(); // initialize OpenGL and create window
-	void RenderScene0(GLFWwindow* window); // not using shader class
-	void RenderScene(GLFWwindow* window); // using shader class
+	GLFWwindow* initOpenGL();				// initialize OpenGL and create window
+	void RenderScene0(GLFWwindow* window);	// not using shader class
+	void RenderScene(GLFWwindow* window);	// using shader class
 
 	void TestVector3();
 	void TestMatrix4f();

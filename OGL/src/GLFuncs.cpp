@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb/stb_image.h>
 
 #include <unordered_map>
 
@@ -9,6 +10,7 @@
 namespace Logl
 {
 
+	unsigned int LoadTexture();
 	int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
 	void processWindowInput(GLFWwindow*);
 
@@ -49,13 +51,23 @@ namespace Logl
 
 	void RenderScene(GLFWwindow* window)
 	{
-		Shader shaderProgram("asserts/shaders/vs.glsl", "asserts/shaders/fs.glsl");
+		// Shaders
+		Shader shaderProgram("asserts/shaders/tex_vs.glsl", "asserts/shaders/tex_fs.glsl");
 		if (!shaderProgram.IsValid())
 		{
 			PRINT("Invalid shader program!\n");
 			return;
 		}
 
+		// Texture
+		unsigned int texture = LoadTexture();
+		if (texture == 0)
+		{
+			PRINT("Faild to load texture!\n");
+			return;
+		}
+
+		// Vertex
 		unsigned int VAO{}, VBO{}, EBO{};
 		int count = inputVertexData(VAO, VBO, EBO);
 
@@ -67,11 +79,12 @@ namespace Logl
 		float offset{};
 		float lastTime{};
 
+		// Loop
 		while (!glfwWindowShouldClose(window))
 		{
 			processWindowInput(window);
 
-			glClearColor(0.0, 1.0, 0.0, 0.0);
+			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			//float timeValue = glfwGetTime();
@@ -92,10 +105,12 @@ namespace Logl
 			lastTime = time;
 
 			shaderProgram.Use();
-			shaderProgram.SetUniform("offset", offset);
+			//shaderProgram.SetUniform("offset", offset);
+
+			// glActiveTexture(GL_TEXTURE0); // the default active texture unit in some graphics drivers
+			glBindTexture(GL_TEXTURE_2D, texture);
 
 			glBindVertexArray(VAO);
-			//glDrawArrays(GL_TRIANGLES, 0, count);
 			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 
 			glfwSwapBuffers(window);
@@ -107,14 +122,39 @@ namespace Logl
 		glDeleteBuffers(1, &EBO);
 	}
 
+	unsigned int LoadTexture()
+	{
+		int width{}, height{}, nrChannels{};
+		unsigned char* data = stbi_load("asserts/textures/container.jpg", &width, &height, &nrChannels, 0);
+		if (data)
+		{
+			unsigned int texture;
+			glGenTextures(1, &texture);
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			stbi_image_free(data);
+
+			return texture;
+		}
+
+		return 0;
+	}
+
 	int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO)
 	{
 		float vertices[] =
 		{
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-			0.5f, -0.5f, 0.0f, 1.0f, 0.8f, 0.2f,
-			0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-			-0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f,
+			// positions         // colors          // texture coords
+			-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f
 		};
 
 		unsigned int indices[] =
@@ -135,15 +175,16 @@ namespace Logl
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
 		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		//return sizeof(vertices) / sizeof(vertices[0]) / 3; // call glDrawArrays
 		return sizeof(indices) / sizeof(indices[0]);
 
 	}
@@ -188,33 +229,33 @@ namespace Logl
 		return shader;
 	}
 
-	unsigned int CreateShader()
+	unsigned int CreateShaderProgram()
 	{
 		const char* vs = R"(
-	#version 330 core
+		#version 330 core
 
-	layout (location = 0) in vec3 aPos;
-	layout (location = 1) in vec3 aColor;
-	out vec3 color;
-	uniform float offset;
+		layout (location = 0) in vec3 aPos;
+		layout (location = 1) in vec3 aColor;
+		out vec3 color;
+		uniform float offset;
 
-	void main()
-	{
-		gl_Position = vec4(aPos.x + offset, aPos.y, aPos.z, 1.0);
-		color = aColor;
-	})";
+		void main()
+		{
+			gl_Position = vec4(aPos.x + offset, aPos.y, aPos.z, 1.0);
+			color = aColor;
+		})";
 
 		const char* fs = R"(
-	#version 330 core
+		#version 330 core
 
-	in vec3 color;
-	out vec4 FragColor;
-	uniform float offset;
+		in vec3 color;
+		out vec4 FragColor;
+		uniform float offset;
 
-	void main()
-	{
-		FragColor = vec4(color, 1.0f);
-	})";
+		void main()
+		{
+			FragColor = vec4(color, 1.0f);
+		})";
 
 		unsigned int vertexShader = CompileShader(GL_VERTEX_SHADER, vs);
 		//assert(vertexShader > 0);
@@ -247,7 +288,7 @@ namespace Logl
 
 	void RenderScene0(GLFWwindow* window)
 	{
-		unsigned int shaderProgram = CreateShader();
+		unsigned int shaderProgram = CreateShaderProgram();
 		if (shaderProgram <= 0)
 			return;
 
@@ -289,11 +330,9 @@ namespace Logl
 			lastTime = time;
 
 			glUseProgram(shaderProgram);
-
 			glUniform1f(offsetLocation, offset);
 
 			glBindVertexArray(VAO);
-			//glDrawArrays(GL_TRIANGLES, 0, count);
 			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 
 			glfwSwapBuffers(window);

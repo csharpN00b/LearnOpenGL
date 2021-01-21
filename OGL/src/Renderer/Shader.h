@@ -15,6 +15,10 @@ namespace Logl
 
 		void Use();
 		void SetUniform(const std::string& name, float value);
+		void SetUniform(const std::string& name, int value);
+
+	private:
+		int GetUniformLocation(const std::string& name);
 
 	private:
 		unsigned int m_Id;
