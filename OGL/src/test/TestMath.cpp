@@ -1,5 +1,7 @@
 #include "../FMT.h"
+#include "../Base.h"
 #include "../Math/Matrix4f.h"
+
 
 #define PRINT_VEC(vec) fmt::print("{3}: [{0}, {1}, {2}]\n", vec.x, vec.y, vec.z, #vec)
 
@@ -54,13 +56,13 @@ namespace Logl
 	void TestMatrix4f()
 	{
 		Matrix4f m1;
-		Matrix4f m2 = Matrix4f::Rotate(PI / 3, Vector3(1.0f, 0.0f, 1.0f));
+		Matrix4f m2 = Matrix4f::Rotate(/*Radians(60.f)*/PI/3, Vector3(1.0f, 0.0f, 1.0f));
 		Matrix4f m3 = Matrix4f::Translate(Vector3(10.0f, 0.0f, 0.0f));
 		Matrix4f m4 = Matrix4f::Scale(2.0f);
 		//Matrix4f m5 = Matrix4f::Mirror({ 0.0f, 1.0f, 0.0f });
 
 		Vector3 v(2.0f, 3.0f, 5.0f);
-		auto m = m4*m3 * m2;
+		auto m = m4 * m3 * m2;
 		auto v1 = m * v;
 
 		auto v2 = m2 * v;
@@ -68,6 +70,7 @@ namespace Logl
 		v2 = m4 * v2;
 
 		PRINT("Logl:\n");
+		PRINT("Radians(60.f): {}\n", Radians(60.f));
 		PRINT_VEC(v);
 		PRINT_VEC(v1);
 		PRINT_VEC(v2);

@@ -1,23 +1,24 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #include <unordered_map>
 
 #include "FMT.h"
 #include "Renderer/Shader.h"
+#include "Math/Matrix4f.h"
+
 
 namespace Logl
 {
 
-	unsigned int LoadTexture();
+	unsigned int LoadTexture(const char* filepath, int format);
 	int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
-	void processWindowInput(GLFWwindow*);
 
-	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-	{
-		glViewport(0, 0, width, height);
-	}
+	void processWindowInput(GLFWwindow* window);
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 	GLFWwindow* initOpenGL()
 	{
@@ -59,25 +60,30 @@ namespace Logl
 			return;
 		}
 
-		// Texture
-		unsigned int texture = LoadTexture();
-		if (texture == 0)
-		{
-			PRINT("Faild to load texture!\n");
-			return;
-		}
-
 		// Vertex
 		unsigned int VAO{}, VBO{}, EBO{};
 		int count = inputVertexData(VAO, VBO, EBO);
 
+		// Texture
+		unsigned int texture1 = LoadTexture("asserts/textures/container.jpg", GL_RGB);
+		unsigned int texture2 = LoadTexture("asserts/textures/awesomeface.png", GL_RGBA);
+		if (texture1 == 0 || texture2 == 0)
+		{
+			PRINT("Faild to load texture!\n");
+			__debugbreak();
+			return;
+		}
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
+		shaderProgram.Use();
+		shaderProgram.SetUniform("texture1", 0);
+		shaderProgram.SetUniform("texture2", 1);
+
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-		float speed = 0.5f;
-		float offset{};
-		float lastTime{};
 
 		// Loop
 		while (!glfwWindowShouldClose(window))
@@ -87,28 +93,15 @@ namespace Logl
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			//float timeValue = glfwGetTime();
-			//float offset =  sin(timeValue);
+			auto transform = Matrix4f::Translate(Vector3(0.5f, -0.5f, 0.0f));
+			transform = transform * Matrix4f::Rotate((float)glfwGetTime(), Vector3(0.0f, 0.0f, 1.0f));
 
-			float time = glfwGetTime();
-			if (lastTime > 0)
-			{
-				float timespan = time - lastTime;
-				offset += speed * timespan;
-
-				if (offset > 0.5f || offset < -0.5f)
-				{
-					speed = -speed;
-					offset = offset > 0 ? 0.5f : -0.5f;
-				}
-			}
-			lastTime = time;
+			//auto glmTransform = glm::translate(glm::mat4(1.f), glm::vec3(0.5f, -0.5f, 0.0f));
+			//glmTransform = glm::rotate(glmTransform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
 			shaderProgram.Use();
-			//shaderProgram.SetUniform("offset", offset);
-
-			// glActiveTexture(GL_TEXTURE0); // the default active texture unit in some graphics drivers
-			glBindTexture(GL_TEXTURE_2D, texture);
+			shaderProgram.SetUniform("transform", transform.ValuePtr());
+			//shaderProgram.SetUniform("transform", glm::value_ptr(glmTransform));
 
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
@@ -121,82 +114,6 @@ namespace Logl
 		glDeleteBuffers(1, &VBO);
 		glDeleteBuffers(1, &EBO);
 	}
-
-	unsigned int LoadTexture()
-	{
-		int width{}, height{}, nrChannels{};
-		unsigned char* data = stbi_load("asserts/textures/container.jpg", &width, &height, &nrChannels, 0);
-		if (data)
-		{
-			unsigned int texture;
-			glGenTextures(1, &texture);
-			glBindTexture(GL_TEXTURE_2D, texture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			stbi_image_free(data);
-
-			return texture;
-		}
-
-		return 0;
-	}
-
-	int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO)
-	{
-		float vertices[] =
-		{
-			// positions         // colors          // texture coords
-			-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
-			 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-			 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-			-0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f
-		};
-
-		unsigned int indices[] =
-		{
-			0, 1, 2,
-			2, 3, 0,
-		};
-
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &EBO);
-
-		glBindVertexArray(VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-
-		return sizeof(indices) / sizeof(indices[0]);
-
-	}
-
-	void processWindowInput(GLFWwindow* window)
-	{
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		{
-			glfwSetWindowShouldClose(window, 1);
-		}
-	}
-
 
 #pragma region without shader class
 
@@ -347,4 +264,83 @@ namespace Logl
 
 #pragma endregion
 
+	unsigned int LoadTexture(const char* filepath, int format)
+	{
+		int width{}, height{}, nrChannels{};
+		stbi_set_flip_vertically_on_load(1);
+		unsigned char* data = stbi_load(filepath, &width, &height, &nrChannels, 0);
+		if (data)
+		{
+			unsigned int texture;
+			glGenTextures(1, &texture);
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			stbi_image_free(data);
+			return texture;
+		}
+
+		return 0;
+	}
+
+	int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO)
+	{
+		float vertices[] =
+		{
+			// positions         // colors          // texture coords
+			-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f
+		};
+
+		unsigned int indices[] =
+		{
+			0, 1, 2,
+			2, 3, 0,
+		};
+
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
+
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		return sizeof(indices) / sizeof(indices[0]);
+
+	}
+
+	void processWindowInput(GLFWwindow* window)
+	{
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		{
+			glfwSetWindowShouldClose(window, 1);
+		}
+	}
+
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+	{
+		glViewport(0, 0, width, height);
+	}
 }

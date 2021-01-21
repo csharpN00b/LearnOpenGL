@@ -45,10 +45,10 @@ namespace Logl
 			float m41, float m42, float m43, float m44
 			)
 		{
-			m_Data[0] = m11;  m_Data[1] = m12;  m_Data[2] = m13;  m_Data[3] = m14;
-			m_Data[4] = m21;  m_Data[5] = m22;  m_Data[6] = m23;  m_Data[7] = m24;
-			m_Data[8] = m31;  m_Data[9] = m32;  m_Data[10] = m33; m_Data[11] = m34;
-			m_Data[12] = m41; m_Data[13] = m42; m_Data[14] = m43; m_Data[15] = m44;
+			m_Data[0] = m11;  m_Data[1] = m21;  m_Data[2] = m31;  m_Data[3] = m41;
+			m_Data[4] = m12;  m_Data[5] = m22;  m_Data[6] = m32;  m_Data[7] = m42;
+			m_Data[8] = m13;  m_Data[9] = m23;  m_Data[10] = m33; m_Data[11] = m43;
+			m_Data[12] = m14; m_Data[13] = m24; m_Data[14] = m34; m_Data[15] = m44;
 		}
 
 		void Identity()
@@ -69,7 +69,10 @@ namespace Logl
 			return matrix;
 		}
 
+		const float* ValuePtr() const { return &m_Data[0]; }
 
+
+	public:
 		static inline Matrix4f Rotate(float angle, const Vector3& axis)
 		{
 			auto v = axis;
@@ -180,53 +183,55 @@ namespace Logl
 		*/
 
 	private:
-		void SetRow(int row, float x, float y, float z, float w)
+		void SetRow(int row, float v1, float v2, float v3, float v4)
 		{
-			int i = (row - 1) * 4;
-			m_Data[i++] = x;
-			m_Data[i++] = y;
-			m_Data[i++] = z;
-			m_Data[i++] = w;
-		}
-
-		void SetRow(int row, vec4 v)
-		{
-			int i = (row - 1) * 4;
-			m_Data[i++] = v.x;
-			m_Data[i++] = v.y;
-			m_Data[i++] = v.z;
-			m_Data[i++] = v.w;
-		}
-
-		void SetCol(int col, float v1, float v2, float v3, float v4)
-		{
-			int i = (col - 1);
+			int i = (row - 1);
 			m_Data[i] = v1;
 			m_Data[i + 4] = v2;
 			m_Data[i + 8] = v3;
 			m_Data[i + 12] = v4;
 		}
 
-		void SetCol(int col, vec4 v)
+		void SetRow(int row, vec4 v)
 		{
-			int i = (col - 1);
+			int i = (row - 1);
 			m_Data[i] = v.x;
 			m_Data[i + 4] = v.y;
 			m_Data[i + 8] = v.z;
 			m_Data[i + 12] = v.w;
 		}
 
+		void SetCol(int col, float x, float y, float z, float w)
+		{
+			int i = (col - 1) * 4;
+			m_Data[i++] = x;
+			m_Data[i++] = y;
+			m_Data[i++] = z;
+			m_Data[i++] = w;
+		}
+
+		void SetCol(int col, vec4 v)
+		{
+			int i = (col - 1) * 4;
+			m_Data[i++] = v.x;
+			m_Data[i++] = v.y;
+			m_Data[i++] = v.z;
+			m_Data[i++] = v.w;
+		}
+
+
 		vec4 GetRow(int row) const
 		{
-			int i = (row - 1) * 4;
-			return { m_Data[i], m_Data[i + 1], m_Data[i + 2], m_Data[i + 3] };
+			int i = (row - 1);
+			return { m_Data[i], m_Data[i + 4], m_Data[i + 8], m_Data[i + 12] };
 		}
 
 		vec4 GetCol(int col) const
 		{
-			int i = (col - 1);
-			return { m_Data[i], m_Data[i + 4], m_Data[i + 8], m_Data[i + 12] };
+			int i = (col - 1) * 4;
+			return { m_Data[i], m_Data[i + 1], m_Data[i + 2], m_Data[i + 3] };
 		}
+
 
 		vec4 operator[](const int row) const
 		{
@@ -254,7 +259,7 @@ namespace Logl
 					data[i++] = GetRow(row) * matrix.GetCol(col);
 				}
 			}
-			return Matrix4f(data);
+			return Matrix4f(data).Transposed();
 		}
 
 		Vector3 operator*(const Vector3& vector) const
@@ -266,7 +271,7 @@ namespace Logl
 
 
 	public:
-		float m_Data[16];
+		float m_Data[16]; // column-major ordering
 	};
 
 }
