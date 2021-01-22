@@ -78,8 +78,8 @@ namespace Logl
 			auto v = axis;
 			v.normalize();
 
-			float cosA = cos(angle);
-			float sinA = sin(angle);
+			float cosA = cosf(angle);
+			float sinA = sinf(angle);
 			float k = 1 - cosA;
 			auto x = v.x;
 			auto y = v.y;
@@ -140,21 +140,30 @@ namespace Logl
 			};
 		}
 
-
-		/*
-		* TODO:
-		* Orthographic Projection Matrix
-		* Perspective Projection Matrix
-		*/
-
 		static inline Matrix4f Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
 		{
-			return Matrix4f();
+			auto rw = 1.0f / (right - left);
+			auto rh = 1.0f / (top - bottom);
+			auto rl = 1.0f / (zFar - zNear);
+
+			return {
+				2.0f*rw, 0.0f, 0.0f, 0.0f,
+				0.0f, 2.0f*rh, 0.0f, 0.0f,
+				0.0f, 0.0f, -2.0f*rl, 0.0f,
+				-(right+left)*rw, -(top+bottom)*rh, -(zFar+zNear)*rl, 1.0f
+			};
 		}
 
 		static inline Matrix4f Perspective(float fovy, float aspect, float zNear, float zFar)
 		{
-			return Matrix4f();
+			auto a = 1.0f / tanf(fovy / 2.0f);
+			auto rl = 1.0f / (zFar - zNear);
+			return {
+				a/aspect, 0.0f, 0.0f, 0.0f,
+				0.0f, a, 0.0f, 0.0f,
+				0.0f, 0.0f, -(zFar+zNear)*rl, -2 * zFar * zNear * rl,
+				0.0f, 0.0f, -1.0f, 0.0f
+			};
 		}
 
 		/*

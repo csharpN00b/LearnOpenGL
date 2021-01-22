@@ -101,9 +101,9 @@ namespace Logl
 		  Vector3(1.5f,  0.2f, -1.5f),
 		  Vector3(-1.3f,  1.0f, -1.5f)
 		};
-
+		
 		auto viewTrans = Matrix4f::Translate(Vector3(0.0f, 0.0f, -3.0f));
-		auto projectTrans = Matrix4f(glm::value_ptr(glm::perspective(Radians(45.0f), 800.f / 600.f, 0.3f, 100.0f)));
+		auto projectTrans = Matrix4f::Perspective(Radians(45.0f), 800.f / 600.f, 0.3f, 100.0f);
 
 		// Loop
 		while (!glfwWindowShouldClose(window))
@@ -177,7 +177,7 @@ namespace Logl
 		// mvp transform
 		auto modelTrans = Matrix4f::Rotate(Radians(-55.0f), Vector3(1.0f, 0.0f, 0.0f));
 		auto viewTrans = Matrix4f::Translate(Vector3(0.0f, 0.0f, -3.0f));
-		auto projectTrans = Matrix4f(glm::value_ptr(glm::perspective(Radians(45.0f), 800.f / 600.f, 0.3f, 100.0f)));
+		auto projectTrans = Matrix4f::Perspective(Radians(45.0f), 800.f / 600.f, 0.3f, 100.0f);
 		auto mvpTrans = projectTrans * viewTrans * modelTrans;
 
 		// Loop

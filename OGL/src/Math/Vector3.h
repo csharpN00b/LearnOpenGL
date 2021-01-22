@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Base.h"
+#include "Math.h"
 
 namespace Logl
 {

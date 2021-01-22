@@ -100,7 +100,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Base.h" />
+    <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Math\Matrix4f.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\FMT.h" />
