@@ -15,7 +15,8 @@ namespace Logl
 {
 
 	unsigned int LoadTexture(const char* filepath, int format);
-	int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
+	int SquareData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
+	int CubeData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
 
 	void processWindowInput(GLFWwindow* window);
 	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -47,6 +48,8 @@ namespace Logl
 		//glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
 		//PRINT("Maximum nr of vertex attributes supported: {}\n", nrAttributes);
 
+		glEnable(GL_DEPTH_TEST);
+
 		return window;
 	}
 
@@ -61,8 +64,90 @@ namespace Logl
 		}
 
 		// Vertex
+		unsigned int vao{}, vbo{}, ebo{};
+		int count = CubeData(vao, vbo, ebo);
+
+		// Texture
+		unsigned int texture1 = LoadTexture("asserts/textures/container.jpg", GL_RGB);
+		unsigned int texture2 = LoadTexture("asserts/textures/awesomeface.png", GL_RGBA);
+		if (texture1 == 0 || texture2 == 0)
+		{
+			PRINT("Faild to load texture!\n");
+			__debugbreak();
+			return;
+		}
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
+		shaderProgram.Use();
+		shaderProgram.SetUniform("texture1", 0);
+		shaderProgram.SetUniform("texture2", 1);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// mvp
+		Vector3 cubePositions[10] = {
+		  Vector3(0.0f,  0.0f,  0.0f),
+		  Vector3(2.0f,  5.0f, -15.0f),
+		  Vector3(-1.5f, -2.2f, -2.5f),
+		  Vector3(-3.8f, -2.0f, -12.3f),
+		  Vector3(2.4f, -0.4f, -3.5f),
+		  Vector3(-1.7f,  3.0f, -7.5f),
+		  Vector3(1.3f, -2.0f, -2.5f),
+		  Vector3(1.5f,  2.0f, -2.5f),
+		  Vector3(1.5f,  0.2f, -1.5f),
+		  Vector3(-1.3f,  1.0f, -1.5f)
+		};
+
+		auto viewTrans = Matrix4f::Translate(Vector3(0.0f, 0.0f, -3.0f));
+		auto projectTrans = Matrix4f(glm::value_ptr(glm::perspective(Radians(45.0f), 800.f / 600.f, 0.3f, 100.0f)));
+
+		// Loop
+		while (!glfwWindowShouldClose(window))
+		{
+			processWindowInput(window);
+
+			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			shaderProgram.Use();
+			glBindVertexArray(vao);
+
+			for (int i = 0; i < 10; i++)
+			{
+				auto modelTrans = Matrix4f::Translate(cubePositions[i]);
+				modelTrans = modelTrans * Matrix4f::Rotate(Radians(20.0f * i), Vector3(1.0f, 0.3f, 0.5f));
+				auto mvpTrans = projectTrans * viewTrans * modelTrans;
+
+				shaderProgram.SetUniform("transform", mvpTrans.ValuePtr());
+				glDrawArrays(GL_TRIANGLES, 0, count);
+			}
+
+			glfwSwapBuffers(window);
+			glfwPollEvents();
+		}
+
+		glDeleteVertexArrays(1, &vao);
+	}
+
+#pragma region render 2D objects
+
+	void RenderScene1(GLFWwindow* window)
+	{
+		// Shaders
+		Shader shaderProgram("asserts/shaders/tex_vs.glsl", "asserts/shaders/tex_fs.glsl");
+		if (!shaderProgram.IsValid())
+		{
+			PRINT("Invalid shader program!\n");
+			return;
+		}
+
+		// Vertex
 		unsigned int VAO{}, VBO{}, EBO{};
-		int count = inputVertexData(VAO, VBO, EBO);
+		int count = SquareData(VAO, VBO, EBO);
 
 		// Texture
 		unsigned int texture1 = LoadTexture("asserts/textures/container.jpg", GL_RGB);
@@ -89,13 +174,19 @@ namespace Logl
 		auto translate2 = Matrix4f::Translate(Vector3(-0.5f, 0.5f, 0.0f));
 		Vector3 rotateAxis(0.0f, 0.0f, 1.0f);
 
+		// mvp transform
+		auto modelTrans = Matrix4f::Rotate(Radians(-55.0f), Vector3(1.0f, 0.0f, 0.0f));
+		auto viewTrans = Matrix4f::Translate(Vector3(0.0f, 0.0f, -3.0f));
+		auto projectTrans = Matrix4f(glm::value_ptr(glm::perspective(Radians(45.0f), 800.f / 600.f, 0.3f, 100.0f)));
+		auto mvpTrans = projectTrans * viewTrans * modelTrans;
+
 		// Loop
 		while (!glfwWindowShouldClose(window))
 		{
 			processWindowInput(window);
 
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			auto time = glfwGetTime();
 			auto transform1 = translate1 * Matrix4f::Rotate((float)time, rotateAxis);
@@ -114,6 +205,9 @@ namespace Logl
 			shaderProgram.SetUniform("transform", transform2.ValuePtr());
 			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 
+			shaderProgram.SetUniform("transform", mvpTrans.ValuePtr());
+			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
@@ -122,6 +216,8 @@ namespace Logl
 		glDeleteBuffers(1, &VBO);
 		glDeleteBuffers(1, &EBO);
 	}
+
+#pragma endregion
 
 #pragma region without shader class
 
@@ -219,7 +315,7 @@ namespace Logl
 		int offsetLocation = glGetUniformLocation(shaderProgram, "offset");
 
 		unsigned int VAO{}, VBO{}, EBO{};
-		int count = inputVertexData(VAO, VBO, EBO);
+		int count = SquareData(VAO, VBO, EBO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -234,7 +330,7 @@ namespace Logl
 			processWindowInput(window);
 
 			glClearColor(0.0, 1.0, 0.0, 0.0);
-			glClear(GL_COLOR_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			//float timeValue = glfwGetTime();
 			//float offset = sin(timeValue);
@@ -295,7 +391,100 @@ namespace Logl
 		return 0;
 	}
 
-	int inputVertexData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO)
+	int CubeData(unsigned int& vao, unsigned int& vbo, unsigned int& ebo)
+	{
+#if 0
+		float vertices[] =
+		{
+			// positions         // colors          // texture coords
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+
+			-0.5f, -0.5f, 0.5f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f, 0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, 0.5f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f, 0.5f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f
+		};
+
+		unsigned int indices[] =
+		{
+			0, 1, 2, 2, 3, 0,
+			4, 5, 6, 6, 7, 4,
+			0, 4, 7, 7, 3, 0,
+			5, 1, 2, 2, 6, 5,
+			4, 5, 1, 1, 0, 4,
+			7, 6, 2, 2, 3, 7
+		};
+#endif
+
+		float vertices[] = {
+			-0.5f, -0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+													 
+			-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+													 
+			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+													 
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+													 
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+													 
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f
+		};
+
+		glGenVertexArrays(1, &vao);
+		glGenBuffers(1, &vbo);
+
+		glBindVertexArray(vao);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		return sizeof(vertices) / sizeof(vertices[0]) / 8;
+	}
+
+	int SquareData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO)
 	{
 		float vertices[] =
 		{
