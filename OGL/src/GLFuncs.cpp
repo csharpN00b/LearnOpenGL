@@ -85,6 +85,10 @@ namespace Logl
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+		auto translate1 = Matrix4f::Translate(Vector3(0.5f, -0.5f, 0.0f));
+		auto translate2 = Matrix4f::Translate(Vector3(-0.5f, 0.5f, 0.0f));
+		Vector3 rotateAxis(0.0f, 0.0f, 1.0f);
+
 		// Loop
 		while (!glfwWindowShouldClose(window))
 		{
@@ -93,17 +97,21 @@ namespace Logl
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			auto transform = Matrix4f::Translate(Vector3(0.5f, -0.5f, 0.0f));
-			transform = transform * Matrix4f::Rotate((float)glfwGetTime(), Vector3(0.0f, 0.0f, 1.0f));
+			auto time = glfwGetTime();
+			auto transform1 = translate1 * Matrix4f::Rotate((float)time, rotateAxis);
+			auto transform2 = translate2 * Matrix4f::Scale((float)sin(time));
 
 			//auto glmTransform = glm::translate(glm::mat4(1.f), glm::vec3(0.5f, -0.5f, 0.0f));
 			//glmTransform = glm::rotate(glmTransform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
 			shaderProgram.Use();
-			shaderProgram.SetUniform("transform", transform.ValuePtr());
-			//shaderProgram.SetUniform("transform", glm::value_ptr(glmTransform));
-
 			glBindVertexArray(VAO);
+
+			shaderProgram.SetUniform("transform", transform1.ValuePtr());
+			//shaderProgram.SetUniform("transform", glm::value_ptr(glmTransform));
+			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+
+			shaderProgram.SetUniform("transform", transform2.ValuePtr());
 			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 
 			glfwSwapBuffers(window);
@@ -167,7 +175,6 @@ namespace Logl
 
 		in vec3 color;
 		out vec4 FragColor;
-		uniform float offset;
 
 		void main()
 		{

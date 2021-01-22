@@ -140,6 +140,23 @@ namespace Logl
 			};
 		}
 
+
+		/*
+		* TODO:
+		* Orthographic Projection Matrix
+		* Perspective Projection Matrix
+		*/
+
+		static inline Matrix4f Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
+		{
+			return Matrix4f();
+		}
+
+		static inline Matrix4f Perspective(float fovy, float aspect, float zNear, float zFar)
+		{
+			return Matrix4f();
+		}
+
 		/*
 		static inline Matrix4f OrthoProjection(const Vector3& normal)
 		{
