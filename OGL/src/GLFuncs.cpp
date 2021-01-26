@@ -7,8 +7,11 @@
 #include <unordered_map>
 
 #include "FMT.h"
-#include "Renderer/Shader.h"
+
 #include "Math/Matrix4f.h"
+
+#include "Renderer/Shader.h"
+#include "Renderer/PerspectiveCamera.h"
 
 
 namespace Logl
@@ -28,24 +31,13 @@ namespace Logl
 	const unsigned int SCR_WIDTH = 800;
 	const unsigned int SCR_HEIGHT = 600;
 
-	float aspect = (float)SCR_WIDTH / (float)SCR_HEIGHT;
-
-	// camera
-	vec3 cameraPos = vec3(0.0f, 0.0f, 3.0f);
-	vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
-	vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
-
-	bool firstMouse = true;
-	float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-	float pitch = 0.0f;
-	float lastX = 800.0f / 2.0;
-	float lastY = 600.0 / 2.0;
-	float fov = 45.0f;
-
 	// timing
 	float deltaTime = 0.0f;	// time between current frame and last frame
 	float lastFrame = 0.0f;
 
+	// camera
+	float ratio = (float)SCR_WIDTH / (float)SCR_HEIGHT;
+	PerspectiveCamera camera(ViewParam(ratio), vec3(0.0f, 0.0f, 3.0f));
 
 	GLFWwindow* initOpenGL()
 	{
@@ -130,6 +122,116 @@ namespace Logl
 		  vec3(1.5f,  0.2f, -1.5f),
 		  vec3(-1.3f,  1.0f, -1.5f)
 		};
+
+		// Loop
+		while (!glfwWindowShouldClose(window))
+		{
+			// per-frame time logic
+			float currentFrame = glfwGetTime();
+			deltaTime = currentFrame - lastFrame;
+			lastFrame = currentFrame;
+
+			// input
+			processWindowInput(window);
+
+			// render
+			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			shaderProgram.Use();
+
+			//  projection matrix
+			auto projection = camera.GetProjectionMatrix();
+			shaderProgram.SetUniform("projection", projection.ValuePtr());
+
+			// camera/view transformation
+			auto view = camera.GetViewMatrix();
+			shaderProgram.SetUniform("view", view.ValuePtr());
+
+			// render boxes
+			glBindVertexArray(vao);
+			for (int i = 0; i < 10; i++)
+			{
+				//  model matrix
+				auto model = mat4::Translate(cubePositions[i]);
+				float angle = 20.0f * i;
+				model = model * mat4::Rotate(Radians(angle), vec3(1.0f, 0.3f, 0.5f));
+				shaderProgram.SetUniform("model", model.ValuePtr());
+
+				glDrawArrays(GL_TRIANGLES, 0, count);
+			}
+
+			// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+			glfwSwapBuffers(window);
+			glfwPollEvents();
+		}
+
+		glDeleteVertexArrays(1, &vao);
+	}
+
+#pragma region without camera class
+
+	// camera
+	vec3 cameraPos = vec3(0.0f, 0.0f, 3.0f);
+	vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
+	vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
+
+	bool firstMouse = true;
+	float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+	float pitch = 0.0f;
+	float lastX = 800.0f / 2.0;
+	float lastY = 600.0 / 2.0;
+	float fov = 45.0f;
+
+#define RS2 0
+
+	void RenderScene2(GLFWwindow* window)
+	{
+		// Shaders
+		Shader shaderProgram("asserts/shaders/mvp_vs.glsl", "asserts/shaders/mvp_fs.glsl");
+		if (!shaderProgram.IsValid())
+		{
+			PRINT("Invalid shader program!\n");
+			return;
+		}
+
+		// Vertex
+		unsigned int vao{}, vbo{}, ebo{};
+		int count = CubeData(vao, vbo, ebo);
+
+		// Texture
+		unsigned int texture1 = LoadTexture("asserts/textures/container.jpg", GL_RGB);
+		unsigned int texture2 = LoadTexture("asserts/textures/awesomeface.png", GL_RGBA);
+		if (texture1 == 0 || texture2 == 0)
+		{
+			PRINT("Faild to load texture!\n");
+			__debugbreak();
+			return;
+		}
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
+		shaderProgram.Use();
+		shaderProgram.SetUniform("texture1", 0);
+		shaderProgram.SetUniform("texture2", 1);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		vec3 cubePositions[10] = {
+		  vec3(0.0f,  0.0f,  0.0f),
+		  vec3(2.0f,  5.0f, -15.0f),
+		  vec3(-1.5f, -2.2f, -2.5f),
+		  vec3(-3.8f, -2.0f, -12.3f),
+		  vec3(2.4f, -0.4f, -3.5f),
+		  vec3(-1.7f,  3.0f, -7.5f),
+		  vec3(1.3f, -2.0f, -2.5f),
+		  vec3(1.5f,  2.0f, -2.5f),
+		  vec3(1.5f,  0.2f, -1.5f),
+		  vec3(-1.3f,  1.0f, -1.5f)
+		};
 		
 		// Loop
 		while (!glfwWindowShouldClose(window))
@@ -149,7 +251,7 @@ namespace Logl
 			shaderProgram.Use();
 
 			//  projection matrix
-			auto projection = mat4::Perspective(Radians(fov), aspect, 0.1f, 100.0f);
+			auto projection = mat4::Perspective(Radians(fov), ratio, 0.1f, 100.0f);
 			shaderProgram.SetUniform("projection", projection.ValuePtr());
 
 			// camera/view transformation
@@ -176,6 +278,8 @@ namespace Logl
 
 		glDeleteVertexArrays(1, &vao);
 	}
+
+#pragma endregion
 
 #pragma region render 2D objects
 
@@ -221,7 +325,7 @@ namespace Logl
 		// mvp transform
 		auto modelTrans = mat4::Rotate(Radians(-55.0f), vec3(1.0f, 0.0f, 0.0f));
 		auto viewTrans = mat4::Translate(vec3(0.0f, 0.0f, -3.0f));
-		auto projectTrans = mat4::Perspective(Radians(45.0f), aspect, 0.3f, 100.0f);
+		auto projectTrans = mat4::Perspective(Radians(45.0f), ratio, 0.3f, 100.0f);
 		auto mvpTrans = projectTrans * viewTrans * modelTrans;
 
 		// Loop
@@ -591,6 +695,7 @@ namespace Logl
 		lastX = xpos;
 		lastY = ypos;
 
+#if RS2
 		float sensitivity = 0.05f;
 		xoffset *= sensitivity;
 		yoffset *= sensitivity;
@@ -608,17 +713,23 @@ namespace Logl
 		front.y = sin(Radians(pitch));
 		front.z = sin(Radians(yaw)) * cos(Radians(pitch));
 		cameraFront = front.normalize();
-
+#else
+		camera.OnMouseMove(xoffset, yoffset);
+#endif
 	}
 
 	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
+#if RS2
 		if (fov >= 1.0f && fov <= 45.0f)
 			fov -= yoffset;
 		if (fov <= 1.0f)
 			fov = 1.0f;
 		if (fov >= 45.0f)
 			fov = 45.0f;
+#else
+		camera.OnMouseScroll(yoffset);
+#endif
 	}
 	
 	void processWindowInput(GLFWwindow* window)
@@ -628,6 +739,7 @@ namespace Logl
 			glfwSetWindowShouldClose(window, 1);
 		}
 
+#if RS2
 		float cameraSpeed = 2.5f * deltaTime;
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			cameraPos += cameraSpeed * cameraFront;
@@ -637,6 +749,16 @@ namespace Logl
 			cameraPos -= CrossProduct(cameraFront, cameraUp).normalize() * cameraSpeed;
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 			cameraPos += CrossProduct(cameraFront, cameraUp).normalize() * cameraSpeed;
+#else
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			camera.OnKeyPress(Camera_Movement::FORWARD, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			camera.OnKeyPress(Camera_Movement::BACKWARD, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			camera.OnKeyPress(Camera_Movement::LEFT, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			camera.OnKeyPress(Camera_Movement::RIGHT, deltaTime);
+#endif
 	}
 
 }
