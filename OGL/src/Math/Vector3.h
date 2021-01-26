@@ -4,22 +4,22 @@
 
 namespace Logl
 {
-	class Vector3
+	class vec3
 	{
 	public:
-		Vector3()
+		vec3()
 			: x(0.0f), y(0.0f), z(0.0f)
 		{}
 
-		Vector3(float nx, float ny, float nz)
+		vec3(float nx, float ny, float nz)
 			: x(nx), y(ny), z(nz)
 		{}
 
-		Vector3(const Vector3& obj)
+		vec3(const vec3& obj)
 			: x(obj.x), y(obj.y), z(obj.z)
 		{}
 
-		Vector3& operator=(const Vector3& obj)
+		vec3& operator=(const vec3& obj)
 		{
 			if (&obj == this)
 				return *this;
@@ -30,7 +30,7 @@ namespace Logl
 			return *this;
 		}
 
-		Vector3 normalize() const
+		vec3 normalize() const
 		{
 			auto magSq = x * x + y * y + z * z;
 			if (magSq > 0.0f || !IsEqual(magSq, 1.0f))
@@ -50,20 +50,20 @@ namespace Logl
 		}
 
 	public:
-		Vector3 operator-() const { return Vector3(-x, -y, -z); }
+		vec3 operator-() const { return vec3(-x, -y, -z); }
 
-		Vector3 operator+(const Vector3& obj) const { return Vector3(x + obj.x, y + obj.y, z + obj.z); }
+		vec3 operator+(const vec3& obj) const { return vec3(x + obj.x, y + obj.y, z + obj.z); }
 
-		Vector3 operator-(const Vector3& obj) const { return Vector3(x - obj.x, y - obj.y, z - obj.z); }
+		vec3 operator-(const vec3& obj) const { return vec3(x - obj.x, y - obj.y, z - obj.z); }
 
 		// Dot Product
-		float operator*(const Vector3& obj) const { return x * obj.x + y * obj.y + z * obj.z; };
+		float operator*(const vec3& obj) const { return x * obj.x + y * obj.y + z * obj.z; };
 
-		Vector3 operator*(const float val) const { return Vector3(val * x, val * y, val * z); }
+		vec3 operator*(const float val) const { return vec3(val * x, val * y, val * z); }
 
-		Vector3 operator/(const float val) const { return Vector3(x / val, y / val, z / val); }
+		vec3 operator/(const float val) const { return vec3(x / val, y / val, z / val); }
 
-		Vector3& operator+=(const Vector3& obj)
+		vec3& operator+=(const vec3& obj)
 		{
 			x += obj.x;
 			y += obj.y;
@@ -71,7 +71,7 @@ namespace Logl
 			return *this;
 		}
 
-		Vector3& operator-=(const Vector3& obj)
+		vec3& operator-=(const vec3& obj)
 		{
 			x -= obj.x;
 			y -= obj.y;
@@ -79,7 +79,7 @@ namespace Logl
 			return *this;
 		}
 
-		Vector3& operator*=(const float val)
+		vec3& operator*=(const float val)
 		{
 			x *= val;
 			y *= val;
@@ -87,7 +87,7 @@ namespace Logl
 			return *this;
 		}
 
-		Vector3& operator/=(const float val)
+		vec3& operator/=(const float val)
 		{
 			x /= val;
 			y /= val;
@@ -95,9 +95,9 @@ namespace Logl
 			return *this;
 		}
 
-		bool operator==(const Vector3& obj) const { return IsEqual(x, obj.x) && IsEqual(y, obj.y) && IsEqual(z, obj.z); }
+		bool operator==(const vec3& obj) const { return IsEqual(x, obj.x) && IsEqual(y, obj.y) && IsEqual(z, obj.z); }
 
-		bool operator!=(const Vector3& obj) const { return !IsEqual(x, obj.x) || !IsEqual(y, obj.y) || !IsEqual(z, obj.z); }
+		bool operator!=(const vec3& obj) const { return !IsEqual(x, obj.x) || !IsEqual(y, obj.y) || !IsEqual(z, obj.z); }
 
 	public:
 		float x, y, z;
@@ -106,17 +106,17 @@ namespace Logl
 	// non-member functions
 	// may be used in vector expression
 
-	inline Vector3 CrossProduct(const Vector3& v1, const Vector3& v2)
+	inline vec3 CrossProduct(const vec3& v1, const vec3& v2)
 	{
-		return Vector3(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
+		return vec3(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
 	}
 
 	// Magnitude
-	inline float VectorMag(const Vector3& obj) { return sqrt(obj.x * obj.x + obj.y * obj.y + obj.z * obj.z); }
+	inline float VectorMag(const vec3& obj) { return sqrt(obj.x * obj.x + obj.y * obj.y + obj.z * obj.z); }
 
-	inline Vector3 operator*(const float val, const Vector3& obj) { return Vector3(val * obj.x, val * obj.y, val * obj.z); }
+	inline vec3 operator*(const float val, const vec3& obj) { return vec3(val * obj.x, val * obj.y, val * obj.z); }
 
-	inline float Distance(const Vector3& v1, const Vector3& v2)
+	inline float Distance(const vec3& v1, const vec3& v2)
 	{
 		auto dx = v1.x - v2.x;
 		auto dy = v1.y - v2.y;
@@ -124,5 +124,5 @@ namespace Logl
 		return sqrt(dx * dx + dy * dy + dz * dz);
 	}
 
-	//extern const Vector3 kZeroVector;
+	//extern const vec3 kZeroVector;
 }

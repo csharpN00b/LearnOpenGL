@@ -102,6 +102,7 @@
   <ItemGroup>
     <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Math\Matrix4f.h" />
+    <ClInclude Include="src\Renderer\PerspectiveCamera.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\FMT.h" />
     <ClInclude Include="src\Math\Vector3.h" />

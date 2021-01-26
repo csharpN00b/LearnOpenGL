@@ -10,8 +10,8 @@ namespace Logl
 
 	void TestVector3()
 	{
-		Vector3 v1(1.0, 0.0, 0.0);
-		Vector3 v2(0.0, 1.0, 0.0);
+		vec3 v1(1.0, 0.0, 0.0);
+		vec3 v2(0.0, 1.0, 0.0);
 		auto v3 = v1 + v2;
 		auto v4 = v3;
 		v4 *= 2;
@@ -22,9 +22,9 @@ namespace Logl
 		v8 += v7;
 		auto v9 = 2 * v1;
 		v9 /= 2;
-		Vector3 v10(v9);
+		vec3 v10(v9);
 
-		Matrix4f matrix;
+		mat4 matrix;
 		auto v11 = matrix * v10;
 
 		PRINT_VEC(v11);
@@ -55,13 +55,13 @@ namespace Logl
 
 	void TestMatrix4f()
 	{
-		Matrix4f m1;
-		Matrix4f m2 = Matrix4f::Rotate(/*Radians(60.f)*/PI/3, Vector3(1.0f, 0.0f, 1.0f));
-		Matrix4f m3 = Matrix4f::Translate(Vector3(10.0f, 0.0f, 0.0f));
-		Matrix4f m4 = Matrix4f::Scale(2.0f);
+		mat4 m1;
+		mat4 m2 = mat4::Rotate(/*Radians(60.f)*/PI/3, vec3(1.0f, 0.0f, 1.0f));
+		mat4 m3 = mat4::Translate(vec3(10.0f, 0.0f, 0.0f));
+		mat4 m4 = mat4::Scale(2.0f);
 		//Matrix4f m5 = Matrix4f::Mirror({ 0.0f, 1.0f, 0.0f });
 
-		Vector3 v(2.0f, 3.0f, 5.0f);
+		vec3 v(2.0f, 3.0f, 5.0f);
 		auto m = m4 * m3 * m2;
 		auto v1 = m * v;
 

@@ -4,42 +4,43 @@
 
 namespace Logl
 {
-	struct vec4
+
+	class mat4
 	{
-		float x, y, z, w;
-
-		vec4(float nx, float ny, float nz, float nw)
-			: x(nx), y(ny), z(nz), w(nw)
+	private:
+		struct vec4
 		{
-		}
+			float x, y, z, w;
 
-		vec4(const Vector3& vector)
-			: x(vector.x), y(vector.y), z(vector.z), w(1.0f)
-		{
-		}
+			vec4(float nx, float ny, float nz, float nw)
+				: x(nx), y(ny), z(nz), w(nw)
+			{
+			}
 
-		float operator*(const vec4& v2)
-		{
-			return x * v2.x + y * v2.y + z * v2.z + w * v2.w;
-		}
-	};
+			vec4(const vec3& vector)
+				: x(vector.x), y(vector.y), z(vector.z), w(1.0f)
+			{
+			}
 
+			float operator*(const vec4& v2)
+			{
+				return x * v2.x + y * v2.y + z * v2.z + w * v2.w;
+			}
+		};
 
-	class Matrix4f
-	{
 	public:
-		Matrix4f()
+		mat4()
 		{
 			Identity();
 		}
 
-		Matrix4f(const float array[])
+		mat4(const float array[])
 		{
 			for (int i = 0; i < 16; i++)
 				m_Data[i] = array[i];
 		}
 
-		Matrix4f(float m11, float m12, float m13, float m14,
+		mat4(float m11, float m12, float m13, float m14,
 			float m21, float m22, float m23, float m24,
 			float m31, float m32, float m33, float m34,
 			float m41, float m42, float m43, float m44
@@ -59,9 +60,9 @@ namespace Logl
 			SetRow(4, 0.0f, 0.0f, 0.0f, 1.0f);
 		}
 
-		Matrix4f Transposed() const
+		mat4 Transposed() const
 		{
-			Matrix4f matrix;
+			mat4 matrix;
 			matrix.SetRow(1, GetCol(1));
 			matrix.SetRow(2, GetCol(2));
 			matrix.SetRow(3, GetCol(3));
@@ -73,7 +74,7 @@ namespace Logl
 
 
 	public:
-		static inline Matrix4f Rotate(float angle, const Vector3& axis)
+		static inline mat4 Rotate(float angle, const vec3& axis)
 		{
 			auto v = axis.normalize();
 
@@ -98,7 +99,7 @@ namespace Logl
 			};
 		}
 
-		static inline Matrix4f Translate(const Vector3& v)
+		static inline mat4 Translate(const vec3& v)
 		{
 			return {
 				1.0f, 0.0f, 0.0f, v.x,
@@ -108,7 +109,7 @@ namespace Logl
 			};
 		}
 
-		static inline Matrix4f Scale(const Vector3& direction, float k)
+		static inline mat4 Scale(const vec3& direction, float k)
 		{
 			auto v = direction.normalize();
 
@@ -128,7 +129,7 @@ namespace Logl
 			};
 		}
 
-		static inline Matrix4f Scale(float k)
+		static inline mat4 Scale(float k)
 		{
 			return {
 				k,0.0f,0.0f, 0.0f,
@@ -138,7 +139,7 @@ namespace Logl
 			};
 		}
 
-		static inline Matrix4f Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
+		static inline mat4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
 		{
 			auto rw = 1.0f / (right - left);
 			auto rh = 1.0f / (top - bottom);
@@ -152,7 +153,7 @@ namespace Logl
 			};
 		}
 
-		static inline Matrix4f Perspective(float fovy, float aspect, float zNear, float zFar)
+		static inline mat4 Perspective(float fovy, float aspect, float zNear, float zFar)
 		{
 			auto a = 1.0f / tanf(fovy / 2.0f);
 			auto rl = 1.0f / (zFar - zNear);
@@ -164,23 +165,23 @@ namespace Logl
 			};
 		}
 
-		static inline Matrix4f LookAt(const Vector3& eye, const Vector3& target, const Vector3& up)
+		static inline mat4 LookAt(const vec3& eye, const vec3& target, const vec3& up)
 		{
 			auto direction = (eye - target).normalize();
 			auto right = CrossProduct(up, direction).normalize();
 			auto cameraUp = CrossProduct(direction, right).normalize();
-			Matrix4f m1 = {
+			mat4 m1 = {
 				right.x, right.y, right.z, 0,
 				cameraUp.x, cameraUp.y, cameraUp.z, 0,
 				direction.x, direction.y, direction.z, 0,
 				0, 0, 0, 1
 			};
-			Matrix4f m2 = Translate(-eye);
+			mat4 m2 = Translate(-eye);
 			return m1 * m2;
 		}
 
 		/*
-		static inline Matrix4f OrthoProjection(const Vector3& normal)
+		static inline mat4 OrthoProjection(const vec3& normal)
 		{
 			auto v = normal.normalize();
 
@@ -199,7 +200,7 @@ namespace Logl
 			};
 		}
 
-		static inline Matrix4f Mirror(const Vector3& axis)
+		static inline mat4 Mirror(const vec3& axis)
 		{
 			auto v = axis.normalize();
 
@@ -277,15 +278,15 @@ namespace Logl
 		}
 
 	public:
-		Matrix4f operator*(const float val) const
+		mat4 operator*(const float val) const
 		{
 			float data[16];
 			for (int i = 0; i < 16; i++)
 				data[i] = m_Data[i] * val;
-			return Matrix4f(data);
+			return mat4(data);
 		}
 
-		Matrix4f operator*(const Matrix4f& matrix) const
+		mat4 operator*(const mat4& matrix) const
 		{
 			float data[16];
 			int i = 0;
@@ -296,14 +297,14 @@ namespace Logl
 					data[i++] = GetRow(row) * matrix.GetCol(col);
 				}
 			}
-			return Matrix4f(data).Transposed();
+			return mat4(data).Transposed();
 		}
 
-		Vector3 operator*(const Vector3& vector) const
+		vec3 operator*(const vec3& vector) const
 		{
 			vec4 vec(vector);
 			auto k = 1 / (GetRow(4) * vec);
-			return Vector3(GetRow(1) * vec*k, GetRow(2) * vec*k, GetRow(3) * vec*k);
+			return vec3(GetRow(1) * vec*k, GetRow(2) * vec*k, GetRow(3) * vec*k);
 		}
 
 

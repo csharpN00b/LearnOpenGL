@@ -31,9 +31,9 @@ namespace Logl
 	float aspect = (float)SCR_WIDTH / (float)SCR_HEIGHT;
 
 	// camera
-	Vector3 cameraPos = Vector3(0.0f, 0.0f, 3.0f);
-	Vector3 cameraFront = Vector3(0.0f, 0.0f, -1.0f);
-	Vector3 cameraUp = Vector3(0.0f, 1.0f, 0.0f);
+	vec3 cameraPos = vec3(0.0f, 0.0f, 3.0f);
+	vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
+	vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
 	bool firstMouse = true;
 	float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
@@ -118,17 +118,17 @@ namespace Logl
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		Vector3 cubePositions[10] = {
-		  Vector3(0.0f,  0.0f,  0.0f),
-		  Vector3(2.0f,  5.0f, -15.0f),
-		  Vector3(-1.5f, -2.2f, -2.5f),
-		  Vector3(-3.8f, -2.0f, -12.3f),
-		  Vector3(2.4f, -0.4f, -3.5f),
-		  Vector3(-1.7f,  3.0f, -7.5f),
-		  Vector3(1.3f, -2.0f, -2.5f),
-		  Vector3(1.5f,  2.0f, -2.5f),
-		  Vector3(1.5f,  0.2f, -1.5f),
-		  Vector3(-1.3f,  1.0f, -1.5f)
+		vec3 cubePositions[10] = {
+		  vec3(0.0f,  0.0f,  0.0f),
+		  vec3(2.0f,  5.0f, -15.0f),
+		  vec3(-1.5f, -2.2f, -2.5f),
+		  vec3(-3.8f, -2.0f, -12.3f),
+		  vec3(2.4f, -0.4f, -3.5f),
+		  vec3(-1.7f,  3.0f, -7.5f),
+		  vec3(1.3f, -2.0f, -2.5f),
+		  vec3(1.5f,  2.0f, -2.5f),
+		  vec3(1.5f,  0.2f, -1.5f),
+		  vec3(-1.3f,  1.0f, -1.5f)
 		};
 		
 		// Loop
@@ -149,11 +149,11 @@ namespace Logl
 			shaderProgram.Use();
 
 			//  projection matrix
-			auto projection = Matrix4f::Perspective(Radians(fov), aspect, 0.1f, 100.0f);
+			auto projection = mat4::Perspective(Radians(fov), aspect, 0.1f, 100.0f);
 			shaderProgram.SetUniform("projection", projection.ValuePtr());
 
 			// camera/view transformation
-			auto view = Matrix4f::LookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+			auto view = mat4::LookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 			shaderProgram.SetUniform("view", view.ValuePtr());
 
 			// render boxes
@@ -161,9 +161,9 @@ namespace Logl
 			for (int i = 0; i < 10; i++)
 			{
 				//  model matrix
-				auto model = Matrix4f::Translate(cubePositions[i]);
+				auto model = mat4::Translate(cubePositions[i]);
 				float angle = 20.0f * i;
-				model = model * Matrix4f::Rotate(Radians(angle), Vector3(1.0f, 0.3f, 0.5f));
+				model = model * mat4::Rotate(Radians(angle), vec3(1.0f, 0.3f, 0.5f));
 				shaderProgram.SetUniform("model", model.ValuePtr());
 
 				glDrawArrays(GL_TRIANGLES, 0, count);
@@ -214,14 +214,14 @@ namespace Logl
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		auto translate1 = Matrix4f::Translate(Vector3(0.5f, -0.5f, 0.0f));
-		auto translate2 = Matrix4f::Translate(Vector3(-0.5f, 0.5f, 0.0f));
-		Vector3 rotateAxis(0.0f, 0.0f, 1.0f);
+		auto translate1 = mat4::Translate(vec3(0.5f, -0.5f, 0.0f));
+		auto translate2 = mat4::Translate(vec3(-0.5f, 0.5f, 0.0f));
+		vec3 rotateAxis(0.0f, 0.0f, 1.0f);
 
 		// mvp transform
-		auto modelTrans = Matrix4f::Rotate(Radians(-55.0f), Vector3(1.0f, 0.0f, 0.0f));
-		auto viewTrans = Matrix4f::Translate(Vector3(0.0f, 0.0f, -3.0f));
-		auto projectTrans = Matrix4f::Perspective(Radians(45.0f), aspect, 0.3f, 100.0f);
+		auto modelTrans = mat4::Rotate(Radians(-55.0f), vec3(1.0f, 0.0f, 0.0f));
+		auto viewTrans = mat4::Translate(vec3(0.0f, 0.0f, -3.0f));
+		auto projectTrans = mat4::Perspective(Radians(45.0f), aspect, 0.3f, 100.0f);
 		auto mvpTrans = projectTrans * viewTrans * modelTrans;
 
 		// Loop
@@ -233,8 +233,8 @@ namespace Logl
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			auto time = glfwGetTime();
-			auto transform1 = translate1 * Matrix4f::Rotate((float)time, rotateAxis);
-			auto transform2 = translate2 * Matrix4f::Scale((float)sin(time));
+			auto transform1 = translate1 * mat4::Rotate((float)time, rotateAxis);
+			auto transform2 = translate2 * mat4::Scale((float)sin(time));
 
 			//auto glmTransform = glm::translate(glm::mat4(1.f), glm::vec3(0.5f, -0.5f, 0.0f));
 			//glmTransform = glm::rotate(glmTransform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -603,7 +603,7 @@ namespace Logl
 		if (pitch < -89.0f)
 			pitch = -89.0f;
 
-		Vector3 front;
+		vec3 front;
 		front.x = cos(Radians(yaw)) * cos(Radians(pitch));
 		front.y = sin(Radians(pitch));
 		front.z = sin(Radians(yaw)) * cos(Radians(pitch));
