@@ -13,13 +13,39 @@
 
 namespace Logl
 {
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+	void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+	void processWindowInput(GLFWwindow* window);
+
 
 	unsigned int LoadTexture(const char* filepath, int format);
 	int SquareData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
 	int CubeData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO);
 
-	void processWindowInput(GLFWwindow* window);
-	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
+	// settings
+	const unsigned int SCR_WIDTH = 800;
+	const unsigned int SCR_HEIGHT = 600;
+
+	float aspect = (float)SCR_WIDTH / (float)SCR_HEIGHT;
+
+	// camera
+	Vector3 cameraPos = Vector3(0.0f, 0.0f, 3.0f);
+	Vector3 cameraFront = Vector3(0.0f, 0.0f, -1.0f);
+	Vector3 cameraUp = Vector3(0.0f, 1.0f, 0.0f);
+
+	bool firstMouse = true;
+	float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+	float pitch = 0.0f;
+	float lastX = 800.0f / 2.0;
+	float lastY = 600.0 / 2.0;
+	float fov = 45.0f;
+
+	// timing
+	float deltaTime = 0.0f;	// time between current frame and last frame
+	float lastFrame = 0.0f;
+
 
 	GLFWwindow* initOpenGL()
 	{
@@ -28,7 +54,7 @@ namespace Logl
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		GLFWwindow* window = glfwCreateWindow(800, 600, "GLFWwindow", nullptr, nullptr);
+		GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "GLFWwindow", nullptr, nullptr);
 		if (window == nullptr)
 		{
 			PRINT("Failed to create GLFW window!\n");
@@ -50,13 +76,17 @@ namespace Logl
 
 		glEnable(GL_DEPTH_TEST);
 
+		//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetCursorPosCallback(window, mouse_callback);
+		glfwSetScrollCallback(window, scroll_callback);
+
 		return window;
 	}
 
 	void RenderScene(GLFWwindow* window)
 	{
 		// Shaders
-		Shader shaderProgram("asserts/shaders/tex_vs.glsl", "asserts/shaders/tex_fs.glsl");
+		Shader shaderProgram("asserts/shaders/mvp_vs.glsl", "asserts/shaders/mvp_fs.glsl");
 		if (!shaderProgram.IsValid())
 		{
 			PRINT("Invalid shader program!\n");
@@ -88,7 +118,6 @@ namespace Logl
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		// mvp
 		Vector3 cubePositions[10] = {
 		  Vector3(0.0f,  0.0f,  0.0f),
 		  Vector3(2.0f,  5.0f, -15.0f),
@@ -102,30 +131,45 @@ namespace Logl
 		  Vector3(-1.3f,  1.0f, -1.5f)
 		};
 		
-		auto viewTrans = Matrix4f::Translate(Vector3(0.0f, 0.0f, -3.0f));
-		auto projectTrans = Matrix4f::Perspective(Radians(45.0f), 800.f / 600.f, 0.3f, 100.0f);
-
 		// Loop
 		while (!glfwWindowShouldClose(window))
 		{
+			// per-frame time logic
+			float currentFrame = glfwGetTime();
+			deltaTime = currentFrame - lastFrame;
+			lastFrame = currentFrame;
+
+			// input
 			processWindowInput(window);
 
+			// render
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			shaderProgram.Use();
-			glBindVertexArray(vao);
 
+			//  projection matrix
+			auto projection = Matrix4f::Perspective(Radians(fov), aspect, 0.1f, 100.0f);
+			shaderProgram.SetUniform("projection", projection.ValuePtr());
+
+			// camera/view transformation
+			auto view = Matrix4f::LookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+			shaderProgram.SetUniform("view", view.ValuePtr());
+
+			// render boxes
+			glBindVertexArray(vao);
 			for (int i = 0; i < 10; i++)
 			{
-				auto modelTrans = Matrix4f::Translate(cubePositions[i]);
-				modelTrans = modelTrans * Matrix4f::Rotate(Radians(20.0f * i), Vector3(1.0f, 0.3f, 0.5f));
-				auto mvpTrans = projectTrans * viewTrans * modelTrans;
+				//  model matrix
+				auto model = Matrix4f::Translate(cubePositions[i]);
+				float angle = 20.0f * i;
+				model = model * Matrix4f::Rotate(Radians(angle), Vector3(1.0f, 0.3f, 0.5f));
+				shaderProgram.SetUniform("model", model.ValuePtr());
 
-				shaderProgram.SetUniform("transform", mvpTrans.ValuePtr());
 				glDrawArrays(GL_TRIANGLES, 0, count);
 			}
 
+			// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
@@ -177,7 +221,7 @@ namespace Logl
 		// mvp transform
 		auto modelTrans = Matrix4f::Rotate(Radians(-55.0f), Vector3(1.0f, 0.0f, 0.0f));
 		auto viewTrans = Matrix4f::Translate(Vector3(0.0f, 0.0f, -3.0f));
-		auto projectTrans = Matrix4f::Perspective(Radians(45.0f), 800.f / 600.f, 0.3f, 100.0f);
+		auto projectTrans = Matrix4f::Perspective(Radians(45.0f), aspect, 0.3f, 100.0f);
 		auto mvpTrans = projectTrans * viewTrans * modelTrans;
 
 		// Loop
@@ -527,16 +571,72 @@ namespace Logl
 
 	}
 
+
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+	{
+		glViewport(0, 0, width, height);
+	}
+
+	void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+	{
+		if (firstMouse)
+		{
+			lastX = xpos;
+			lastY = ypos;
+			firstMouse = false;
+		}
+
+		float xoffset = xpos - lastX;
+		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+		lastX = xpos;
+		lastY = ypos;
+
+		float sensitivity = 0.05f;
+		xoffset *= sensitivity;
+		yoffset *= sensitivity;
+
+		yaw += xoffset;
+		pitch += yoffset;
+
+		if (pitch > 89.0f)
+			pitch = 89.0f;
+		if (pitch < -89.0f)
+			pitch = -89.0f;
+
+		Vector3 front;
+		front.x = cos(Radians(yaw)) * cos(Radians(pitch));
+		front.y = sin(Radians(pitch));
+		front.z = sin(Radians(yaw)) * cos(Radians(pitch));
+		cameraFront = front.normalize();
+
+	}
+
+	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+	{
+		if (fov >= 1.0f && fov <= 45.0f)
+			fov -= yoffset;
+		if (fov <= 1.0f)
+			fov = 1.0f;
+		if (fov >= 45.0f)
+			fov = 45.0f;
+	}
+	
 	void processWindowInput(GLFWwindow* window)
 	{
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		{
 			glfwSetWindowShouldClose(window, 1);
 		}
+
+		float cameraSpeed = 2.5f * deltaTime;
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			cameraPos += cameraSpeed * cameraFront;
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			cameraPos -= cameraSpeed * cameraFront;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			cameraPos -= CrossProduct(cameraFront, cameraUp).normalize() * cameraSpeed;
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			cameraPos += CrossProduct(cameraFront, cameraUp).normalize() * cameraSpeed;
 	}
 
-	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-	{
-		glViewport(0, 0, width, height);
-	}
 }

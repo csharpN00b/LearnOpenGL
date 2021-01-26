@@ -30,17 +30,16 @@ namespace Logl
 			return *this;
 		}
 
-		void normalize()
+		Vector3 normalize() const
 		{
 			auto magSq = x * x + y * y + z * z;
-
 			if (magSq > 0.0f || !IsEqual(magSq, 1.0f))
 			{
 				auto k = 1 / sqrt(magSq);
-				x *= k;
-				y *= k;
-				z *= k;
+				return { x * k, y * k, z * k };
 			}
+
+			return { x, y, z };
 		}
 
 		void zero()

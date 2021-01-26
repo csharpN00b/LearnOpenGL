@@ -75,8 +75,7 @@ namespace Logl
 	public:
 		static inline Matrix4f Rotate(float angle, const Vector3& axis)
 		{
-			auto v = axis;
-			v.normalize();
+			auto v = axis.normalize();
 
 			float cosA = cosf(angle);
 			float sinA = sinf(angle);
@@ -111,8 +110,7 @@ namespace Logl
 
 		static inline Matrix4f Scale(const Vector3& direction, float k)
 		{
-			auto v = direction;
-			v.normalize();
+			auto v = direction.normalize();
 
 			float k1 = k - 1;
 			float xx = v.x * v.x;
@@ -166,11 +164,25 @@ namespace Logl
 			};
 		}
 
+		static inline Matrix4f LookAt(const Vector3& eye, const Vector3& target, const Vector3& up)
+		{
+			auto direction = (eye - target).normalize();
+			auto right = CrossProduct(up, direction).normalize();
+			auto cameraUp = CrossProduct(direction, right).normalize();
+			Matrix4f m1 = {
+				right.x, right.y, right.z, 0,
+				cameraUp.x, cameraUp.y, cameraUp.z, 0,
+				direction.x, direction.y, direction.z, 0,
+				0, 0, 0, 1
+			};
+			Matrix4f m2 = Translate(-eye);
+			return m1 * m2;
+		}
+
 		/*
 		static inline Matrix4f OrthoProjection(const Vector3& normal)
 		{
-			auto v = normal;
-			v.normalize();
+			auto v = normal.normalize();
 
 			float xx = v.x * v.x;
 			float yy = v.y * v.y;
@@ -189,8 +201,7 @@ namespace Logl
 
 		static inline Matrix4f Mirror(const Vector3& axis)
 		{
-			auto v = axis;
-			v.normalize();
+			auto v = axis.normalize();
 
 			float xx = v.x * v.x;
 			float yy = v.y * v.y;
