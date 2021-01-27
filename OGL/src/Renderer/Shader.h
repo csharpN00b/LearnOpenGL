@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+#include "../FMT.h"
+
 namespace Logl
 {
 	class Shader

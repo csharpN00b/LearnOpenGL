@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vector3.h"
+#include "Vector3f.h"
 
 namespace Logl
 {
@@ -146,10 +146,10 @@ namespace Logl
 			auto rl = 1.0f / (zFar - zNear);
 
 			return {
-				2.0f*rw, 0.0f, 0.0f, 0.0f,
-				0.0f, 2.0f*rh, 0.0f, 0.0f,
-				0.0f, 0.0f, -2.0f*rl, 0.0f,
-				-(right+left)*rw, -(top+bottom)*rh, -(zFar+zNear)*rl, 1.0f
+				2.0f*rw, 0.0f, 0.0f, -(right + left) * rw,
+				0.0f, 2.0f*rh, 0.0f, -(top + bottom) * rh,
+				0.0f, 0.0f, -2.0f*rl, -(zFar + zNear) * rl,
+				0.0f, 0.0f, 0.0f, 1.0f
 			};
 		}
 
