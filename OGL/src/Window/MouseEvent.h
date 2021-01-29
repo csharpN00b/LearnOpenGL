@@ -11,9 +11,12 @@ namespace Logl
 			: m_xpos(xpos), m_ypos(ypos)
 		{}
 
+		float GetXPos() const { return m_xpos; }
+		float GetYPos() const { return m_ypos; }
+
 		EVENT_CLASS_TYPE(MouseMoved)
 
-	public:
+	private:
 		float m_xpos;
 		float m_ypos;
 	};
@@ -26,9 +29,12 @@ namespace Logl
 			: m_xoffset(xoffset), m_yoffset(yoffset)
 		{}
 
+		float GetXOffset() const { return m_xoffset; }
+		float GetYOffset() const { return m_yoffset; }
+
 		EVENT_CLASS_TYPE(MouseScrolled)
 
-	public:
+	private:
 		float m_xoffset;
 		float m_yoffset;
 	};

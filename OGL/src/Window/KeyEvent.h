@@ -4,30 +4,37 @@
 
 namespace Logl
 {
-	class KeyPressedEvent : public Event
+	class KeyEvent : public Event
 	{
 	public:
-		KeyPressedEvent(int key)
+		KeyEvent(int key)
 			: m_key(key)
 		{}
 
-		EVENT_CLASS_TYPE(KeyPressed)
+		int GetKey() const { return m_key; }
 
-	public:
+	private:
 		int m_key;
 	};
 
+	class KeyPressedEvent : public KeyEvent
+	{
+	public:
+		KeyPressedEvent(int key)
+			: KeyEvent(key)
+		{}
 
-	class KeyReleasedEvent : public Event
+		EVENT_CLASS_TYPE(KeyPressed)
+	};
+
+
+	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
 		KeyReleasedEvent(int key)
-			: m_key(key)
+			: KeyEvent(key)
 		{}
 
 		EVENT_CLASS_TYPE(KeyReleased)
-
-	public:
-		int m_key;
 	};
 }

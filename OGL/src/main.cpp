@@ -9,6 +9,7 @@ void TestGLM();
 DECLARE_RENDER_FUNC(E1)
 DECLARE_RENDER_FUNC(E2)
 DECLARE_RENDER_FUNC(E3)
+DECLARE_RENDER_FUNC(E4)
 
 int main()
 {
@@ -16,6 +17,7 @@ int main()
 	//TestGLM();
 	//return 0;
 
+#if 0
 	GLFWwindow* window = initOpenGL();
 	if (window == nullptr)
 		return -1;
@@ -23,6 +25,13 @@ int main()
 	//CALL_RENDER_FUNC(E1);
 	//CALL_RENDER_FUNC(E2);
 	CALL_RENDER_FUNC(E3);
+
+#else 
+	GLFWwindow* window = nullptr;
+	CALL_RENDER_FUNC(E4);
+
+
+#endif
 
 	glfwTerminate();
 

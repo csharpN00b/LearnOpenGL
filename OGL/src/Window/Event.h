@@ -30,10 +30,29 @@ namespace Logl
 	virtual const char* GetName() const override { return #type; }
 
 
-	class WindowCloseEvent : public Event
-	{
+	class EventDispatcher
+	{	
 	public:
+		template<typename T>
+		using EventFunc = std::function<bool(T&)>;
 
-		EVENT_CLASS_TYPE(WindowClose)
+		EventDispatcher(Event& event)
+			:m_Event(event)
+		{}
+
+		template<typename T>
+		bool Dispatch(const EventFunc<T>& func)
+		{
+			if (m_Event.GetEventType() == T::GetStaticType())
+			{
+				m_Event.Handled = func(*(T*)(&m_Event));
+				return true;
+			}
+			return false;
+		}
+
+	private:
+		Event& m_Event;
 	};
+
 }

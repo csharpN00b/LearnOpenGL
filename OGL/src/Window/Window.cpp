@@ -5,6 +5,7 @@
 #include "Window.h"
 #include "KeyEvent.h"
 #include "MouseEvent.h"
+#include "WindowEvent.h"
 
 namespace Logl
 {
@@ -52,14 +53,19 @@ namespace Logl
 			return;
 		}
 
-		glfwSetWindowUserPointer(m_Window, &m_Data);
-
 		glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 			{
 				glViewport(0, 0, width, height);
 			});
 
+		glfwSetWindowUserPointer(m_Window, &m_Data);
 
+		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				WindowCloseEvent event;
+				data.EventCallback(event);
+			});
 
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 			{
@@ -78,12 +84,12 @@ namespace Logl
 						data.EventCallback(event);
 						break;
 					}
-					//case GLFW_REPEAT:
-					//{
-					//	KeyPressedEvent event(key);
-					//	data.EventCallback(event);
-					//	break;
-					//}
+					case GLFW_REPEAT:
+					{
+						KeyPressedEvent event(key);
+						data.EventCallback(event);
+						break;
+					}
 				}
 			});
 

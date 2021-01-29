@@ -120,6 +120,7 @@
     <ClInclude Include="src\Window\KeyEvent.h" />
     <ClInclude Include="src\Window\MouseEvent.h" />
     <ClInclude Include="src\Window\Window.h" />
+    <ClInclude Include="src\Window\WindowEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="asserts\shaders\basic_fs.glsl" />
