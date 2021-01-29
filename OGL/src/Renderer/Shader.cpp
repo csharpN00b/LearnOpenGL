@@ -3,7 +3,6 @@
 #include <string>
 #include <fstream>
 
-#include "../FMT.h"
 #include "Shader.h"
 
 namespace Logl

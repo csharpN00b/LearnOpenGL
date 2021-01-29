@@ -16,6 +16,8 @@ namespace Logl
 
 	inline bool IsEqual(float a, float b) { return fabs(a - b) < 0.0001f; }
 
+	inline bool IsZero(float val) { return val < 0.0001f && val> -0.0001f; }
+
 	inline float Radians(float angle) { return angle * RPA; }
 
 	inline float Angle(float radian) { return radian * APR; }

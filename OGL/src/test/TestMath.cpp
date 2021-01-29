@@ -1,6 +1,6 @@
-#include "../FMT.h"
-#include "../Math/Math.h"
-#include "../Math/Matrix4f.h"
+#include "FMT.h"
+#include "Math/Math.h"
+#include "Math/Matrix4f.h"
 
 
 #define PRINT_VEC(vec) fmt::print("{3}: [{0}, {1}, {2}]\n", vec.x, vec.y, vec.z, #vec)

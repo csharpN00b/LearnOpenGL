@@ -1,95 +1,60 @@
 #pragma once
 
-#include "../Math/EulerAngle.h"
-#include "../Math/Matrix4f.h"
+#include "Math/EulerAngle.h"
+#include "Math/Matrix4f.h"
 
 namespace Logl
 {
-	struct OrthoFrustum
-	{
-		float left;
-		float right;
-		float bottom;
-		float top;
-		float near;
-		float far;
-
-		OrthoFrustum(float left_, float right_, float bottom_, float top_, float near_ = 0.1f, float far_ = 100.0f)
-			: left(left_), right(right_), bottom(bottom_), top(top_), near(near_), far(far_)
-		{}
-
-		void Scale(float k)
-		{
-			left *= k;
-			right *= k;
-			bottom *= k;
-			top *= k;
-		}
-
-		mat4 GetProjectionMatrix() const { return mat4::Ortho(left, right, bottom, top, near, far); }
-	};
-
-	class OrthoGraphicCamera
+	class OrthoGraphicCamera : public Camera
 	{
 	public:
-		OrthoGraphicCamera(OrthoFrustum frustum, vec3 position, 
+		OrthoGraphicCamera(Frustum frustum, vec3 position, 
 			vec3 worldUp = vec3(0.0f, 1.0f, 0.0f), 
 			EulerAngle eulerAngle = EulerAngle(-90.0f, 0.0f))
-			: m_frustum(frustum), m_position(position), m_EulerAngle(eulerAngle), m_bRotate(false)
+			: Camera(frustum, position, worldUp, eulerAngle)
 		{
-			m_front = m_EulerAngle.GetFront();
-			m_right = CrossProduct(m_front, worldUp);
-			m_up = CrossProduct(m_right, m_front);
 		}
 
-		mat4 GetViewMatrix() const
+		virtual mat4 GetViewMatrix() const override
 		{
 			return mat4::LookAt(m_position, m_position + m_front, m_up);
 		}
 
-		mat4 GetProjectionMatrix() const
+		virtual mat4 GetProjectionMatrix() const override
 		{
 			return m_frustum.GetProjectionMatrix();
 		}
 
-		void OnMouseMove(float xoffset, float yoffset)
+		virtual void Move(MoveDirection direction, float deltaTime) override
 		{
-			if (m_bRotate)
-			{
-
-			}
+			float dis = m_speed * deltaTime;
+			if (direction == MoveDirection::FORWARD)
+				m_position += dis * m_front;
+			if (direction == MoveDirection::BACKWARD)
+				m_position -= dis * m_front;
+			if (direction == MoveDirection::LEFT)
+				m_position -= dis * m_right;
+			if (direction == MoveDirection::RIGHT)
+				m_position += dis * m_right;
 		}
 
-		void OnMouseScroll(float yoffset)
+		virtual void Turn(float xoffset, float yoffset) override
 		{
+
+		}
+
+		virtual void Scale(float yoffset) override
+		{
+			float k = 1.0f;
 			if (yoffset < 0.0f)
-			{
-				m_frustum.Scale(2.0f);
-			}
+				k = 2.0f;
+			else if (yoffset > 0.0f)
+				k = 0.5f;
 
-			if (yoffset > 0.0f)
-			{
-				m_frustum.Scale(0.5f);
-			}
+			m_frustum.left *= k;
+			m_frustum.right *= k;
+			m_frustum.bottom *= k;
+			m_frustum.top *= k;
 		}
-
-		void OnKeyPress(int key)
-		{
-
-		}
-
-		void SetRotateState(bool state) { m_bRotate = state; }
-
-	private:
-		vec3 m_position;
-		vec3 m_up;
-		vec3 m_front;
-		vec3 m_right;
-
-		EulerAngle m_EulerAngle;
-
-		OrthoFrustum m_frustum;
-
-		bool m_bRotate;
 	};
 }

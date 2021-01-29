@@ -3,8 +3,8 @@
 
 #include "stb/stb_image.h"
 
-#include "../Renderer/Shader.h"
-#include "../Math/Matrix4f.h"
+#include "Renderer/Shader.h"
+#include "Math/Matrix4f.h"
 
 using namespace Logl;
 

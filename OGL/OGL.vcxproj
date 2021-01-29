@@ -59,7 +59,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)OGL\vendor\glfw\include;$(SolutionDir)OGL\vendor\glad\include;$(SolutionDir)OGL\vendor\fmt\include;$(SolutionDir)OGL\vendor\glm;$(SolutionDir)OGL\vendor\stb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)OGL\vendor\glfw\include;$(SolutionDir)OGL\vendor\glad\include;$(SolutionDir)OGL\vendor\fmt\include;$(SolutionDir)OGL\vendor\glm;$(SolutionDir)OGL\vendor\stb\include;$(SolutionDir)OGL\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -74,7 +74,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)OGL\vendor\glfw\include;$(SolutionDir)OGL\vendor\glad\include;$(SolutionDir)OGL\vendor\fmt\include;$(SolutionDir)OGL\vendor\glm;$(SolutionDir)OGL\vendor\stb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)OGL\vendor\glfw\include;$(SolutionDir)OGL\vendor\glad\include;$(SolutionDir)OGL\vendor\fmt\include;$(SolutionDir)OGL\vendor\glm;$(SolutionDir)OGL\vendor\stb\include;$(SolutionDir)OGL\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -91,8 +91,10 @@
     <ClCompile Include="src\test\Exercise1.cpp" />
     <ClCompile Include="src\test\Exercise2.cpp" />
     <ClCompile Include="src\test\Exercise3.cpp" />
+    <ClCompile Include="src\test\Exercise4.cpp" />
     <ClCompile Include="src\test\TestGLM.cpp" />
     <ClCompile Include="src\test\TestMath.cpp" />
+    <ClCompile Include="src\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\glad\glad.vcxproj">
@@ -106,12 +108,18 @@
     <ClInclude Include="src\Math\EulerAngle.h" />
     <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Math\Matrix4f.h" />
+    <ClInclude Include="src\Renderer\Camera.h" />
+    <ClInclude Include="src\Renderer\Frustum.h" />
     <ClInclude Include="src\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\Renderer\PerspectiveCamera.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\FMT.h" />
     <ClInclude Include="src\Math\Vector3f.h" />
     <ClInclude Include="src\GLFuncs.h" />
+    <ClInclude Include="src\Window\Event.h" />
+    <ClInclude Include="src\Window\KeyEvent.h" />
+    <ClInclude Include="src\Window\MouseEvent.h" />
+    <ClInclude Include="src\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="asserts\shaders\basic_fs.glsl" />

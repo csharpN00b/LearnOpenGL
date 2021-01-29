@@ -1,3 +1,5 @@
+#if 0
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
@@ -6,25 +8,29 @@
 
 #include <unordered_map>
 
-#include "FMT.h"
+#include "../FMT.h"
 
-#include "Math/Matrix4f.h"
+#include "../Math/Matrix4f.h"
 
-#include "Renderer/Shader.h"
-#include "Renderer/PerspectiveCamera.h"
-#include "Renderer/OrthographicCamera.h"
+#include "../Renderer/Shader.h"
+#include "../Renderer/PerspectiveCamera.h"
+#include "../Renderer/OrthographicCamera.h"
 
-#include "GLFuncs.h"
+#include "../Window/Window.h"
+#include "../Window/MouseEvent.h"
+#include "../Window/KeyEvent.h"
+
+#include "../GLFuncs.h"
+
 
 using namespace Logl;
 
-namespace E3
+namespace E4
 {
-	void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void OnEvent(Event& event)
+	{
 
-	void processWindowInput(GLFWwindow* window);
+	}
 
 	// timing
 	float deltaTime = 0.0f;	// time between current frame and last frame
@@ -42,19 +48,9 @@ namespace E3
 #if 1
 	PerspectiveCamera camera(Frustum(ratio, 45.0f, 0.1f, 100.0f), vec3(0.0f, 0.0f, 3.0f));
 #else
-	OrthoGraphicCamera camera(Frustum(-w/2.0f, w/2.0f, -h/2.0f, h/2.0f, 0.1f, 100.0f), vec3(0.0f, 0.0f, 3.0f));
+	OrthoGraphicCamera camera(Frustum(-w / 2.0f, w / 2.0f, -h / 2.0f, h / 2.0f, 0.1f, 100.0f), vec3(0.0f, 0.0f, 3.0f));
 #endif
 
-	void SetOpenGL(GLFWwindow* window)
-	{
-		glEnable(GL_DEPTH_TEST);
-
-		//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-		glfwSetCursorPosCallback(window, mouse_callback);
-		glfwSetScrollCallback(window, scroll_callback);
-		glfwSetKeyCallback(window, key_callback);
-	}
 
 	int CubeData(unsigned int& vao, unsigned int& vbo, unsigned int& ebo)
 	{
@@ -149,9 +145,12 @@ namespace E3
 		return sizeof(vertices) / sizeof(vertices[0]) / 8;
 	}
 
-	void RenderScene(GLFWwindow* window)
+	void RenderScene(Window& window)
 	{
-		SetOpenGL(window);
+		window.SetEventCallback(std::bind(OnEvent, std::placeholders::_1));
+
+		glEnable(GL_DEPTH_TEST);
+
 
 		// Shaders
 		Shader shaderProgram("asserts/shaders/mvp_vs.glsl", "asserts/shaders/mvp_fs.glsl");
@@ -207,9 +206,6 @@ namespace E3
 			deltaTime = currentFrame - lastFrame;
 			lastFrame = currentFrame;
 
-			// input
-			processWindowInput(window);
-
 			// render
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -237,56 +233,11 @@ namespace E3
 				glDrawArrays(GL_TRIANGLES, 0, count);
 			}
 
-			// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-			glfwSwapBuffers(window);
-			glfwPollEvents();
+			window.OnUpdate();
 		}
 
 		glDeleteVertexArrays(1, &vao);
 	}
-
-
-	void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-	{
-		if (firstMouse)
-		{
-			lastX = xpos;
-			lastY = ypos;
-			firstMouse = false;
-		}
-
-		float xoffset = xpos - lastX;
-		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-		lastX = xpos;
-		lastY = ypos;
-
-		camera.Turn(xoffset, yoffset);
-	}
-
-	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-	{
-		camera.Scale(yoffset);
-	}
-
-	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-	{
-
-	}
-
-	void processWindowInput(GLFWwindow* window)
-	{
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		{
-			glfwSetWindowShouldClose(window, 1);
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			camera.Move(MoveDirection::FORWARD, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			camera.Move(MoveDirection::BACKWARD, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			camera.Move(MoveDirection::LEFT, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			camera.Move(MoveDirection::RIGHT, deltaTime);
-	}
 }
+
+#endif
