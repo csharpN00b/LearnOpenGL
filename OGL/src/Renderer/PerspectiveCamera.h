@@ -68,8 +68,8 @@ namespace Logl
 		virtual void Update() override
 		{
 			m_front = m_EulerAngle.GetFront();
-			m_right = CrossProduct(m_front, m_worldUp);
-			m_up = CrossProduct(m_right, m_front);
+			m_right = CrossProduct(m_front, m_worldUp).normalize();
+			m_up = CrossProduct(m_right, m_front).normalize();
 		}
 
 		virtual void SetMoveSpeed(float speed) override { m_speed = speed; }

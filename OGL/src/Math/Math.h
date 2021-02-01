@@ -14,9 +14,9 @@ namespace Logl
 #define RPA 0.0174533f
 #define APR 57.295780f
 
-	inline bool IsEqual(float a, float b) { return fabs(a - b) < 0.0001f; }
+	inline bool IsEqual(float a, float b) { return fabs(a - b) < 0.00001f; }
 
-	inline bool IsZero(float val) { return val < 0.0001f && val> -0.0001f; }
+	inline bool IsZero(float val) { return val < 0.00001f && val> -0.00001f; }
 
 	inline float Radians(float angle) { return angle * RPA; }
 

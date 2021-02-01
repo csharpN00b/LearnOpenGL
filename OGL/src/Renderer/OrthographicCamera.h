@@ -42,15 +42,14 @@ namespace Logl
 				if (m_EulerAngle.pitch < -89.0f)
 					m_EulerAngle.pitch = -89.0f;
 				
-				
-				auto target = m_position + m_front * VectorMag(m_position);
-
+				auto mag = VectorMag(m_position);
+				auto target = m_position + mag * m_front;
 				Update();
-				m_position = target - m_front;
+				m_position = target - mag * m_front;
 			}
 			else if (m_bMove)
 			{
-				auto vector = vec3(xoffset * m_MoveSensitivity, yoffset * m_MoveSensitivity, 0.0f);
+				auto vector = xoffset * m_MoveSensitivity * m_right + yoffset * m_MoveSensitivity * m_up;
 				m_position -= vector;
 			}
 		}
@@ -80,7 +79,8 @@ namespace Logl
 
 			auto x = w * (xpos - sW / 2.0f) / sW;
 			auto y = h * (sH / 2.0f - ypos) / sH;
-			auto vector = vec3(k * x, k * y, 0.0f);
+			//auto vector = vec3(k * x, k * y, 0.0f);
+			auto vector = k * x * m_right + k * y * m_up;
 			m_position += vector;
 
 			m_Scale *= scale;
@@ -89,8 +89,8 @@ namespace Logl
 		virtual void Update() override
 		{
 			m_front = m_EulerAngle.GetFront();
-			m_right = CrossProduct(m_front, m_worldUp);
-			m_up = CrossProduct(m_right, m_front);
+			m_right = CrossProduct(m_front, m_worldUp).normalize();
+			m_up = CrossProduct(m_right, m_front).normalize();
 		}
 
 		virtual void SetRotate(bool bInOut) override { m_bRotate = bInOut; }

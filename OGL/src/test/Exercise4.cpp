@@ -35,10 +35,10 @@ namespace Logl
 			
 			if (bOrtho)
 			{
-				float w = width / 50.0f;
-				float h = height / 50.0f;
+				float w = width / 100.0f;
+				float h = height / 100.0f;
 				auto frustum = Frustum(-w / 2.0f, w / 2.0f, -h / 2.0f, h / 2.0f, 0.1f, 100.0f);
-				auto position = vec3(0.0f, 0.0f, 3.0f);
+				auto position = vec3(0.0f, 0.0f, 20.0f);
 				m_Camera = new OrthoGraphicCamera(frustum, position);
 				m_Camera->SetRotateSensitivity(0.1f);
 			}
