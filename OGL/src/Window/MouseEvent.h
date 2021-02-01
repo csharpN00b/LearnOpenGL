@@ -38,4 +38,36 @@ namespace Logl
 		float m_xoffset;
 		float m_yoffset;
 	};
+
+
+	class MouseButtonPressedEvent : public Event
+	{
+	public:
+		MouseButtonPressedEvent(int button)
+			: m_button(button)
+		{}
+
+		int GetButton() const { return m_button; }
+
+		EVENT_CLASS_TYPE(MouseButtonPressed)
+
+	private:
+		int m_button;
+	};
+
+
+	class MouseButtonReleasedEvent : public Event
+	{
+	public:
+		MouseButtonReleasedEvent(int button)
+			: m_button(button)
+		{}
+
+		int GetButton() const { return m_button; }
+
+		EVENT_CLASS_TYPE(MouseButtonReleased)
+
+	private:
+		int m_button;
+	};
 }

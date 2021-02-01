@@ -10,11 +10,10 @@ namespace Logl
 		PerspectiveCamera(Frustum frustum, vec3 position, 
 			vec3 worldUp = vec3(0.0f, 1.0f, 0.0f), 
 			EulerAngle eulerAngle = EulerAngle(-90.0f, 0.0f))
-			: Camera(frustum, position, worldUp, eulerAngle)
+			: Camera(frustum, position, worldUp, eulerAngle), 
+			m_speed(2.5f), m_sensitivity(0.1f)
 		{
-			m_front = m_EulerAngle.GetFront();
-			m_right = CrossProduct(m_front, worldUp);
-			m_up = CrossProduct(m_right, m_front);
+			Update();
 		}
 
 		mat4 GetViewMatrix() const override
@@ -53,7 +52,7 @@ namespace Logl
 			if (m_EulerAngle.pitch < -89.0f)
 				m_EulerAngle.pitch = -89.0f;
 
-			m_front = m_EulerAngle.GetFront();
+			Update();
 		}
 
 		virtual void Scale(float yoffset) override
@@ -65,5 +64,19 @@ namespace Logl
 			if (m_frustum.fov >= 45.0f)
 				m_frustum.fov = 45.0f;
 		}
+
+		virtual void Update() override
+		{
+			m_front = m_EulerAngle.GetFront();
+			m_right = CrossProduct(m_front, m_worldUp);
+			m_up = CrossProduct(m_right, m_front);
+		}
+
+		virtual void SetMoveSpeed(float speed) override { m_speed = speed; }
+		virtual void SetRotateSensitivity(float sensitivity) override { m_sensitivity = sensitivity; }
+
+	protected:
+		float m_speed;
+		float m_sensitivity;
 	};
 }

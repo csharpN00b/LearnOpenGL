@@ -35,18 +35,25 @@ namespace Logl
 			
 			if (bOrtho)
 			{
-				float w = width / 100.0f;
-				float h = height / 100.0f;
-				m_Camera = new OrthoGraphicCamera(Frustum(-w / 2.0f, w / 2.0f, -h / 2.0f, h / 2.0f, 0.1f, 100.0f), vec3(0.0f, 0.0f, 3.0f));
+				float w = width / 50.0f;
+				float h = height / 50.0f;
+				auto frustum = Frustum(-w / 2.0f, w / 2.0f, -h / 2.0f, h / 2.0f, 0.1f, 100.0f);
+				auto position = vec3(0.0f, 0.0f, 3.0f);
+				m_Camera = new OrthoGraphicCamera(frustum, position);
+				m_Camera->SetRotateSensitivity(0.1f);
 			}
 			else
 			{
 				float ratio = (float)width / (float)height;
-				m_Camera = new PerspectiveCamera(Frustum(ratio, 45.0f, 0.1f, 100.0f), vec3(0.0f, 0.0f, 3.0f));
+				auto frustum = Frustum(ratio, 45.0f, 0.1f, 100.0f);
+				auto position = vec3(0.0f, 0.0f, 3.0f);
+				m_Camera = new PerspectiveCamera(frustum, position);
 			}
 
 			m_tmpParam.lastX = width / 2.0f;
 			m_tmpParam.lastY = height / 2.0f;
+
+			m_Running = false;
 		}
 
 		~Renderer()
@@ -54,7 +61,7 @@ namespace Logl
 			delete m_Camera;
 		}
 
-		void StartWork()
+		void Begin()
 		{
 			glEnable(GL_DEPTH_TEST);
 
@@ -224,6 +231,8 @@ namespace Logl
 			dispatcher.Dispatch<MouseScrolledEvent>(BIND_FUNC(OnMouseScroll));
 			dispatcher.Dispatch<KeyPressedEvent>(BIND_FUNC(OnKeyPress));
 			dispatcher.Dispatch<KeyReleasedEvent>(BIND_FUNC(OnKeyRelease));
+			dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_FUNC(OnMouseButtonPress));
+			dispatcher.Dispatch<MouseButtonReleasedEvent>(BIND_FUNC(OnMouseButtonRelease));
 		}
 
 		bool OnMouseMove(MouseMovedEvent event)
@@ -237,6 +246,7 @@ namespace Logl
 		bool OnMouseScroll(MouseScrolledEvent event)
 		{
 			m_Camera->Scale(event.GetYOffset());
+			m_Camera->Scale(event.GetYOffset(), m_tmpParam.lastX, m_tmpParam.lastY, (float)m_window->GetWidth(), (float)m_window->GetHeight());
 
 			return true;
 		}
@@ -265,13 +275,33 @@ namespace Logl
 			return true;
 		}
 
+		bool OnMouseButtonPress(MouseButtonPressedEvent event)
+		{
+			if (event.GetButton() == GLFW_MOUSE_BUTTON_LEFT)
+				m_Camera->SetRotate(true);
+			else if (event.GetButton() == GLFW_MOUSE_BUTTON_MIDDLE)
+				m_Camera->SetMove(true);
+
+			return true;
+		}
+
+		bool OnMouseButtonRelease(MouseButtonReleasedEvent event)
+		{
+			if (event.GetButton() == GLFW_MOUSE_BUTTON_LEFT)
+				m_Camera->SetRotate(false);
+			else if (event.GetButton() == GLFW_MOUSE_BUTTON_MIDDLE)
+				m_Camera->SetMove(false);
+
+			return true;
+		}
+
 	private:
 		Window* m_window;
 		Camera* m_Camera;
 		bool m_Running;
 
 	private:
-		struct ControlParam
+		struct TmpParam
 		{
 			float deltaTime; // time between current frame and last frame
 			float lastFrame;
@@ -280,7 +310,7 @@ namespace Logl
 			float lastX;
 			float lastY;
 
-			ControlParam()
+			TmpParam()
 				: deltaTime(0.0f), lastFrame(0.0f), firstMouse(true), lastX(0.0f), lastY(0.0f)
 			{}
 
@@ -309,7 +339,7 @@ namespace Logl
 			}
 		};
 		
-		ControlParam m_tmpParam;
+		TmpParam m_tmpParam;
 	};
 }
 
@@ -318,7 +348,7 @@ namespace E4
 	void RenderScene(GLFWwindow*)
 	{
 		Logl::Window window(800, 600, "Hello OpenGL");
-		Logl::Renderer renderer(&window, false);
-		renderer.StartWork();
+		Logl::Renderer renderer(&window, true);
+		renderer.Begin();
 	}
 }

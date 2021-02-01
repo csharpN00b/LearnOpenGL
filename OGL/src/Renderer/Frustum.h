@@ -66,6 +66,9 @@ namespace Logl
 				GetProjectionMatrix = std::bind(&Frustum::OrthographicMatrix, this);
 		}
 
+		float GetWidth() const { return right - left; }
+		float GetHeight() const { return top - bottom; }
+
 	private:
 		mat4 OrthographicMatrix()
 		{
