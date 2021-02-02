@@ -37,9 +37,14 @@ namespace Logl
 			{
 				float w = width / 100.0f;
 				float h = height / 100.0f;
-				auto frustum = Frustum(-w / 2.0f, w / 2.0f, -h / 2.0f, h / 2.0f, 0.1f, 100.0f);
+				auto frustum = Frustum(-w / 2.0f, w / 2.0f, -h / 2.0f, h / 2.0f, 0.1f, 50.0f);
 				auto position = vec3(0.0f, 0.0f, 20.0f);
+#if 1
 				m_Camera = new OrthoGraphicCamera(frustum, position);
+				m_Camera->SetViewport(0, 0, width, height);
+#else
+				m_Camera = new OrthoCamera(frustum, position);
+#endif
 				m_Camera->SetRotateSensitivity(0.1f);
 			}
 			else
@@ -233,12 +238,20 @@ namespace Logl
 			dispatcher.Dispatch<KeyReleasedEvent>(BIND_FUNC(OnKeyRelease));
 			dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_FUNC(OnMouseButtonPress));
 			dispatcher.Dispatch<MouseButtonReleasedEvent>(BIND_FUNC(OnMouseButtonRelease));
+			dispatcher.Dispatch<WindowResizeEvent>(BIND_FUNC(OnWindowResize));
 		}
 
 		bool OnMouseMove(MouseMovedEvent event)
 		{
+			auto xold = m_tmpParam.lastX;
+			auto yold = m_window->GetHeight() - m_tmpParam.lastY; // window coordinates -> viewport coordinates
 			auto pair = m_tmpParam.UpdatePos(event.GetXPos(), event.GetYPos());
 			m_Camera->Turn(pair.first, pair.second);
+			m_Camera->Move(pair.first, pair.second);
+
+			auto xnew = m_tmpParam.lastX;;
+			auto ynew = m_window->GetHeight() - m_tmpParam.lastY; // window coordinates -> viewport coordinates
+			m_Camera->Move(xold, yold, xnew, ynew);
 
 			return true;
 		}
@@ -246,6 +259,11 @@ namespace Logl
 		bool OnMouseScroll(MouseScrolledEvent event)
 		{
 			m_Camera->Scale(event.GetYOffset());
+
+			auto xpos = m_tmpParam.lastX;
+			auto ypos = (float)m_window->GetHeight() - m_tmpParam.lastY; // window coordinates -> viewport coordinates
+			m_Camera->Scale(event.GetYOffset(), xpos, ypos);
+
 			m_Camera->Scale(event.GetYOffset(), m_tmpParam.lastX, m_tmpParam.lastY, (float)m_window->GetWidth(), (float)m_window->GetHeight());
 
 			return true;
@@ -253,19 +271,42 @@ namespace Logl
 
 		bool OnKeyPress(KeyPressedEvent event)
 		{
-			if (event.GetKey() == GLFW_KEY_ESCAPE)
+			auto key = event.GetKey();
+			switch (key)
+			{
+			case GLFW_KEY_ESCAPE:
 			{
 				m_Running = false;
+				break;
 			}
-
-			if (event.GetKey() == GLFW_KEY_W)
+			case GLFW_KEY_F2:
+			{
+				m_Camera->Reset();
+				break;
+			}
+			case GLFW_KEY_W:
+			{
 				m_Camera->Move(MoveDirection::FORWARD, m_tmpParam.deltaTime);
-			if (event.GetKey() == GLFW_KEY_S)
+				break;
+			}
+			case GLFW_KEY_S:
+			{
 				m_Camera->Move(MoveDirection::BACKWARD, m_tmpParam.deltaTime);
-			if (event.GetKey() == GLFW_KEY_A)
+				break;
+			}
+			case GLFW_KEY_A:
+			{
 				m_Camera->Move(MoveDirection::LEFT, m_tmpParam.deltaTime);
-			if (event.GetKey() == GLFW_KEY_D)
+				break;
+			}
+			case GLFW_KEY_D:
+			{
 				m_Camera->Move(MoveDirection::RIGHT, m_tmpParam.deltaTime);
+				break;
+			}
+			default:
+				break;
+			}
 
 			return true;
 		}
@@ -292,6 +333,12 @@ namespace Logl
 			else if (event.GetButton() == GLFW_MOUSE_BUTTON_MIDDLE)
 				m_Camera->SetMove(false);
 
+			return true;
+		}
+
+		bool OnWindowResize(WindowResizeEvent event)
+		{
+			m_Camera->SetViewport(0, 0, event.GetWidth(), event.GetHeight());
 			return true;
 		}
 

@@ -19,6 +19,9 @@ namespace Logl
 			: m_width(width), m_height(height)
 		{}
 
+		int GetWidth() const { return m_width; }
+		int GetHeight() const { return m_height; }
+
 		EVENT_CLASS_TYPE(WindowResize)
 
 	private:

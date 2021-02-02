@@ -1,9 +1,13 @@
 #pragma once
 
+#include <algorithm>
+
 #include "Vector3f.h"
 
 namespace Logl
 {
+
+#define MAT4_VALUE(matrix, i, j) matrix.m_Data[4*(i)+(j)]
 
 	class mat4
 	{
@@ -70,6 +74,8 @@ namespace Logl
 			return matrix;
 		}
 
+		friend mat4 Inverse(mat4 matrix);
+
 		const float* ValuePtr() const { return &m_Data[0]; }
 
 
@@ -91,22 +97,22 @@ namespace Logl
 			float yz = v.y * v.z;
 			float xz = v.x * v.z;
 
-			return {
+			return mat4(
 				k * xx + cosA,		k* xy - z * sinA,	k* xz + y * sinA,	0.0f,
 				k* xy + z * sinA,	k * yy + cosA,		k* yz - x * sinA,	0.0f,
 				k* xz - y * sinA,	k* yz + x * sinA,	k * zz + cosA,		0.0f,
 				0.0f, 0.0f, 0.0f, 1.0f
-			};
+			);
 		}
 
 		static inline mat4 Translate(const vec3& v)
 		{
-			return {
+			return mat4(
 				1.0f, 0.0f, 0.0f, v.x,
 				0.0f, 1.0f, 0.0f, v.y,
 				0.0f, 0.0f, 1.0f, v.z,
-				0.0f, 0.0f, 0.0f, 1.0f,
-			};
+				0.0f, 0.0f, 0.0f, 1.0f
+			);
 		}
 
 		static inline mat4 Scale(const vec3& direction, float k)
@@ -121,22 +127,32 @@ namespace Logl
 			float yz = v.y * v.z;
 			float xz = v.x * v.z;
 
-			return {
+			return mat4(
 				1 + k1 * xx, k1* xy, k1* xz, 0.0f,
 				k1 * xy, 1 + k1 * yy, k1* yz, 0.0f,
 				k1 * xz, k1* yz, 1 + k1 * zz, 0.0f,
 				0.0f, 0.0f, 0.0f, 1.0f
-			};
+			);
 		}
 
 		static inline mat4 Scale(float k)
 		{
-			return {
+			return mat4(
 				k,0.0f,0.0f, 0.0f,
 				0.0f, k,0.0f, 0.0f,
 				0.0f, 0.0f,k, 0.0f,
 				0.0f, 0.0f, 0.0f, 1.0f
-			};
+			);
+		}
+
+		static inline mat4 Scale(float kx, float ky, float kz)
+		{
+			return mat4(
+				kx, 0.0f, 0.0f, 0.0f,
+				0.0f, ky, 0.0f, 0.0f,
+				0.0f, 0.0f, kz, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
+			);
 		}
 
 		static inline mat4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
@@ -145,24 +161,24 @@ namespace Logl
 			auto rh = 1.0f / (top - bottom);
 			auto rl = 1.0f / (zFar - zNear);
 
-			return {
+			return mat4(
 				2.0f*rw, 0.0f, 0.0f, -(right + left) * rw,
 				0.0f, 2.0f*rh, 0.0f, -(top + bottom) * rh,
 				0.0f, 0.0f, -2.0f*rl, -(zFar + zNear) * rl,
 				0.0f, 0.0f, 0.0f, 1.0f
-			};
+			);
 		}
 
 		static inline mat4 Perspective(float fovy, float aspect, float zNear, float zFar)
 		{
 			auto a = 1.0f / tanf(fovy / 2.0f);
 			auto rl = 1.0f / (zFar - zNear);
-			return {
+			return mat4(
 				a/aspect, 0.0f, 0.0f, 0.0f,
 				0.0f, a, 0.0f, 0.0f,
 				0.0f, 0.0f, -(zFar+zNear)*rl, -2 * zFar * zNear * rl,
 				0.0f, 0.0f, -1.0f, 0.0f
-			};
+			);
 		}
 
 		static inline mat4 LookAt(const vec3& eye, const vec3& target, const vec3& up)
@@ -170,14 +186,19 @@ namespace Logl
 			auto direction = (eye - target).normalize();
 			auto right = CrossProduct(up, direction).normalize();
 			auto cameraUp = CrossProduct(direction, right).normalize();
-			mat4 m1 = {
+			mat4 m1 = mat4(
 				right.x, right.y, right.z, 0,
 				cameraUp.x, cameraUp.y, cameraUp.z, 0,
 				direction.x, direction.y, direction.z, 0,
 				0, 0, 0, 1
-			};
+			);
 			mat4 m2 = Translate(-eye);
 			return m1 * m2;
+		}
+
+		static inline mat4 Viewport(int x, int y, int width, int height)
+		{
+			return mat4::Translate(vec3(x, y, 0.0f)) * mat4::Scale(width * 0.5f, height * 0.5f, 0.5f) * mat4::Translate(vec3(1.0f, 1.0f, 1.0f));
 		}
 
 		/*
@@ -274,7 +295,7 @@ namespace Logl
 		vec4 operator[](const int row) const
 		{
 			int i = (row - 1) * 4;
-			return { m_Data[i], m_Data[i + 1], m_Data[i + 2], m_Data[i + 3] };
+			return { m_Data[i], m_Data[i + 4], m_Data[i + 8], m_Data[i + 12] };
 		}
 
 	public:
@@ -307,9 +328,91 @@ namespace Logl
 			return vec3(GetRow(1) * vec*k, GetRow(2) * vec*k, GetRow(3) * vec*k);
 		}
 
-
 	public:
+		bool IsEqual(const mat4& matrix) const
+		{
+			for (int i = 0; i < 16; i++)
+			{
+				if (!Logl::IsEqual(m_Data[i], matrix.m_Data[i]))
+					return false;
+			}
+			return true;
+		}
+
+
+	private:
 		float m_Data[16]; // column-major ordering
 	};
 
+
+	inline mat4 Inverse(mat4 matrix)
+	{
+		unsigned int indxc[4], indxr[4], ipiv[4];
+		unsigned int i, j, k, l, ll;
+		unsigned int icol = 0;
+		unsigned int irow = 0;
+		float pivinv, dum, big;
+
+		for (j = 0; j < 4; j++)
+			ipiv[j] = 0;
+
+		for (i = 0; i < 4; i++)
+		{
+			big = 0.0f;
+			for (j = 0; j < 4; ++j)
+			{
+				if (ipiv[j] != 1)
+				{
+					for (k = 0; k < 4; k++)
+					{
+						if (ipiv[k] == 0)
+						{
+							if (fabs(MAT4_VALUE(matrix, j, k)) >= big)
+							{
+								big = fabs(MAT4_VALUE(matrix, j, k));
+								irow = j;
+								icol = k;
+							}
+						}
+						else if (ipiv[k] > 1)
+							return matrix;
+					}
+				}
+			}
+			++(ipiv[icol]);
+			if (irow != icol)
+				for (l = 0; l < 4; ++l)
+					std::swap(MAT4_VALUE(matrix, irow, l), MAT4_VALUE(matrix, icol, l));
+
+			indxr[i] = irow;
+			indxc[i] = icol;
+			if (IsZero(MAT4_VALUE(matrix, icol, icol)))
+				return matrix;
+
+			pivinv = 1.0f / MAT4_VALUE(matrix, icol, icol);
+			MAT4_VALUE(matrix, icol, icol) = 1;
+			for (l = 0; l < 4; ++l)
+				MAT4_VALUE(matrix, icol, l) *= pivinv;
+			for (ll = 0; ll < 4; ++ll)
+			{
+				if (ll != icol)
+				{
+					dum = MAT4_VALUE(matrix, ll, icol);
+					MAT4_VALUE(matrix, ll, icol) = 0;
+					for (l = 0; l < 4; ++l)
+						MAT4_VALUE(matrix, ll, l) -= MAT4_VALUE(matrix, icol, l) * dum;
+				}
+			}
+		}
+		for (int lx = 4; lx > 0; --lx)
+		{
+			if (indxr[lx - 1] != indxc[lx - 1])
+			{
+				for (k = 0; k < 4; k++)
+					std::swap(MAT4_VALUE(matrix, k, indxr[lx - 1]), MAT4_VALUE(matrix, k, indxc[lx - 1]));
+			}
+		}
+
+		return matrix;
+	}
 }

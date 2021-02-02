@@ -7,10 +7,8 @@ namespace Logl
 	class PerspectiveCamera : public Camera
 	{
 	public:
-		PerspectiveCamera(Frustum frustum, vec3 position, 
-			vec3 worldUp = vec3(0.0f, 1.0f, 0.0f), 
-			EulerAngle eulerAngle = EulerAngle(-90.0f, 0.0f))
-			: Camera(frustum, position, worldUp, eulerAngle), 
+		PerspectiveCamera(Frustum frustum, vec3 position, vec3 worldUp = vec3(0.0f, 1.0f, 0.0f))
+			: Camera(frustum, position, worldUp), 
 			m_speed(2.5f), m_sensitivity(0.1f)
 		{
 			Update();
@@ -23,7 +21,7 @@ namespace Logl
 
 		mat4 GetProjectionMatrix() const override
 		{
-			return m_frustum.GetProjectionMatrix();
+			return mat4::Perspective(Radians(m_frustum.fov), m_frustum.ratio, m_frustum.near, m_frustum.far);
 		}
 
 		virtual void Move(MoveDirection direction, float deltaTime) override
