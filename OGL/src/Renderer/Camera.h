@@ -37,8 +37,6 @@ namespace Logl
 		virtual void Scale(float yoffset, float xpos, float ypos) {}
 		virtual void Scale(float yoffset, float xpos, float ypos, float sW, float sH) {}
 
-		virtual void Update() {}
-
 		virtual void Reset() {}
 
 		virtual void SetRotate(bool bInOut) { }
@@ -49,6 +47,10 @@ namespace Logl
 		virtual void SetMoveSensitivity(float sensitivity) {}
 
 		virtual void SetViewport(int x, int y, int width, int height) {}
+		virtual void SetFrustum(float left, float right, float bottom, float top) {}
+
+	protected:
+		virtual void Update() {}
 
 	protected:
 		Frustum m_frustum;

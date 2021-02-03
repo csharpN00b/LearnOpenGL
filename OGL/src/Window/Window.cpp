@@ -113,7 +113,7 @@ namespace Logl
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset)
 			{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-				MouseScrolledEvent event(xoffset, yoffset);
+				MouseScrolledEvent event((float)xoffset, (float)yoffset);
 				data.EventCallback(event);
 			});
 

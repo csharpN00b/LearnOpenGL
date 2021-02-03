@@ -203,7 +203,7 @@ namespace E3
 		while (!glfwWindowShouldClose(window))
 		{
 			// per-frame time logic
-			float currentFrame = glfwGetTime();
+			float currentFrame = (float)glfwGetTime();
 			deltaTime = currentFrame - lastFrame;
 			lastFrame = currentFrame;
 
@@ -248,24 +248,27 @@ namespace E3
 
 	void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	{
+		float xoffset{}, yoffset{};
+
 		if (firstMouse)
 		{
-			lastX = xpos;
-			lastY = ypos;
 			firstMouse = false;
 		}
+		else
+		{
+			xoffset = (float)xpos - lastX;
+			yoffset = lastY - (float)ypos; // reversed since y-coordinates go from bottom to top
+		}
 
-		float xoffset = xpos - lastX;
-		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-		lastX = xpos;
-		lastY = ypos;
+		lastX = (float)xpos;
+		lastY = (float)ypos;
 
 		camera.Turn(xoffset, yoffset);
 	}
 
 	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
-		camera.Scale(yoffset);
+		camera.Scale((float)yoffset);
 	}
 
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

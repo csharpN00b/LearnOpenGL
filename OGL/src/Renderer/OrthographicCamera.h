@@ -5,10 +5,10 @@
 
 namespace Logl
 {
-	class OrthoGraphicCamera : public Camera
+	class OrthographicCamera : public Camera
 	{
 	public:
-		OrthoGraphicCamera(Frustum frustum, vec3 position, vec3 worldUp = vec3(0.0f, 1.0f, 0.0f))
+		OrthographicCamera(Frustum frustum, vec3 position, vec3 worldUp = vec3(0.0f, 1.0f, 0.0f))
 			: Camera(frustum, position, worldUp), 
 			m_initialPostion(position), m_Scale(1.0f)
 		{
@@ -22,7 +22,10 @@ namespace Logl
 
 		virtual mat4 GetProjectionMatrix() const override
 		{
-			return mat4::Ortho(m_Scale * m_frustum.left, m_Scale * m_frustum.right, m_Scale * m_frustum.bottom, m_Scale * m_frustum.top,
+			return mat4::Ortho(m_Scale * m_frustum.left, 
+				m_Scale * m_frustum.right, 
+				m_Scale * m_frustum.bottom, 
+				m_Scale * m_frustum.top,
 				m_frustum.near, m_frustum.far);
 		}
 
@@ -53,7 +56,7 @@ namespace Logl
 				if (m_EulerAngle.pitch < -89.0f)
 					m_EulerAngle.pitch = -89.0f;
 				
-				auto center = vec3(0.0f, 0.0f, (m_frustum.near + m_frustum.far) * 0.5);
+				auto center = vec3(0.0f, 0.0f, (m_frustum.near + m_frustum.far) * 0.5f);
 				auto transform = Inverse(GetViewMatrix());
 				auto ptWorld = transform * center;
 
@@ -109,13 +112,16 @@ namespace Logl
 		virtual void SetRotateSensitivity(float sensitivity) override { m_RotateSensitivity = sensitivity; }
 		virtual void SetMoveSensitivity(float sensitivity) override { m_MoveSensitivity = sensitivity; }
 
+		virtual void SetFrustum(float left, float right, float bottom, float top) override
+		{
+			m_frustum.left = left;
+			m_frustum.right = right;
+			m_frustum.bottom = bottom;
+			m_frustum.top = top;
+		}
+
 		virtual void SetViewport(int x, int y, int width, int height) override 
 		{
-			m_frustum.left = -width * 0.5f * 0.01;
-			m_frustum.right = width * 0.5f * 0.01;
-			m_frustum.bottom = -height * 0.5f * 0.01;
-			m_frustum.top = height * 0.5f * 0.01;
-
 			m_ViewportMatrix = mat4::Viewport(x, y, width, height);
 		}
 

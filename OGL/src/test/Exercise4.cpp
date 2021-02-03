@@ -35,12 +35,12 @@ namespace Logl
 			
 			if (bOrtho)
 			{
-				float w = width / 100.0f;
-				float h = height / 100.0f;
-				auto frustum = Frustum(-w / 2.0f, w / 2.0f, -h / 2.0f, h / 2.0f, 0.1f, 50.0f);
+				float x = width * 0.01f * 0.5f;;
+				float y = height * 0.01f * 0.5f;
+				auto frustum = Frustum(-x, x, -y, y, 0.1f, 50.0f);
 				auto position = vec3(0.0f, 0.0f, 20.0f);
 #if 1
-				m_Camera = new OrthoGraphicCamera(frustum, position);
+				m_Camera = new OrthographicCamera(frustum, position);
 				m_Camera->SetViewport(0, 0, width, height);
 #else
 				m_Camera = new OrthoCamera(frustum, position);
@@ -144,7 +144,8 @@ namespace Logl
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				glBindVertexArray(0);
 
-				return sizeof(vertices) / sizeof(vertices[0]) / 8;
+				int count = sizeof(vertices) / sizeof(vertices[0]) / 8;
+				return count;
 			};
 			int count = initGeometryData();
 
@@ -338,7 +339,12 @@ namespace Logl
 
 		bool OnWindowResize(WindowResizeEvent event)
 		{
-			m_Camera->SetViewport(0, 0, event.GetWidth(), event.GetHeight());
+			auto width = event.GetWidth();
+			auto height = event.GetHeight();
+			auto x = width * 0.01f * 0.5f;
+			auto y = height * 0.01f * 0.5f;
+			m_Camera->SetFrustum(-x, x, -y, y);
+			m_Camera->SetViewport(0, 0, width, height);
 			return true;
 		}
 

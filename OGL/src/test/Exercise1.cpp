@@ -163,7 +163,7 @@ namespace E1
 			//float timeValue = glfwGetTime();
 			//float offset = sin(timeValue);
 
-			float time = glfwGetTime();
+			float time = (float)glfwGetTime();
 			if (lastTime > 0)
 			{
 				float timespan = time - lastTime;
