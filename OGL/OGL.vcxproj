@@ -94,11 +94,11 @@
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\STB.cpp" />
-    <ClCompile Include="src\test\Exercise1.cpp" />
-    <ClCompile Include="src\test\Exercise2.cpp" />
-    <ClCompile Include="src\test\Exercise3.cpp" />
-    <ClCompile Include="src\test\Exercise4.cpp" />
-    <ClCompile Include="src\test\Exercise5.cpp" />
+    <ClCompile Include="src\test\test1.cpp" />
+    <ClCompile Include="src\test\test2.cpp" />
+    <ClCompile Include="src\test\test3.cpp" />
+    <ClCompile Include="src\test\test4.cpp" />
+    <ClCompile Include="src\test\test5.cpp" />
     <ClCompile Include="src\test\Renderer.cpp" />
     <ClCompile Include="src\test\TestGLM.cpp" />
     <ClCompile Include="src\test\TestMath.cpp" />
