@@ -10,3 +10,12 @@ GLFWwindow* initOpenGL();
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 unsigned int LoadTexture(const char* filepath, int format);
+
+#define GLCall(x) GLClearError();\
+	x;\
+	ASSERT(GLLogCall(#x, __FILE__, __LINE__))
+
+
+void GLClearError();
+
+bool GLLogCall(const char* function, const char* file, int line);

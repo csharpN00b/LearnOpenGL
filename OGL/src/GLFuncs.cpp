@@ -2,10 +2,25 @@
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
 
-#include "FMT.h"
+#include "Core/Base.h"
 
 #include "GLFuncs.h"
 
+
+void GLClearError()
+{
+	while (glGetError() != GL_NO_ERROR);
+}
+
+bool GLLogCall(const char* function, const char* file, int line)
+{
+	while (GLenum error = glGetError())
+	{
+		PRINT("[OpenGL Error] ({0}): {1} {2}: {3}\n", function, file, line);
+		return false;
+	}
+	return true;
+}
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;

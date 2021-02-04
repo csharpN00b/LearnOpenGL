@@ -10,6 +10,7 @@ DECLARE_RENDER_FUNC(E1)
 DECLARE_RENDER_FUNC(E2)
 DECLARE_RENDER_FUNC(E3)
 DECLARE_RENDER_FUNC(E4)
+DECLARE_RENDER_FUNC(E5)
 
 int main()
 {
@@ -22,14 +23,11 @@ int main()
 	if (window == nullptr)
 		return -1;
 
-	//CALL_RENDER_FUNC(E1);
-	//CALL_RENDER_FUNC(E2);
 	CALL_RENDER_FUNC(E3);
 
 #else 
 	GLFWwindow* window = nullptr;
-	CALL_RENDER_FUNC(E4);
-
+	CALL_RENDER_FUNC(E5);
 
 #endif
 

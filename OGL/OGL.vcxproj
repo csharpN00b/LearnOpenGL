@@ -86,12 +86,20 @@
   <ItemGroup>
     <ClCompile Include="src\GLFuncs.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\Renderer\OrthographicCamera.cpp" />
+    <ClCompile Include="src\Renderer\PerspectiveCamera.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Renderer\Texture.cpp" />
+    <ClCompile Include="src\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\STB.cpp" />
     <ClCompile Include="src\test\Exercise1.cpp" />
     <ClCompile Include="src\test\Exercise2.cpp" />
     <ClCompile Include="src\test\Exercise3.cpp" />
     <ClCompile Include="src\test\Exercise4.cpp" />
+    <ClCompile Include="src\test\Exercise5.cpp" />
+    <ClCompile Include="src\test\Renderer.cpp" />
     <ClCompile Include="src\test\TestGLM.cpp" />
     <ClCompile Include="src\test\TestMath.cpp" />
     <ClCompile Include="src\Window\Window.cpp" />
@@ -105,17 +113,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\Base.h" />
     <ClInclude Include="src\Math\EulerAngle.h" />
     <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Math\Matrix4f.h" />
     <ClInclude Include="src\Renderer\Camera.h" />
     <ClInclude Include="src\Renderer\Frustum.h" />
+    <ClInclude Include="src\Renderer\IndexBuffer.h" />
     <ClInclude Include="src\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\Renderer\PerspectiveCamera.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
-    <ClInclude Include="src\FMT.h" />
     <ClInclude Include="src\Math\Vector3f.h" />
     <ClInclude Include="src\GLFuncs.h" />
+    <ClInclude Include="src\Renderer\Texture.h" />
+    <ClInclude Include="src\Renderer\VertexArray.h" />
+    <ClInclude Include="src\Renderer\VertexBuffer.h" />
+    <ClInclude Include="src\test\Renderer.h" />
     <ClInclude Include="src\Window\Event.h" />
     <ClInclude Include="src\Window\KeyEvent.h" />
     <ClInclude Include="src\Window\MouseEvent.h" />
