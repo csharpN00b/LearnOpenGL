@@ -9,6 +9,8 @@ namespace Logl
 	public:
 		OrthographicCamera(Frustum frustum, vec3 position, vec3 worldUp = vec3(0.0f, 1.0f, 0.0f));
 
+		virtual CameraType Type() const override;
+
 		virtual mat4 GetViewMatrix() const override;
 
 		virtual mat4 GetProjectionMatrix() const override;
@@ -42,9 +44,6 @@ namespace Logl
 
 		float m_Scale;
 		mat4 m_ViewportMatrix;
-
-	protected:
-		vec3 m_initialPostion;
 	};
 
 

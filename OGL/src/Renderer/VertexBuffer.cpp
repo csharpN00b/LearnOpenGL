@@ -1,5 +1,6 @@
 #include "glad/glad.h"
 
+#include "Core/Base.h"
 #include "VertexBuffer.h"
 
 namespace Logl
@@ -15,6 +16,15 @@ namespace Logl
 	VertexBuffer::~VertexBuffer()
 	{
 		glDeleteBuffers(1, &m_Id);
+	}
+
+	void VertexBuffer::SetBufferLayout(const BufferLayout& layout) 
+	{
+		ASSERT(layout.GetElements().size());
+		ASSERT(layout.GetStride());
+
+		m_Layout = layout; 
+		m_Count /= layout.GetStride(); 
 	}
 
 	void VertexBuffer::Bind() const

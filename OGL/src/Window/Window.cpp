@@ -153,4 +153,9 @@ namespace Logl
 	{
 		glfwDestroyWindow(m_Window);
 	}
+
+	void Window::SetCursorPos(double x, double y)
+	{
+		glfwSetCursorPos(m_Window, x, y);
+	}
 }

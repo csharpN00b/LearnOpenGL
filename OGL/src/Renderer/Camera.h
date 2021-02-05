@@ -14,16 +14,23 @@ namespace Logl
 		RIGHT
 	};
 
+	enum class CameraType
+	{
+		OrthographicCamera,
+		PerspectiveCamera,
+	};
+
 	class Camera
 	{
 	public:
 		Camera(Frustum frustum, vec3 position, vec3 worldUp)
-			: m_frustum(frustum), m_position(position), m_worldUp(worldUp), m_EulerAngle(-90.0f, 0.0f)
+			: m_frustum(frustum), m_initialPostion(position), m_worldUp(worldUp), m_position(position), m_EulerAngle(-90.0f, 0.0f)
 		{
 		}
 
 		virtual ~Camera() {}
 
+		virtual CameraType Type() const = 0;
 		virtual mat4 GetViewMatrix() const = 0;
 		virtual mat4 GetProjectionMatrix() const = 0;
 
@@ -61,6 +68,7 @@ namespace Logl
 		vec3 m_front;
 		vec3 m_right;
 
+		vec3 m_initialPostion;
 		vec3 m_worldUp;
 
 		EulerAngle m_EulerAngle;

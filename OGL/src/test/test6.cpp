@@ -6,7 +6,7 @@ namespace E6
 	void RenderScene(GLFWwindow*)
 	{
 		Logl::Window window(800, 600, "Hello OpenGL");
-		Logl::Renderer renderer(&window, true);
+		Logl::Renderer renderer(&window, false);
 
         float vertices[] = {
            -0.5f, -0.5f, -0.5f,

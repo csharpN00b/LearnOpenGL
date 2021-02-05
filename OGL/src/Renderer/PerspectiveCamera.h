@@ -9,6 +9,8 @@ namespace Logl
 	public:
 		PerspectiveCamera(Frustum frustum, vec3 position, vec3 worldUp = vec3(0.0f, 1.0f, 0.0f));
 
+		virtual CameraType Type() const override;
+
 		mat4 GetViewMatrix() const override;
 
 		mat4 GetProjectionMatrix() const override;
@@ -20,6 +22,8 @@ namespace Logl
 		virtual void Scale(float yoffset) override;
 
 		virtual void Update() override;
+
+		virtual void Reset() override;
 
 		virtual void SetMoveSpeed(float speed) override { m_speed = speed; }
 		virtual void SetRotateSensitivity(float sensitivity) override { m_sensitivity = sensitivity; }

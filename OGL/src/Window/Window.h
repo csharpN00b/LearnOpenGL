@@ -25,6 +25,8 @@ namespace Logl
 		void OnUpdate();
 		void Shutdown();
 
+		void SetCursorPos(double x, double y);
+
 		void SetEventCallback(const EventCallbackFunc& callback) { m_Data.EventCallback = callback; }
 
 		GLFWwindow* GetNativeWindow() const { return m_Window; }

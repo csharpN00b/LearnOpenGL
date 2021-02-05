@@ -6,10 +6,12 @@ namespace Logl
 {
 	OrthographicCamera::OrthographicCamera(Frustum frustum, vec3 position, vec3 worldUp)
 		: Camera(frustum, position, worldUp),
-		m_initialPostion(position), m_Scale(1.0f)
+		m_Scale(1.0f)
 	{
 		Update();
 	}
+
+	CameraType OrthographicCamera::Type() const { return CameraType::OrthographicCamera; }
 
 	mat4 OrthographicCamera::GetViewMatrix() const
 	{
@@ -101,7 +103,6 @@ namespace Logl
 		Update();
 	}
 
-
 	void OrthographicCamera::SetFrustum(float left, float right, float bottom, float top)
 	{
 		m_frustum.left = left;
@@ -114,6 +115,7 @@ namespace Logl
 	{
 		m_ViewportMatrix = mat4::Viewport(x, y, width, height);
 	}
+
 
 
 

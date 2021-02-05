@@ -1,5 +1,6 @@
 #include "glad/glad.h"
 
+#include "Core/Base.h"
 #include "VertexArray.h"
 
 
@@ -27,11 +28,7 @@ namespace Logl
 
 	void VertexArray::AddVertexBuffer(const VertexBuffer& vertexBuffer)
 	{
-		if (vertexBuffer.GetBufferLayout().GetElements().size() == 0)
-		{
-			// TODO: 
-			__debugbreak();
-		}
+		ASSERT(vertexBuffer.GetBufferLayout().IsValid());
 
 		glBindVertexArray(m_Id);
 		vertexBuffer.Bind();

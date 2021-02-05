@@ -64,8 +64,14 @@ namespace Logl
 		m_Objects.push_back(&obj);
 	}
 
+
 	void Renderer::Render(vec3 backgroudColor)
 	{
+		if (m_Camera->Type() == CameraType::PerspectiveCamera)
+		{
+			m_window->SetCursorPos(m_window->GetWidth() * 0.5, m_window->GetHeight() * 0.5);
+		}
+
 		DrawCallFunc drawcall;
 		auto drawElements = [](int count) { glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); };
 		auto drawArrays = drawcall = [](int count) { glDrawArrays(GL_TRIANGLES, 0, count); };
@@ -102,6 +108,7 @@ namespace Logl
 			m_window->OnUpdate();
 		}
 	}
+
 
 	void Renderer::OnEvent(Event& event)
 	{

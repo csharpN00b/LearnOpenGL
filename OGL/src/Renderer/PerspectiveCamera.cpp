@@ -9,6 +9,8 @@ namespace Logl
 		Update();
 	}
 
+	CameraType PerspectiveCamera::Type() const { return CameraType::PerspectiveCamera; }
+
 	mat4 PerspectiveCamera::GetViewMatrix() const
 	{
 		return mat4::LookAt(m_position, m_position + m_front, m_up);
@@ -64,4 +66,14 @@ namespace Logl
 		m_right = CrossProduct(m_front, m_worldUp).normalize();
 		m_up = CrossProduct(m_right, m_front).normalize();
 	}
+
+	void PerspectiveCamera::Reset()
+	{
+		m_EulerAngle.yaw = -90.0f;
+		m_EulerAngle.pitch = 0.0f;
+		m_EulerAngle.roll = 0.0f;
+		m_position = m_initialPostion;
+		Update();
+	}
+
 }

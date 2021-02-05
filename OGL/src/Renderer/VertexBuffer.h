@@ -37,6 +37,7 @@ namespace Logl
 
 		int GetStride() const { return m_Stride; }
 		const std::vector<BufferElement>& GetElements() const { return m_Elements; }
+		bool IsValid() const { return m_Stride > 0 && m_Elements.size(); }
 		
 		std::vector<BufferElement>::iterator begin() { return m_Elements.begin(); }
 		std::vector<BufferElement>::iterator end() { return m_Elements.end(); }
@@ -67,7 +68,7 @@ namespace Logl
 		VertexBuffer(const void* data, unsigned int size);
 		~VertexBuffer();
 
-		void SetBufferLayout(const BufferLayout& layout) { m_Layout = layout; m_Count /= layout.GetStride(); }
+		void SetBufferLayout(const BufferLayout& layout);
 		const BufferLayout& GetBufferLayout() const { return m_Layout; }
 
 		void Bind() const;
