@@ -24,7 +24,6 @@ namespace E5
 		};
 
 		Logl::VertexArray vao;
-
 		Logl::VertexBuffer vbo(vertices, sizeof(vertices));
 		Logl::IndexBuffer ibo(indices, sizeof(indices));
 
@@ -38,10 +37,10 @@ namespace E5
 
 		vao.AddVertexBuffer(vbo);
 		vao.SetIndexBuffer(ibo);
-		renderer.SetVexterArray(vao);
 
 		Logl::Shader shader("asserts/shaders/basic_vs.glsl", "asserts/shaders/basic_fs.glsl");
-		renderer.SetShader(shader);
+		Logl::object object(vao, shader, Logl::mat4());
+		renderer.AddObject(object);
 
 		renderer.Render();
 	}

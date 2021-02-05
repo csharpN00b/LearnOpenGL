@@ -14,7 +14,6 @@ namespace Logl
 
 
 	Renderer::Renderer(Window* window, bool bOrtho)
-		: m_Shader(nullptr), m_Vao(nullptr)
 	{
 		m_window = window;
 		m_window->SetEventCallback(BIND_FUNC(OnEvent));
@@ -40,7 +39,7 @@ namespace Logl
 		{
 			float ratio = (float)width / (float)height;
 			auto frustum = Frustum(ratio, 45.0f, 0.1f, 100.0f);
-			auto position = vec3(0.0f, 0.0f, 3.0f);
+			auto position = vec3(0.0f, 0.0f, 5.0f);
 			m_Camera = new PerspectiveCamera(frustum, position);
 		}
 
@@ -60,48 +59,17 @@ namespace Logl
 		glEnable(GL_DEPTH_TEST);
 	}
 
-	void Renderer::SetShader(Shader& shader)
+	void Renderer::AddObject(object& obj)
 	{
-		m_Shader = &shader;
-		m_Shader->Use();
+		m_Objects.push_back(&obj);
 	}
 
-	void Renderer::SetVexterArray(VertexArray& vao)
+	void Renderer::Render(vec3 backgroudColor)
 	{
-		m_Vao = &vao;
-	}
-
-	void Renderer::Render()
-	{
-		if (m_Shader == nullptr || m_Vao == nullptr)
-		{
-			PRINT("no shader to use!");
-			return;
-		}
-
 		DrawCallFunc drawcall;
-		if (m_Vao->IsUsingIndex())
-		{
-			drawcall = [](int count) { glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); };
-		}
-		else
-		{
-			drawcall = [](int count) { glDrawArrays(GL_TRIANGLES, 0, count); };
-		}
-
-		vec3 cubePositions[10] = {
-		  vec3(0.0f,  0.0f,  0.0f),
-		  vec3(2.0f,  5.0f, -15.0f),
-		  vec3(-1.5f, -2.2f, -2.5f),
-		  vec3(-3.8f, -2.0f, -12.3f),
-		  vec3(2.4f, -0.4f, -3.5f),
-		  vec3(-1.7f,  3.0f, -7.5f),
-		  vec3(1.3f, -2.0f, -2.5f),
-		  vec3(1.5f,  2.0f, -2.5f),
-		  vec3(1.5f,  0.2f, -1.5f),
-		  vec3(-1.3f,  1.0f, -1.5f)
-		};
-
+		auto drawElements = [](int count) { glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); };
+		auto drawArrays = drawcall = [](int count) { glDrawArrays(GL_TRIANGLES, 0, count); };
+		
 		// Loop
 		m_Running = true;
 		while (m_Running)
@@ -109,31 +77,26 @@ namespace Logl
 			// per-frame time logic
 			m_tmpParam.UpdateTime((float)glfwGetTime());
 
-			// render
-			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+			glClearColor(backgroudColor.x, backgroudColor.y, backgroudColor.z, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			m_Shader->Use();
-
-			//  projection matrix
-			auto projection = m_Camera->GetProjectionMatrix();
-			m_Shader->SetUniform("projection", projection.ValuePtr());
-
-			// camera/view transformation
-			auto view = m_Camera->GetViewMatrix();
-			m_Shader->SetUniform("view", view.ValuePtr());
-
-			// render boxes
-			m_Vao->Bind();
-			for (int i = 0; i < 10; i++)
+			for (auto obj : m_Objects)
 			{
-				//  model matrix
-				auto model = mat4::Translate(cubePositions[i]);
-				float angle = 20.0f * i;
-				model = model * mat4::Rotate(Radians(angle), vec3(1.0f, 0.3f, 0.5f));
-				m_Shader->SetUniform("model", model.ValuePtr());
+				obj->shader->Use();
 
-				drawcall(m_Vao->GetCount());
+				auto projection = m_Camera->GetProjectionMatrix();
+				obj->shader->SetUniform("projection", projection.ValuePtr());
+
+				auto view = m_Camera->GetViewMatrix();
+				obj->shader->SetUniform("view", view.ValuePtr());
+
+				obj->vao->Bind();
+				drawcall = obj->vao->IsUsingIndex() ? drawElements : drawArrays;
+				for (auto& mat : obj->models)
+				{
+					obj->shader->SetUniform("model", mat.ValuePtr());
+					drawcall(obj->vao->GetCount());
+				}
 			}
 
 			m_window->OnUpdate();

@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include <vector>
+
 #include "Window/Window.h"
 #include "Window/MouseEvent.h"
 #include "Window/KeyEvent.h"
@@ -16,6 +18,27 @@
 
 namespace Logl
 {
+	struct object
+	{
+		VertexArray* vao;
+		Shader* shader;
+		std::vector<mat4> models;
+
+		object(VertexArray& pvao, Shader& pshader)
+			: vao(&pvao), shader(&pshader)
+		{
+		}
+
+		object(VertexArray& pvao, Shader& pshader, mat4 model) 
+			: vao(&pvao), shader(&pshader)
+		{
+			models.emplace_back(model);
+		}
+
+		void AddModel(const mat4& mat) { models.emplace_back(mat); }
+	};
+
+
 	class Renderer
 	{
 	public:
@@ -27,10 +50,9 @@ namespace Logl
 
 		void EnableDepthTest();
 
-		void SetShader(Shader& shader);
-		void SetVexterArray(VertexArray& vao);
+		void AddObject(object& obj);
 
-		void Render();
+		void Render(vec3 backgroudColor = vec3(0.2f, 0.3f, 0.3f));
 
 	public:
 		void OnEvent(Event& event);
@@ -90,7 +112,6 @@ namespace Logl
 		TmpParam m_tmpParam;
 
 	private:
-		Shader* m_Shader;
-		VertexArray* m_Vao;
+		std::vector<object*> m_Objects;
 	};
 }

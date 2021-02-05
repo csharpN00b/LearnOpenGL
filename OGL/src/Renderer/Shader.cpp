@@ -164,6 +164,11 @@ namespace Logl
 		glUniformMatrix4fv(Location(name), 1, GL_FALSE, value); 
 	}
 
+	void Shader::SetUniform3f(const std::string& name, float x, float y, float z)
+	{
+		glUniform3f(Location(name), x, y, z);
+	}
+
 	int Shader::Location(const std::string& name)
 	{
 		auto it = m_uniforms.find(name);
