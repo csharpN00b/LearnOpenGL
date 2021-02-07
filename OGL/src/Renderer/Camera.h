@@ -33,6 +33,7 @@ namespace Logl
 		virtual CameraType Type() const = 0;
 		virtual mat4 GetViewMatrix() const = 0;
 		virtual mat4 GetProjectionMatrix() const = 0;
+		virtual vec3 GetPosition() const { return m_position; }
 
 		virtual void Move(MoveDirection direction, float deltaTime) {}
 		virtual void Move(float xoffset, float yoffset) {}
@@ -53,8 +54,10 @@ namespace Logl
 		virtual void SetRotateSensitivity(float sensitivity) {}
 		virtual void SetMoveSensitivity(float sensitivity) {}
 
-		virtual void SetViewport(int x, int y, int width, int height) {}
+		virtual void SetPosition(vec3 pos) { m_initialPostion = pos; m_position = pos; }
 		virtual void SetFrustum(float left, float right, float bottom, float top) {}
+
+		virtual void SetViewport(int x, int y, int width, int height) {}
 
 	protected:
 		virtual void Update() {}

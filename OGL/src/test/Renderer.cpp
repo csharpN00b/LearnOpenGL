@@ -59,6 +59,16 @@ namespace Logl
 		glEnable(GL_DEPTH_TEST);
 	}
 
+	void Renderer::SetCameraPos(vec3 pos)
+	{
+		m_Camera->SetPosition(pos);
+	}
+
+	vec3 Renderer::GetCameraPos() const
+	{
+		return m_Camera->GetPosition();
+	}
+
 	void Renderer::AddObject(object& obj)
 	{
 		m_Objects.push_back(&obj);
@@ -76,6 +86,9 @@ namespace Logl
 		auto drawElements = [](int count) { glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); };
 		auto drawArrays = drawcall = [](int count) { glDrawArrays(GL_TRIANGLES, 0, count); };
 		
+		if (m_Objects.size() == 0)
+			PRINT("no objects!");
+
 		// Loop
 		m_Running = true;
 		while (m_Running)
@@ -95,6 +108,9 @@ namespace Logl
 
 				auto view = m_Camera->GetViewMatrix();
 				obj->shader->SetUniform("view", view.ValuePtr());
+
+				if (obj->bSpecular)
+					obj->shader->SetUniform("viewPos", m_Camera->GetPosition());
 
 				obj->vao->Bind();
 				drawcall = obj->vao->IsUsingIndex() ? drawElements : drawArrays;

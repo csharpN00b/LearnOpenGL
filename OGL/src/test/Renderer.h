@@ -18,8 +18,10 @@
 
 namespace Logl
 {
+
 	struct object
 	{
+		bool bSpecular = false;
 		VertexArray* vao;
 		Shader* shader;
 		std::vector<mat4> models;
@@ -36,6 +38,9 @@ namespace Logl
 		}
 
 		void AddModel(const mat4& mat) { models.emplace_back(mat); }
+
+		void SetSpecular(bool value) { bSpecular = value; }
+
 	};
 
 
@@ -49,6 +54,10 @@ namespace Logl
 		~Renderer();
 
 		void EnableDepthTest();
+
+		void SetCameraPos(vec3 pos);
+
+		vec3 GetCameraPos() const;
 
 		void AddObject(object& obj);
 

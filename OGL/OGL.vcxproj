@@ -101,6 +101,7 @@
     <ClCompile Include="src\test\test5.cpp" />
     <ClCompile Include="src\test\Renderer.cpp" />
     <ClCompile Include="src\test\test6.cpp" />
+    <ClCompile Include="src\test\test7.cpp" />
     <ClCompile Include="src\test\TestGLM.cpp" />
     <ClCompile Include="src\test\TestMath.cpp" />
     <ClCompile Include="src\Window\Window.cpp" />
@@ -139,10 +140,13 @@
   <ItemGroup>
     <None Include="asserts\shaders\basic_fs.glsl" />
     <None Include="asserts\shaders\light_fs.glsl" />
+    <None Include="asserts\shaders\light_vs.glsl" />
     <None Include="asserts\shaders\object_fs.glsl" />
     <None Include="asserts\shaders\object_vs.glsl" />
     <None Include="asserts\shaders\mvp_fs.glsl" />
     <None Include="asserts\shaders\mvp_vs.glsl" />
+    <None Include="asserts\shaders\phong_fs.glsl" />
+    <None Include="asserts\shaders\phong_vs.glsl" />
     <None Include="asserts\shaders\tex_fs.glsl" />
     <None Include="asserts\shaders\tex_vs.glsl" />
     <None Include="asserts\shaders\basic_vs.glsl" />

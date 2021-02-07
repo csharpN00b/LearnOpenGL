@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Math/Vector3f.h"
+
 #include <unordered_map>
 
 namespace Logl
@@ -18,6 +20,7 @@ namespace Logl
 		void SetUniform(const std::string& name, int value);
 		void SetUniform(const std::string& name, const float* value);
 		void SetUniform3f(const std::string& name, float x, float y, float z);
+		void SetUniform(const std::string& name, vec3 vec);
 
 	private:
 		int Location(const std::string& name);

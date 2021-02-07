@@ -64,7 +64,7 @@ namespace E6
         Logl::Shader objectShader("asserts/shaders/object_vs.glsl", "asserts/shaders/object_fs.glsl");
         objectShader.Use();
         objectShader.SetUniform3f("objectColor", 1.0f, 0.5f, 0.31f);
-        objectShader.SetUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
+        objectShader.SetUniform3f("lightColor", 1.0f, 1.0f, 1.0f); // 0.0f, 1.0f, 0.0f
 
         Logl::object object(objectVao, objectShader, Logl::mat4());
 

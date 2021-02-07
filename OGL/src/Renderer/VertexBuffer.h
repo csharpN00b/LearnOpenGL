@@ -16,6 +16,7 @@ namespace Logl
 		int Count;
 		bool Normalized;
 		int Offset;
+		//bool Enabled; // set false to ignore the attrib, and still increase the stride
 
 		BufferElement(unsigned int dataType, int count, bool normalized = false)
 			: DataType(dataType), Count(count), Normalized(normalized), Offset(0)

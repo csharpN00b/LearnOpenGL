@@ -12,6 +12,7 @@ DECLARE_RENDER_FUNC(E3)
 DECLARE_RENDER_FUNC(E4)
 DECLARE_RENDER_FUNC(E5)
 DECLARE_RENDER_FUNC(E6)
+DECLARE_RENDER_FUNC(E7)
 
 int main()
 {
@@ -28,7 +29,7 @@ int main()
 
 #else 
 	GLFWwindow* window = nullptr;
-	CALL_RENDER_FUNC(E6);
+	CALL_RENDER_FUNC(E7);
 
 #endif
 
