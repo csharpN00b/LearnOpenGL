@@ -41,6 +41,8 @@ namespace Logl
 			auto frustum = Frustum(ratio, 45.0f, 0.1f, 100.0f);
 			auto position = vec3(0.0f, 0.0f, 5.0f);
 			m_Camera = new PerspectiveCamera(frustum, position);
+
+			m_window->SetCursorPos(m_window->GetWidth() * 0.5, m_window->GetHeight() * 0.5);
 		}
 
 		m_tmpParam.lastX = width / 2.0f;
@@ -77,11 +79,6 @@ namespace Logl
 
 	void Renderer::Render(vec3 backgroudColor)
 	{
-		if (m_Camera->Type() == CameraType::PerspectiveCamera)
-		{
-			m_window->SetCursorPos(m_window->GetWidth() * 0.5, m_window->GetHeight() * 0.5);
-		}
-
 		DrawCallFunc drawcall;
 		auto drawElements = [](int count) { glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); };
 		auto drawArrays = drawcall = [](int count) { glDrawArrays(GL_TRIANGLES, 0, count); };
@@ -95,6 +92,8 @@ namespace Logl
 		{
 			// per-frame time logic
 			m_tmpParam.UpdateTime((float)glfwGetTime());
+
+			processInput();
 
 			glClearColor(backgroudColor.x, backgroudColor.y, backgroudColor.z, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -123,6 +122,21 @@ namespace Logl
 
 			m_window->OnUpdate();
 		}
+	}
+
+	void Renderer::processInput()
+	{
+		//return;
+		auto window = m_window->GetNativeWindow();
+
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			m_Camera->Move(MoveDirection::FORWARD, m_tmpParam.deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			m_Camera->Move(MoveDirection::BACKWARD, m_tmpParam.deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			m_Camera->Move(MoveDirection::LEFT, m_tmpParam.deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			m_Camera->Move(MoveDirection::RIGHT, m_tmpParam.deltaTime);
 	}
 
 
@@ -175,6 +189,13 @@ namespace Logl
 	bool Renderer::OnKeyPress(KeyPressedEvent event)
 	{
 		auto key = event.GetKey();
+
+		if (key == GLFW_KEY_ESCAPE)
+			m_Running = false;
+		else if(key == GLFW_KEY_F2)
+			m_Camera->Reset();
+		
+#if 0
 		switch (key)
 		{
 		case GLFW_KEY_ESCAPE:
@@ -210,7 +231,7 @@ namespace Logl
 		default:
 			break;
 		}
-
+#endif
 		return true;
 	}
 

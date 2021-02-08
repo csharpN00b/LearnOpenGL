@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#define MOVING_LIGHT 0
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -20,7 +22,12 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
+#if MOVING_LIGHT
+Camera camera(glm::vec3(2.5f, 1.5f, 2.5f), glm::vec3(0.0f, 1.0f, 0.0f), -135.0f, 0.0f);
+#else
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+#endif
+
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -30,7 +37,11 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // lighting
+#if MOVING_LIGHT
+glm::vec3 lightPos(0.0f, 2.0f, 2.0f);
+#else
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+#endif
 
 int main()
 {
@@ -152,6 +163,9 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+#if MOVING_LIGHT
+    camera.Zoom = 80.0f;
+#endif
 
     // render loop
     // -----------
@@ -163,6 +177,8 @@ int main()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        std::cout << 1.0 / deltaTime << std::endl;
+
         // input
         // -----
         processInput(window);
@@ -171,6 +187,12 @@ int main()
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+#if MOVING_LIGHT
+        auto x = 2.0f * (float)sin((glfwGetTime()));
+        auto z = 2.0f * (float)cos((glfwGetTime()));
+        lightPos = glm::vec3(x, 2.0f, z);
+#endif
 
         // be sure to activate shader when setting uniforms/drawing objects
         lightingShader.use();

@@ -63,6 +63,8 @@ namespace Logl
 
 		void Render(vec3 backgroudColor = vec3(0.2f, 0.3f, 0.3f));
 
+		void processInput();
+
 	public:
 		void OnEvent(Event& event);
 
