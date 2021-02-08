@@ -100,7 +100,7 @@ namespace E4
 		  Logl::vec3(-1.3f,  1.0f, -1.5f)
 		};
 
-		Logl::object object(vao, shader);
+		Logl::object object(vao, shader, nullptr);
 		for (int i = 0; i < 10; i++)
 		{
 			auto model = Logl::mat4::Translate(cubePositions[i]);

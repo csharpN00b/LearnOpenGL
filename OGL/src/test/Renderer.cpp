@@ -43,6 +43,7 @@ namespace Logl
 			m_Camera = new PerspectiveCamera(frustum, position);
 
 			m_window->SetCursorPos(m_window->GetWidth() * 0.5, m_window->GetHeight() * 0.5);
+			window->OnUpdate();
 		}
 
 		m_tmpParam.lastX = width / 2.0f;
@@ -79,6 +80,7 @@ namespace Logl
 
 	void Renderer::Render(vec3 backgroudColor)
 	{
+		typedef void(*DrawCallFunc)(int);
 		DrawCallFunc drawcall;
 		auto drawElements = [](int count) { glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); };
 		auto drawArrays = drawcall = [](int count) { glDrawArrays(GL_TRIANGLES, 0, count); };
@@ -90,8 +92,8 @@ namespace Logl
 		m_Running = true;
 		while (m_Running)
 		{
-			// per-frame time logic
-			m_tmpParam.UpdateTime((float)glfwGetTime());
+			float time = (float)glfwGetTime();
+			m_tmpParam.UpdateTime(time);
 
 			processInput();
 
@@ -108,16 +110,22 @@ namespace Logl
 				auto view = m_Camera->GetViewMatrix();
 				obj->shader->SetUniform("view", view.ValuePtr());
 
-				if (obj->bSpecular)
-					obj->shader->SetUniform("viewPos", m_Camera->GetPosition());
+				if (obj->dynamicUniform)
+					obj->dynamicUniform(obj->shader, time, m_Camera);
+
+				drawcall = obj->vao->IsUsingIndex() ? drawElements : drawArrays;
 
 				obj->vao->Bind();
-				drawcall = obj->vao->IsUsingIndex() ? drawElements : drawArrays;
-				for (auto& mat : obj->models)
+				if (obj->models.size())
 				{
-					obj->shader->SetUniform("model", mat.ValuePtr());
-					drawcall(obj->vao->GetCount());
+					for (auto& mat : obj->models)
+					{
+						obj->shader->SetUniform("model", mat.ValuePtr());
+						drawcall(obj->vao->GetCount());
+					}
 				}
+				else
+					drawcall(obj->vao->GetCount());
 			}
 
 			m_window->OnUpdate();

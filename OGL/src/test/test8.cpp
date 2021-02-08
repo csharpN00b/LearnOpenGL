@@ -1,14 +1,14 @@
 #include "Renderer.h"
 
-namespace E7
+namespace E8
 {
-	void RenderScene(GLFWwindow*)
-	{
-		using namespace Logl;
+    void RenderScene(GLFWwindow*)
+    {
+        using namespace Logl;
 
-		Window window(800, 600);
+        Window window(800, 600);
         bool bUseOrthoCamera = false;
-		Renderer renderer(&window, bUseOrthoCamera);
+        Renderer renderer(&window, bUseOrthoCamera);
         if (!bUseOrthoCamera)
             renderer.SetCameraPos(vec3(0.0f, 0.0f, 3.0f));
 
@@ -56,7 +56,6 @@ namespace E7
            -0.5f,  0.5f, -0.5f,
         };
 
-        vec3 lightPos(1.2f, 1.0f, 2.0f);
         VertexArray lightVao;
         VertexBuffer lightVbo(lightVertices, sizeof(lightVertices));
         BufferLayout lightBufferLayout =
@@ -68,10 +67,19 @@ namespace E7
 
         Shader lightShader("asserts/shaders/light_vs.glsl", "asserts/shaders/light_fs.glsl");
 
-        auto lightModel = mat4::Translate(lightPos);
-        lightModel = lightModel * mat4::Scale(0.2f);
+        auto dynamicUniform = [](Shader* shader, float time, Camera* camera)
+        {
+            vec3 lightPos(1.2f, 1.0f, 2.0f);
+            lightPos.x = 1.0f + sin(time) * 2.0f;
+            lightPos.y = sin(time / 2.0f) * 1.0f;
 
-        object light(lightVao, lightShader, lightModel);
+            auto lightModel = mat4::Translate(lightPos);
+            lightModel = lightModel * mat4::Scale(0.2f);
+            shader->SetUniform("model", lightModel.ValuePtr());
+        };
+
+        object light(lightVao, lightShader, dynamicUniform);
+        
         renderer.AddObject(light);
 
 
@@ -132,16 +140,20 @@ namespace E7
         object obj(vao, shader, mat4());
         obj.dynamicUniform = [](Shader* shader, float time, Camera* camera)
         {
+            vec3 lightPos(1.2f, 1.0f, 2.0f);
+            lightPos.x = 1.0f + sin(time) * 2.0f;
+            lightPos.y = sin(time / 2.0f) * 1.0f;
+            shader->SetUniform("lightPos", lightPos);
+
             shader->SetUniform("viewPos", camera->GetPosition());
         };
         renderer.AddObject(obj);
 
         shader.Use();
         shader.SetUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
-        shader.SetUniform("lightPos", lightPos);
         shader.SetUniform3f("objectColor", 1.0f, 0.5f, 0.31f);
 
         renderer.EnableDepthTest();
         renderer.Render(vec3(0.1f, 0.1f, 0.1f));
-	}
+    }
 }

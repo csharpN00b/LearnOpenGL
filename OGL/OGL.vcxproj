@@ -102,6 +102,7 @@
     <ClCompile Include="src\test\Renderer.cpp" />
     <ClCompile Include="src\test\test6.cpp" />
     <ClCompile Include="src\test\test7.cpp" />
+    <ClCompile Include="src\test\test8.cpp" />
     <ClCompile Include="src\test\TestGLM.cpp" />
     <ClCompile Include="src\test\TestMath.cpp" />
     <ClCompile Include="src\Window\Window.cpp" />

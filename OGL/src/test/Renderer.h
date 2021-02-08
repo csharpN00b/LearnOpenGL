@@ -21,34 +21,31 @@ namespace Logl
 
 	struct object
 	{
-		bool bSpecular = false;
+		typedef void(*DynamicUniform)(Shader* shader, float time, Camera* camera);
+
 		VertexArray* vao;
 		Shader* shader;
+		DynamicUniform dynamicUniform;
 		std::vector<mat4> models;
 
-		object(VertexArray& pvao, Shader& pshader)
-			: vao(&pvao), shader(&pshader)
+		object(VertexArray& pvao, Shader& pshader, DynamicUniform func)
+			: vao(&pvao), shader(&pshader), dynamicUniform(func)
 		{
 		}
 
 		object(VertexArray& pvao, Shader& pshader, mat4 model) 
-			: vao(&pvao), shader(&pshader)
+			: vao(&pvao), shader(&pshader), dynamicUniform(nullptr)
 		{
 			models.emplace_back(model);
 		}
 
 		void AddModel(const mat4& mat) { models.emplace_back(mat); }
-
-		void SetSpecular(bool value) { bSpecular = value; }
-
 	};
 
 
 	class Renderer
 	{
 	public:
-		typedef void(*DrawCallFunc)(int);
-		
 		Renderer(Window* window, bool bOrtho);
 
 		~Renderer();
