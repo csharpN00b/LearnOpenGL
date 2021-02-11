@@ -2,7 +2,7 @@
 
 References:
 
-《3D数学基础：图形与游戏开发》
+___3D Math Primer for Graphics and Game Development___
 
 https://learnopengl.com/
 
