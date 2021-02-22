@@ -67,6 +67,7 @@ namespace Logl
 	{
 	public:
 		VertexBuffer(const void* data, unsigned int size);
+		VertexBuffer(const void* data, unsigned int size, std::initializer_list<BufferElement> elements);
 		~VertexBuffer();
 
 		void SetBufferLayout(const BufferLayout& layout);

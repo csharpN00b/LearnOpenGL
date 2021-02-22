@@ -19,7 +19,7 @@
 namespace Logl
 {
 
-	struct object
+	struct RenderObject
 	{
 		typedef void(*DynamicUniform)(Shader* shader, float time, Camera* camera);
 
@@ -28,12 +28,12 @@ namespace Logl
 		DynamicUniform dynamicUniform;
 		std::vector<mat4> models;
 
-		object(VertexArray& pvao, Shader& pshader, DynamicUniform func)
+		RenderObject(VertexArray& pvao, Shader& pshader, DynamicUniform func)
 			: vao(&pvao), shader(&pshader), dynamicUniform(func)
 		{
 		}
 
-		object(VertexArray& pvao, Shader& pshader, mat4 model) 
+		RenderObject(VertexArray& pvao, Shader& pshader, mat4 model)
 			: vao(&pvao), shader(&pshader), dynamicUniform(nullptr)
 		{
 			models.emplace_back(model);
@@ -56,7 +56,7 @@ namespace Logl
 
 		vec3 GetCameraPos() const;
 
-		void AddObject(object& obj);
+		void AddObject(RenderObject& obj);
 
 		void Render(vec3 backgroudColor = vec3(0.2f, 0.3f, 0.3f));
 
@@ -120,6 +120,6 @@ namespace Logl
 		TmpParam m_tmpParam;
 
 	private:
-		std::vector<object*> m_Objects;
+		std::vector<RenderObject*> m_Objects;
 	};
 }

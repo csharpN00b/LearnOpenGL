@@ -66,14 +66,7 @@ namespace E4
 		};
 
 		Logl::VertexArray vao;
-		Logl::VertexBuffer vbo(vertices, sizeof(vertices));
-		Logl::BufferLayout bufferLayout = 
-		{
-			{GL_FLOAT, 3},
-			{GL_FLOAT, 3},
-			{GL_FLOAT, 2},
-		};
-		vbo.SetBufferLayout(bufferLayout);
+		Logl::VertexBuffer vbo(vertices, sizeof(vertices), { {GL_FLOAT, 3}, {GL_FLOAT, 3}, {GL_FLOAT, 2} });
 		vao.AddVertexBuffer(vbo);
 	
 		Logl::Shader shader("asserts/shaders/mvp_vs.glsl", "asserts/shaders/mvp_fs.glsl");
@@ -87,6 +80,9 @@ namespace E4
 		shader.SetUniform("texture1", 0);
 		shader.SetUniform("texture2", 1);
 
+		Logl::RenderObject object(vao, shader, nullptr);
+		renderer.AddObject(object);
+
 		Logl::vec3 cubePositions[10] = {
 		  Logl::vec3(0.0f,  0.0f,  0.0f),
 		  Logl::vec3(2.0f,  5.0f, -15.0f),
@@ -99,8 +95,6 @@ namespace E4
 		  Logl::vec3(1.5f,  0.2f, -1.5f),
 		  Logl::vec3(-1.3f,  1.0f, -1.5f)
 		};
-
-		Logl::object object(vao, shader, nullptr);
 		for (int i = 0; i < 10; i++)
 		{
 			auto model = Logl::mat4::Translate(cubePositions[i]);
@@ -108,7 +102,6 @@ namespace E4
 			model = model * Logl::mat4::Rotate(Logl::Radians(angle), Logl::vec3(1.0f, 0.3f, 0.5f));
 			object.AddModel(model);
 		}
-		renderer.AddObject(object);
 
 		renderer.EnableDepthTest();
 		renderer.Render();

@@ -13,6 +13,16 @@ namespace Logl
 		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	}
 
+	VertexBuffer::VertexBuffer(const void* data, unsigned int size, std::initializer_list<BufferElement> elements)
+		: m_Layout(elements)
+	{
+		glGenBuffers(1, &m_Id);
+		glBindBuffer(GL_ARRAY_BUFFER, m_Id);
+		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+
+		m_Count = size / m_Layout.GetStride();
+	}
+
 	VertexBuffer::~VertexBuffer()
 	{
 		glDeleteBuffers(1, &m_Id);

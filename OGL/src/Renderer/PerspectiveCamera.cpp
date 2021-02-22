@@ -76,4 +76,10 @@ namespace Logl
 		Update();
 	}
 
+	void PerspectiveCamera::SetFrustum(float left, float right, float bottom, float top)
+	{
+		m_frustum.ratio = (right - left) / (top - bottom);
+		// TODO : modify fov to scale?
+	}
+
 }

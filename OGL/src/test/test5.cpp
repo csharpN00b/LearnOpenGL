@@ -24,22 +24,14 @@ namespace E5
 		};
 
 		Logl::VertexArray vao;
-		Logl::VertexBuffer vbo(vertices, sizeof(vertices));
+		Logl::VertexBuffer vbo(vertices, sizeof(vertices), { {GL_FLOAT, 3}, {GL_FLOAT, 3}, {GL_FLOAT, 2} });
 		Logl::IndexBuffer ibo(indices, sizeof(indices));
-
-		Logl::BufferLayout bufferLayout =
-		{
-			{GL_FLOAT, 3},
-			{GL_FLOAT, 3},
-			{GL_FLOAT, 2},
-		};
-		vbo.SetBufferLayout(bufferLayout);
 
 		vao.AddVertexBuffer(vbo);
 		vao.SetIndexBuffer(ibo);
 
 		Logl::Shader shader("asserts/shaders/basic_vs.glsl", "asserts/shaders/basic_fs.glsl");
-		Logl::object object(vao, shader, Logl::mat4());
+		Logl::RenderObject object(vao, shader, Logl::mat4());
 		renderer.AddObject(object);
 
 		renderer.Render();

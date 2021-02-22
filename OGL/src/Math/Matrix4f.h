@@ -198,7 +198,9 @@ namespace Logl
 
 		static inline mat4 Viewport(int x, int y, int width, int height)
 		{
-			return mat4::Translate(vec3((float)x, (float)y, 0.0f)) * mat4::Scale(width * 0.5f, height * 0.5f, 0.5f) * mat4::Translate(vec3(1.0f, 1.0f, 1.0f));
+			return mat4::Translate(vec3((float)x, (float)y, 0.0f)) 
+				* mat4::Scale(width * 0.5f, height * 0.5f, 0.5f) 
+				* mat4::Translate(vec3(1.0f, 1.0f, 1.0f));
 		}
 
 		/*

@@ -58,12 +58,7 @@ namespace E7
 
         vec3 lightPos(1.2f, 1.0f, 2.0f);
         VertexArray lightVao;
-        VertexBuffer lightVbo(lightVertices, sizeof(lightVertices));
-        BufferLayout lightBufferLayout =
-        {
-            {GL_FLOAT, 3},
-        };
-        lightVbo.SetBufferLayout(lightBufferLayout);
+        VertexBuffer lightVbo(lightVertices, sizeof(lightVertices), { {GL_FLOAT, 3} });
         lightVao.AddVertexBuffer(lightVbo);
 
         Shader lightShader("asserts/shaders/light_vs.glsl", "asserts/shaders/light_fs.glsl");
@@ -71,7 +66,7 @@ namespace E7
         auto lightModel = mat4::Translate(lightPos);
         lightModel = lightModel * mat4::Scale(0.2f);
 
-        object light(lightVao, lightShader, lightModel);
+        RenderObject light(lightVao, lightShader, lightModel);
         renderer.AddObject(light);
 
 
@@ -119,17 +114,11 @@ namespace E7
           -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
         };
         VertexArray vao;
-        VertexBuffer vbo(vertices, sizeof(vertices));
-        BufferLayout bufferLayout =
-        {
-            {GL_FLOAT, 3},
-            {GL_FLOAT, 3},
-        };
-        vbo.SetBufferLayout(bufferLayout);
+        VertexBuffer vbo(vertices, sizeof(vertices), { {GL_FLOAT, 3}, {GL_FLOAT, 3} });
         vao.AddVertexBuffer(vbo);
 
         Shader shader("asserts/shaders/phong_vs.glsl", "asserts/shaders/phong_fs.glsl");
-        object obj(vao, shader, mat4());
+        RenderObject obj(vao, shader, mat4());
         obj.dynamicUniform = [](Shader* shader, float time, Camera* camera)
         {
             shader->SetUniform("viewPos", camera->GetPosition());

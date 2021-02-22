@@ -72,7 +72,7 @@ namespace Logl
 		return m_Camera->GetPosition();
 	}
 
-	void Renderer::AddObject(object& obj)
+	void Renderer::AddObject(RenderObject& obj)
 	{
 		m_Objects.push_back(&obj);
 	}

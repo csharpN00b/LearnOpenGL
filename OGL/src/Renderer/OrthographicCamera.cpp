@@ -117,6 +117,7 @@ namespace Logl
 	}
 
 
+	//=====================================================================================================================
 
 
 	OrthoCamera::OrthoCamera(Frustum frustum, vec3 position, vec3 worldUp)

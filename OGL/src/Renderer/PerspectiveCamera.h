@@ -28,6 +28,8 @@ namespace Logl
 		virtual void SetMoveSpeed(float speed) override { m_speed = speed; }
 		virtual void SetRotateSensitivity(float sensitivity) override { m_sensitivity = sensitivity; }
 
+		virtual void SetFrustum(float left, float right, float bottom, float top) override;
+
 	protected:
 		float m_speed;
 		float m_sensitivity;
