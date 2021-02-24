@@ -16,6 +16,8 @@
 
 #include "GLFuncs.h"
 
+#define USE_PERSPECTIVE_CAMERA 1
+
 using namespace Logl;
 
 namespace E3
@@ -23,6 +25,7 @@ namespace E3
 	void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void mousebutton_callback(GLFWwindow* window, int button, int action, int mods);
 
 	void processWindowInput(GLFWwindow* window);
 
@@ -39,11 +42,13 @@ namespace E3
 	float h = SCR_HEIGHT / 100.0f;
 	float ratio = w / h;
 
-#if 1
+
+#if USE_PERSPECTIVE_CAMERA
 	PerspectiveCamera camera(Frustum(ratio, 45.0f, 0.1f, 100.0f), vec3(0.0f, 0.0f, 3.0f));
 #else
-	OrthoGraphicCamera camera(Frustum(-w/2.0f, w/2.0f, -h/2.0f, h/2.0f, 0.1f, 100.0f), vec3(0.0f, 0.0f, 3.0f));
+	OrthographicCamera camera(Frustum(-w/2.0f, w/2.0f, -h/2.0f, h/2.0f, 0.1f, 100.0f), vec3(0.0f, 0.0f, 3.0f));
 #endif
+
 
 	void SetOpenGL(GLFWwindow* window)
 	{
@@ -54,6 +59,7 @@ namespace E3
 		glfwSetCursorPosCallback(window, mouse_callback);
 		glfwSetScrollCallback(window, scroll_callback);
 		glfwSetKeyCallback(window, key_callback);
+		glfwSetMouseButtonCallback(window, mousebutton_callback);
 	}
 
 	int CubeData(unsigned int& vao, unsigned int& vbo, unsigned int& ebo)
@@ -152,6 +158,11 @@ namespace E3
 	void RenderScene(GLFWwindow* window)
 	{
 		SetOpenGL(window);
+
+#if USE_PERSPECTIVE_CAMERA
+#else
+		camera.SetViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+#endif
 
 		// Shaders
 		Shader shaderProgram("asserts/shaders/mvp_vs.glsl", "asserts/shaders/mvp_fs.glsl");
@@ -260,20 +271,54 @@ namespace E3
 			yoffset = lastY - (float)ypos; // reversed since y-coordinates go from bottom to top
 		}
 
+#if USE_PERSPECTIVE_CAMERA
+		camera.Turn(xoffset, yoffset);
+#else
+		camera.Turn(xoffset, yoffset);
+
+		float height = static_cast<float>(SCR_HEIGHT);
+		camera.Move(lastX, height - lastY, xpos, height - ypos);
+#endif
+
 		lastX = (float)xpos;
 		lastY = (float)ypos;
-
-		camera.Turn(xoffset, yoffset);
 	}
 
 	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
+#if USE_PERSPECTIVE_CAMERA
 		camera.Scale((float)yoffset);
+#else
+		float height = static_cast<float>(SCR_HEIGHT);
+		camera.Scale((float)yoffset, lastX, height - lastY);
+#endif
 	}
 
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
 
+	}
+
+	void mousebutton_callback(GLFWwindow* window, int button, int action, int mods)
+	{
+#if USE_PERSPECTIVE_CAMERA
+#else
+		if (button == GLFW_MOUSE_BUTTON_LEFT)
+		{
+			if (action == GLFW_PRESS)
+				camera.SetRotate(true);
+			else if (action == GLFW_RELEASE)
+				camera.SetRotate(false);
+		}
+		
+		if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+		{
+			if (action == GLFW_PRESS)
+				camera.SetMove(true);
+			else if (action == GLFW_RELEASE)
+				camera.SetMove(false);
+		}
+#endif
 	}
 
 	void processWindowInput(GLFWwindow* window)
@@ -283,6 +328,8 @@ namespace E3
 			glfwSetWindowShouldClose(window, 1);
 		}
 
+#if USE_PERSPECTIVE_CAMERA
+
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			camera.Move(MoveDirection::FORWARD, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -291,5 +338,8 @@ namespace E3
 			camera.Move(MoveDirection::LEFT, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 			camera.Move(MoveDirection::RIGHT, deltaTime);
+#else
+		
+#endif
 	}
 }

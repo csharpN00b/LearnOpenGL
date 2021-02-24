@@ -148,7 +148,7 @@
     <None Include="asserts\shaders\object_vs.glsl" />
     <None Include="asserts\shaders\mvp_fs.glsl" />
     <None Include="asserts\shaders\mvp_vs.glsl" />
-    <None Include="asserts\shaders\phongMAT_fs.glsl" />
+    <None Include="asserts\shaders\phong_material_fs.glsl" />
     <None Include="asserts\shaders\phong_fs.glsl" />
     <None Include="asserts\shaders\phong_vs.glsl" />
     <None Include="asserts\shaders\tex_fs.glsl" />

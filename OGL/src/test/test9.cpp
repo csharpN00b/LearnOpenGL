@@ -137,7 +137,7 @@ namespace E9
         VertexBuffer vbo(vertices, sizeof(vertices), { {GL_FLOAT, 3}, {GL_FLOAT, 3} });
         vao.AddVertexBuffer(vbo);
 
-        Shader shader("asserts/shaders/phong_vs.glsl", "asserts/shaders/phongMAT_fs.glsl");
+        Shader shader("asserts/shaders/phong_vs.glsl", "asserts/shaders/phong_material_fs.glsl");
         RenderObject obj(vao, shader, mat4());
         renderer.AddObject(obj);
 

@@ -119,22 +119,19 @@ namespace E2
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		auto translate1 = mat4::Translate(vec3(0.5f, -0.5f, 0.0f));
-		auto translate2 = mat4::Translate(vec3(-0.5f, 0.5f, 0.0f));
-		vec3 rotateAxis(0.0f, 0.0f, 1.0f);
+		auto m1 = mat4::Translate(vec3(0.5f, -0.5f, 0.0f));
+		auto m2 = mat4::Translate(vec3(-0.5f, 0.5f, 0.0f));
 
 		// mvp transform
-		auto modelTrans = mat4::Rotate(Radians(-55.0f), vec3(1.0f, 0.0f, 0.0f));
-		auto viewTrans = mat4::Translate(vec3(0.0f, 0.0f, -3.0f));
-		auto projectTrans = mat4::Perspective(Radians(45.0f), 800.0f / 600.0f, 0.3f, 100.0f);
-		//auto projectTrans = mat4::Ortho(0.0f, 2.0f, 0.0f, 1.5f, 0.3f, 100.0f);
-		//auto projectTrans = mat4::Ortho(-1.0f, 1.0f, -0.75f, 0.75f, 0.3f, 100.0f);
-		auto mvpTrans = projectTrans * viewTrans * modelTrans;
+		auto model = mat4::Rotate(Radians(-55.0f), vec3(1.0f, 0.0f, 0.0f));
+		auto view = mat4::Translate(vec3(0.0f, 0.0f, -3.0f));
+		auto projection = mat4::Perspective(Radians(45.0f), 800.0f / 600.0f, 0.3f, 100.0f);
+		//auto projection = mat4::Ortho(0.0f, 2.0f, 0.0f, 1.5f, 0.3f, 100.0f);
+		//auto projection = mat4::Ortho(-1.0f, 1.0f, -0.75f, 0.75f, 0.3f, 100.0f);
+		auto mvp = projection * view * model;
 
-		vec3 v = { -0.5f, -0.5f, 0.0f
-		};
-		auto v1 = mvpTrans * v;
-
+		//vec3 v(-0.5f, -0.5f, 0.0f);
+		//auto v1 = mvpTrans * v;
 
 		// Loop
 		while (!glfwWindowShouldClose(window))
@@ -145,8 +142,8 @@ namespace E2
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			auto time = glfwGetTime();
-			auto transform1 = translate1 * mat4::Rotate((float)time, rotateAxis);
-			auto transform2 = translate2 * mat4::Scale((float)sin(time));
+			auto transform1 = m1 * mat4::Rotate((float)time, vec3(0.0f, 0.0f, 1.0f));
+			auto transform2 = m2 * mat4::Scale((float)sin(time));
 
 			shaderProgram.Use();
 			glBindVertexArray(VAO);
@@ -157,7 +154,7 @@ namespace E2
 			shaderProgram.SetUniform("transform", transform2.ValuePtr());
 			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 
-			shaderProgram.SetUniform("transform", mvpTrans.ValuePtr());
+			shaderProgram.SetUniform("transform", mvp.ValuePtr());
 			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 
 			glfwSwapBuffers(window);
