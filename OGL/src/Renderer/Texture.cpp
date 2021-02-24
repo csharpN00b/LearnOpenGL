@@ -7,7 +7,7 @@
 
 namespace Logl
 {
-	Texture2D::Texture2D(const char* path, int format)
+	Texture2D::Texture2D(const char* path)
 	{
 		m_Id = 0;
 
@@ -15,6 +15,14 @@ namespace Logl
 		stbi_set_flip_vertically_on_load(1);
 		unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
 		ASSERT(data);
+
+		GLenum format;
+		if (nrChannels == 1)
+			format = GL_RED;
+		else if (nrChannels == 3)
+			format = GL_RGB;
+		else if (nrChannels == 4)
+			format = GL_RGBA;
 
 		glGenTextures(1, &m_Id);
 		glBindTexture(GL_TEXTURE_2D, m_Id);

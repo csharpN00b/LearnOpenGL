@@ -17,7 +17,7 @@ namespace Logl
 	class Texture2D : public Texture
 	{
 	public:
-		Texture2D(const char* path, int format);
+		Texture2D(const char* path);
 		virtual ~Texture2D();
 
 		virtual void Bind(unsigned int index) const override;

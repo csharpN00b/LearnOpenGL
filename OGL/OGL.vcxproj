@@ -95,6 +95,7 @@
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\STB.cpp" />
     <ClCompile Include="src\test\test1.cpp" />
+    <ClCompile Include="src\test\test10.cpp" />
     <ClCompile Include="src\test\test2.cpp" />
     <ClCompile Include="src\test\test3.cpp" />
     <ClCompile Include="src\test\test4.cpp" />
@@ -142,6 +143,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="asserts\shaders\basic_fs.glsl" />
+    <None Include="asserts\shaders\lighting_maps_fs.glsl" />
+    <None Include="asserts\shaders\lighting_maps_vs.glsl" />
     <None Include="asserts\shaders\light_fs.glsl" />
     <None Include="asserts\shaders\light_vs.glsl" />
     <None Include="asserts\shaders\object_fs.glsl" />

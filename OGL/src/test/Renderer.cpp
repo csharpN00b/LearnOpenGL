@@ -100,20 +100,22 @@ namespace Logl
 			glClearColor(backgroudColor.x, backgroudColor.y, backgroudColor.z, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			auto projection = m_Camera->GetProjectionMatrix();
+			auto view = m_Camera->GetViewMatrix();
+
 			for (auto obj : m_Objects)
 			{
+				drawcall = obj->vao->IsUsingIndex() ? drawElements : drawArrays;
+
+				for (int i = 0; i < obj->textures.size(); i++)
+					obj->textures[i]->Bind(i);
+
 				obj->shader->Use();
-
-				auto projection = m_Camera->GetProjectionMatrix();
 				obj->shader->SetUniform("projection", projection.ValuePtr());
-
-				auto view = m_Camera->GetViewMatrix();
 				obj->shader->SetUniform("view", view.ValuePtr());
 
 				if (obj->dynamicUniform)
 					obj->dynamicUniform(obj->shader, time, m_Camera);
-
-				drawcall = obj->vao->IsUsingIndex() ? drawElements : drawArrays;
 
 				obj->vao->Bind();
 				if (obj->models.size())

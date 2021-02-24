@@ -27,6 +27,7 @@ namespace Logl
 		Shader* shader;
 		DynamicUniform dynamicUniform;
 		std::vector<mat4> models;
+		std::vector<Texture2D*> textures;
 
 		RenderObject(VertexArray& pvao, Shader& pshader, DynamicUniform func)
 			: vao(&pvao), shader(&pshader), dynamicUniform(func)
@@ -40,6 +41,8 @@ namespace Logl
 		}
 
 		void AddModel(const mat4& mat) { models.emplace_back(mat); }
+
+		void AddTexture(Texture2D* texture) { textures.emplace_back(texture); }
 	};
 
 

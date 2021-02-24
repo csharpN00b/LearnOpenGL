@@ -71,8 +71,8 @@ namespace E4
 	
 		Logl::Shader shader("asserts/shaders/mvp_vs.glsl", "asserts/shaders/mvp_fs.glsl");
 
-		Logl::Texture2D texture1("asserts/textures/container.jpg", GL_RGB);
-		Logl::Texture2D texture2("asserts/textures/awesomeface.png", GL_RGBA);
+		Logl::Texture2D texture1("asserts/textures/container.jpg");
+		Logl::Texture2D texture2("asserts/textures/awesomeface.png");
 		texture1.Bind(0);
 		texture2.Bind(1);
 		
