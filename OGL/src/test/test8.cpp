@@ -2,7 +2,7 @@
 
 namespace E8
 {
-    void RenderScene(GLFWwindow*)
+    void RenderScene()
     {
         using namespace Logl;
 

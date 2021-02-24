@@ -16,7 +16,7 @@ void TestVector3()
 	v4 *= 2;
 	auto v5 = v4 / 2;
 	auto v6 = -v2 + v3;
-	auto v7 = CrossProduct(v1, v2);
+	auto v7 = cross(v1, v2);
 	auto v8 = v1 * 2;
 	v8 += v7;
 	auto v9 = 2 * v1;
@@ -38,8 +38,8 @@ void TestVector3()
 	PRINT_VEC(v2);
 	PRINT_VEC(v1);
 
-	PRINT("|v8|: {}\n", VectorMag(v8));
-	PRINT("v1*v2: {}\n", v1 * v2);
+	PRINT("|v8|: {}\n", length(v8));
+	//PRINT("v1*v2: {}\n", v1 * v2);
 	PRINT("v1 == v2: {}\n", v1 == v2 ? "true" : "false");
 	PRINT("v3 == v5: {}\n", v3 == v5 ? "true" : "false");
 	PRINT("v6 != v1: {}\n", v6 != v1 ? "true" : "false");

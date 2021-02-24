@@ -184,8 +184,8 @@ namespace Logl
 		static inline mat4 LookAt(const vec3& eye, const vec3& target, const vec3& up)
 		{
 			auto direction = (eye - target).normalize();
-			auto right = CrossProduct(up, direction).normalize();
-			auto cameraUp = CrossProduct(direction, right).normalize();
+			auto right = cross(up, direction).normalize();
+			auto cameraUp = cross(direction, right).normalize();
 			mat4 m1 = mat4(
 				right.x, right.y, right.z, 0,
 				cameraUp.x, cameraUp.y, cameraUp.z, 0,

@@ -3,7 +3,7 @@
 
 namespace E5
 {
-	void RenderScene(GLFWwindow*)
+	void RenderScene()
 	{
 		Logl::Window window(800, 600, "Hello OpenGL");
 		Logl::Renderer renderer(&window, true);

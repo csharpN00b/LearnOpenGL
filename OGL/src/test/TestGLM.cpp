@@ -22,6 +22,20 @@ glm::mat4 transform(glm::vec2 const& Orientation, glm::vec3 const& Translate, gl
 #define PI 3.1415926f
 void TestGLM()
 {
+	glm::vec3 a(0.5f);
+	glm::vec3 b(1.0f, 0.0f, 0.5f);
+	auto r = a * b;
+	r.x = 1.0f;
+	auto x = r.x;
+	r[0] = 1.0f;
+	
+	glm::cross(a, b);
+	glm::vec3 c(1.0f);
+	auto l1 = glm::length(c);
+	constexpr auto l2 = c.length();
+	glm::distance(c, glm::vec3(0.0f));
+
+
 	auto m2 = glm::rotate(glm::mat4(1.f), /*glm::radians(60.f)*/PI/3, glm::vec3(1.0f, 0.0f, 1.0f));
 	auto m3 = glm::translate(glm::mat4(1.f), glm::vec3(10.0f, 0.0f, 0.0f));
 	auto m4 = glm::scale(glm::mat4(1.f), glm::vec3(2.0f, 2.0f, 2.0f));

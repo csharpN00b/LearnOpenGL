@@ -58,7 +58,7 @@ namespace Logl
 			auto transform = Inverse(GetViewMatrix());
 			auto ptWorld = transform * center;
 
-			auto distance = Distance(m_position, ptWorld);
+			auto distance = Logl::distance(m_position, ptWorld);
 			auto target = m_position + distance * m_front;
 			Update();
 			m_position = target - distance * m_front;
@@ -89,8 +89,8 @@ namespace Logl
 	void OrthographicCamera::Update()
 	{
 		m_front = m_EulerAngle.GetFront();
-		m_right = CrossProduct(m_front, m_worldUp).normalize();
-		m_up = CrossProduct(m_right, m_front).normalize();
+		m_right = cross(m_front, m_worldUp).normalize();
+		m_up = cross(m_right, m_front).normalize();
 	}
 
 	void OrthographicCamera::Reset()
@@ -162,7 +162,7 @@ namespace Logl
 			if (m_EulerAngle.pitch < -89.0f)
 				m_EulerAngle.pitch = -89.0f;
 
-			auto mag = VectorMag(m_position);
+			auto mag = length(m_position);
 			auto target = m_position + mag * m_front;
 			Update();
 			m_position = target - mag * m_front;
@@ -202,7 +202,7 @@ namespace Logl
 	void OrthoCamera::Update()
 	{
 		m_front = m_EulerAngle.GetFront();
-		m_right = CrossProduct(m_front, m_worldUp).normalize();
-		m_up = CrossProduct(m_right, m_front).normalize();
+		m_right = cross(m_front, m_worldUp).normalize();
+		m_up = cross(m_right, m_front).normalize();
 	}
 }

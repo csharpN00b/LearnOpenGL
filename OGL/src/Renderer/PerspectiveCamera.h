@@ -25,13 +25,13 @@ namespace Logl
 
 		virtual void Reset() override;
 
-		virtual void SetMoveSpeed(float speed) override { m_speed = speed; }
-		virtual void SetRotateSensitivity(float sensitivity) override { m_sensitivity = sensitivity; }
+		virtual void SetMoveSpeed(float speed) override { m_MovementSpeed = speed; }
+		virtual void SetRotateSensitivity(float sensitivity) override { m_MouseSensitivity = sensitivity; }
 
 		virtual void SetFrustum(float left, float right, float bottom, float top) override;
 
 	protected:
-		float m_speed;
-		float m_sensitivity;
+		float m_MovementSpeed;
+		float m_MouseSensitivity;
 	};
 }

@@ -1,42 +1,22 @@
+#include "Core/Base.h"
 #include "GLFuncs.h"
-
-void TestLogl();
-void TestGLM();
-
-#define DECLARE_RENDER_FUNC(ns) namespace ns { void RenderScene(GLFWwindow*); }
-#define CALL_RENDER_FUNC(ns) ns::RenderScene(window)
-
-DECLARE_RENDER_FUNC(E1)
-DECLARE_RENDER_FUNC(E2)
-DECLARE_RENDER_FUNC(E3)
-
-DECLARE_RENDER_FUNC(E4)
-DECLARE_RENDER_FUNC(E5)
-DECLARE_RENDER_FUNC(E6)
-DECLARE_RENDER_FUNC(E7)
-DECLARE_RENDER_FUNC(E8)
+#include "test/test.h"
 
 int main()
 {
+	// test math
 	//TestLogl();
 	//TestGLM();
-	//return 0;
 
-#if 0
-	GLFWwindow* window = initOpenGL();
-	if (window == nullptr)
-		return -1;
+	// simple test
+	//GLFWwindow* window = initOpenGL();
+	//ASSERT(window);
+	//CALL_RENDER_FUNC(E3);
 
-	CALL_RENDER_FUNC(E3);
-
-#else 
-	GLFWwindow* window = nullptr;
-	CALL_RENDER_FUNC(E8);
-
-#endif
+	// use renderer
+	CALL_RENDERER_FUNC(E9);
 
 	glfwTerminate();
-
 	return 0;
 }
 

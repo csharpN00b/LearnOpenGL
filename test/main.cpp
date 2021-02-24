@@ -194,7 +194,7 @@ int main()
         lightPos = glm::vec3(x, 2.0f, z);
 #endif
 
-#if 1
+#if 0
         lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
         lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
 #endif

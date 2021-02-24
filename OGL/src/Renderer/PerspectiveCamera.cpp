@@ -4,7 +4,7 @@ namespace Logl
 {
 	PerspectiveCamera::PerspectiveCamera(Frustum frustum, vec3 position, vec3 worldUp)
 		: Camera(frustum, position, worldUp),
-		m_speed(2.5f), m_sensitivity(0.1f)
+		m_MovementSpeed(2.5f), m_MouseSensitivity(0.1f)
 	{
 		Update();
 	}
@@ -23,7 +23,7 @@ namespace Logl
 
 	void PerspectiveCamera::Move(MoveDirection direction, float deltaTime)
 	{
-		float dis = m_speed * deltaTime;
+		float dis = m_MovementSpeed * deltaTime;
 		if (direction == MoveDirection::FORWARD)
 			m_position += dis * m_front;
 		if (direction == MoveDirection::BACKWARD)
@@ -36,8 +36,8 @@ namespace Logl
 
 	void PerspectiveCamera::Turn(float xoffset, float yoffset)
 	{
-		xoffset *= m_sensitivity;
-		yoffset *= m_sensitivity;
+		xoffset *= m_MouseSensitivity;
+		yoffset *= m_MouseSensitivity;
 
 		m_EulerAngle.yaw += xoffset;
 		m_EulerAngle.pitch += yoffset;
@@ -63,8 +63,8 @@ namespace Logl
 	void PerspectiveCamera::Update()
 	{
 		m_front = m_EulerAngle.GetFront();
-		m_right = CrossProduct(m_front, m_worldUp).normalize();
-		m_up = CrossProduct(m_right, m_front).normalize();
+		m_right = cross(m_front, m_worldUp).normalize();
+		m_up = cross(m_right, m_front).normalize();
 	}
 
 	void PerspectiveCamera::Reset()

@@ -103,6 +103,7 @@
     <ClCompile Include="src\test\test6.cpp" />
     <ClCompile Include="src\test\test7.cpp" />
     <ClCompile Include="src\test\test8.cpp" />
+    <ClCompile Include="src\test\test9.cpp" />
     <ClCompile Include="src\test\TestGLM.cpp" />
     <ClCompile Include="src\test\TestMath.cpp" />
     <ClCompile Include="src\Window\Window.cpp" />
@@ -132,6 +133,7 @@
     <ClInclude Include="src\Renderer\VertexArray.h" />
     <ClInclude Include="src\Renderer\VertexBuffer.h" />
     <ClInclude Include="src\test\Renderer.h" />
+    <ClInclude Include="src\test\test.h" />
     <ClInclude Include="src\Window\Event.h" />
     <ClInclude Include="src\Window\KeyEvent.h" />
     <ClInclude Include="src\Window\MouseEvent.h" />
@@ -146,6 +148,7 @@
     <None Include="asserts\shaders\object_vs.glsl" />
     <None Include="asserts\shaders\mvp_fs.glsl" />
     <None Include="asserts\shaders\mvp_vs.glsl" />
+    <None Include="asserts\shaders\phongMAT_fs.glsl" />
     <None Include="asserts\shaders\phong_fs.glsl" />
     <None Include="asserts\shaders\phong_vs.glsl" />
     <None Include="asserts\shaders\tex_fs.glsl" />
