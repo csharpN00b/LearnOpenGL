@@ -7,7 +7,7 @@ namespace E10
         using namespace Logl;
 
         Window window(800, 600);
-        bool bUseOrthoCamera = true;
+        bool bUseOrthoCamera = false;
         Renderer renderer(&window, bUseOrthoCamera);
         if (!bUseOrthoCamera)
             renderer.SetCameraPos(vec3(0.0f, 0.0f, 3.0f));

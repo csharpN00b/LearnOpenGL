@@ -34,6 +34,7 @@ namespace Logl
 		virtual mat4 GetViewMatrix() const = 0;
 		virtual mat4 GetProjectionMatrix() const = 0;
 		virtual vec3 GetPosition() const { return m_position; }
+		virtual vec3 GetFront() const { return m_front; }
 
 		virtual void Move(MoveDirection direction, float deltaTime) {}
 		virtual void Move(float xoffset, float yoffset) {}

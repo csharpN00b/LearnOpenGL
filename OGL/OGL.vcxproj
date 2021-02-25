@@ -96,6 +96,7 @@
     <ClCompile Include="src\STB.cpp" />
     <ClCompile Include="src\test\test1.cpp" />
     <ClCompile Include="src\test\test10.cpp" />
+    <ClCompile Include="src\test\test11.cpp" />
     <ClCompile Include="src\test\test2.cpp" />
     <ClCompile Include="src\test\test3.cpp" />
     <ClCompile Include="src\test\test4.cpp" />
@@ -143,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="asserts\shaders\basic_fs.glsl" />
+    <None Include="asserts\shaders\directional_light_fs.glsl" />
     <None Include="asserts\shaders\lighting_maps_fs.glsl" />
     <None Include="asserts\shaders\lighting_maps_vs.glsl" />
     <None Include="asserts\shaders\light_fs.glsl" />
@@ -154,6 +156,8 @@
     <None Include="asserts\shaders\phong_material_fs.glsl" />
     <None Include="asserts\shaders\phong_fs.glsl" />
     <None Include="asserts\shaders\phong_vs.glsl" />
+    <None Include="asserts\shaders\point_light_fs.glsl" />
+    <None Include="asserts\shaders\spotlight_fs.glsl" />
     <None Include="asserts\shaders\tex_fs.glsl" />
     <None Include="asserts\shaders\tex_vs.glsl" />
     <None Include="asserts\shaders\basic_vs.glsl" />

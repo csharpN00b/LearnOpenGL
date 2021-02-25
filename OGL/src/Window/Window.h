@@ -14,7 +14,7 @@ namespace Logl
 	public:
 		using EventCallbackFunc = std::function<void(Event&)>;
 
-		Window(unsigned int width, unsigned int height, const char* title = "Hello");
+		Window(unsigned int width, unsigned int height, const char* title = "OGL");
 		
 		virtual ~Window();
 
