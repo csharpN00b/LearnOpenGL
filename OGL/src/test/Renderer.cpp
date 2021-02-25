@@ -120,9 +120,12 @@ namespace Logl
 				obj->vao->Bind();
 				if (obj->models.size())
 				{
-					for (auto& mat : obj->models)
+					for (int i=0;i< obj->models.size();i++)
 					{
-						obj->shader->SetUniform("model", mat.ValuePtr());
+						obj->shader->SetUniform("model", obj->models[i].ValuePtr());
+						if (i < obj->colors.size())
+							obj->shader->SetUniform("color", obj->colors[i]);
+
 						drawcall(obj->vao->GetCount());
 					}
 				}

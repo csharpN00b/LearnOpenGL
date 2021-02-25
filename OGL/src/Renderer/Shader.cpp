@@ -68,7 +68,7 @@ namespace Logl
 			glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &length);
 			char* infoLog = (char*)alloca(length * sizeof(char));
 			glGetProgramInfoLog(programId, 512, NULL, infoLog);
-			PRINT("Failed to link shader program!\n{1}\n", infoLog);
+			PRINT("Failed to link shader program!\n{}\n", infoLog);
 			return false;
 		}
 

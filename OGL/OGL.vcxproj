@@ -97,6 +97,7 @@
     <ClCompile Include="src\test\test1.cpp" />
     <ClCompile Include="src\test\test10.cpp" />
     <ClCompile Include="src\test\test11.cpp" />
+    <ClCompile Include="src\test\test12.cpp" />
     <ClCompile Include="src\test\test2.cpp" />
     <ClCompile Include="src\test\test3.cpp" />
     <ClCompile Include="src\test\test4.cpp" />
@@ -147,8 +148,10 @@
     <None Include="asserts\shaders\directional_light_fs.glsl" />
     <None Include="asserts\shaders\lighting_maps_fs.glsl" />
     <None Include="asserts\shaders\lighting_maps_vs.glsl" />
+    <None Include="asserts\shaders\light_color_fs.glsl" />
     <None Include="asserts\shaders\light_fs.glsl" />
     <None Include="asserts\shaders\light_vs.glsl" />
+    <None Include="asserts\shaders\multiple_lights_fs.glsl" />
     <None Include="asserts\shaders\object_fs.glsl" />
     <None Include="asserts\shaders\object_vs.glsl" />
     <None Include="asserts\shaders\mvp_fs.glsl" />

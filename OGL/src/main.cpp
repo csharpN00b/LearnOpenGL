@@ -12,7 +12,7 @@ int main()
 
 #if USE_RENEDERER
 
-	CALL_RENDERER_FUNC(E11);
+	CALL_RENDERER_FUNC(E12);
 
 #else
 
