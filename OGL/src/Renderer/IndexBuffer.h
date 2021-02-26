@@ -6,7 +6,10 @@ namespace Logl
 	{
 	public:
 		IndexBuffer(const unsigned int* data, unsigned int size);
+		IndexBuffer(const IndexBuffer&) = delete;
 		~IndexBuffer();
+
+		IndexBuffer& operator=(const IndexBuffer&) = delete;
 
 		void Bind() const;
 		void Unbind() const;

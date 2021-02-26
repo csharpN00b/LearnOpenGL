@@ -41,6 +41,11 @@ namespace Logl
 		glDeleteTextures(1, &m_Id);
 	}
 
+	void Texture2D::Bind() const
+	{
+		glBindTexture(GL_TEXTURE_2D, m_Id);
+	}
+
 	void Texture2D::Bind(unsigned int index) const
 	{
 		glActiveTexture(GL_TEXTURE0 + index);

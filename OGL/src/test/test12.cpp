@@ -11,6 +11,14 @@ namespace E12
     {
         using namespace Logl;
 
+        Window window(800, 600);
+        bool bUseOrthoCamera = false;
+        Renderer renderer(&window, bUseOrthoCamera);
+        if (!bUseOrthoCamera)
+            renderer.SetCameraPos(vec3(0.0f, 0.0f, 3.0f));
+
+#pragma region Light Enviroment
+
         struct LightEnv
         {
             vec3 dirLightA;
@@ -177,12 +185,8 @@ namespace E12
         };
 #endif
 
+#pragma endregion
 
-        Window window(800, 600);
-        bool bUseOrthoCamera = false;
-        Renderer renderer(&window, bUseOrthoCamera);
-        if (!bUseOrthoCamera)
-            renderer.SetCameraPos(vec3(0.0f, 0.0f, 3.0f));
 
         float lightVertices[] = {
            -0.5f, -0.5f, -0.5f,

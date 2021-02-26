@@ -30,13 +30,13 @@ namespace Logl
 		std::vector<vec3> colors;
 		std::vector<Texture2D*> textures;
 
-		RenderObject(VertexArray& pvao, Shader& pshader, DynamicUniform func)
-			: vao(&pvao), shader(&pshader), dynamicUniform(func)
+		RenderObject(VertexArray& vao, Shader& shader, DynamicUniform func)
+			: vao(&vao), shader(&shader), dynamicUniform(func)
 		{
 		}
 
-		RenderObject(VertexArray& pvao, Shader& pshader, mat4 model)
-			: vao(&pvao), shader(&pshader), dynamicUniform(nullptr)
+		RenderObject(VertexArray& vao, Shader& shader, mat4 model)
+			: vao(&vao), shader(&shader), dynamicUniform(nullptr)
 		{
 			models.emplace_back(model);
 		}

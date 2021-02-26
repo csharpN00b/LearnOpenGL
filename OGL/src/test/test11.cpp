@@ -166,6 +166,7 @@ namespace E11
         {
             shader->SetUniform("viewPos", camera->GetPosition());
 #if SPOTLIGHT
+            // Flashlight
             shader->SetUniform("light.position", camera->GetPosition());
             shader->SetUniform("light.direction", camera->GetFront());
 #endif

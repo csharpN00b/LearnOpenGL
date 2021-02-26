@@ -9,7 +9,10 @@ namespace Logl
 	{
 	public:
 		VertexArray();
+		VertexArray(const VertexArray&) = delete;
 		~VertexArray();
+
+		VertexArray& operator=(const VertexArray&) = delete;
 
 		void Bind() const;
 		void Unbind() const;
