@@ -10,45 +10,11 @@
 #include "Window/WindowEvent.h"
 
 #include "Renderer/Camera.h"
-#include "Renderer/Shader.h"
-#include "Renderer/Texture.h"
-#include "Renderer/VertexArray.h"
-#include "Renderer/VertexBuffer.h"
-#include "Renderer/IndexBuffer.h"
+
+#include "RenderObject.h"
 
 namespace Logl
 {
-
-	struct RenderObject
-	{
-		typedef void(*DynamicUniform)(Shader* shader, float time, Camera* camera);
-
-		VertexArray* vao;
-		Shader* shader;
-		DynamicUniform dynamicUniform;
-		std::vector<mat4> models;
-		std::vector<vec3> colors;
-		std::vector<Texture2D*> textures;
-
-		RenderObject(VertexArray& vao, Shader& shader, DynamicUniform func)
-			: vao(&vao), shader(&shader), dynamicUniform(func)
-		{
-		}
-
-		RenderObject(VertexArray& vao, Shader& shader, mat4 model)
-			: vao(&vao), shader(&shader), dynamicUniform(nullptr)
-		{
-			models.emplace_back(model);
-		}
-
-		void AddModel(const mat4& mat) { models.emplace_back(mat); }
-
-		void AddColors(const vec3& color) { colors.emplace_back(color); }
-
-		void AddTexture(Texture2D* texture) { textures.emplace_back(texture); }
-	};
-
-
 	class Renderer
 	{
 	public:
@@ -56,7 +22,9 @@ namespace Logl
 
 		~Renderer();
 
-		void EnableDepthTest();
+		void EnableDepthTest(GLenum func = GL_LESS);
+
+		void EnableBlend(GLenum sfactor = GL_SRC_ALPHA, GLenum dfactor = GL_ONE_MINUS_SRC_ALPHA);
 
 		void SetCameraPos(vec3 pos);
 
@@ -80,12 +48,13 @@ namespace Logl
 		bool OnWindowResize(WindowResizeEvent event);
 
 	private:
-		Window* m_window;
+		Window* m_Window;
 		Camera* m_Camera;
+		bool m_EnableTransparent;
 		bool m_Running;
 
 	private:
-		struct TmpParam
+		struct RealTimeState
 		{
 			float deltaTime; // time between current frame and last frame
 			float lastFrame;
@@ -94,7 +63,7 @@ namespace Logl
 			float lastX;
 			float lastY;
 
-			TmpParam()
+			RealTimeState()
 				: deltaTime(0.0f), lastFrame(0.0f), firstMouse(true), lastX(0.0f), lastY(0.0f)
 			{}
 
@@ -123,9 +92,10 @@ namespace Logl
 			}
 		};
 
-		TmpParam m_tmpParam;
+		RealTimeState m_State;
 
 	private:
 		std::vector<RenderObject*> m_Objects;
+		std::vector<TransparentModel> m_TransparentList;
 	};
 }

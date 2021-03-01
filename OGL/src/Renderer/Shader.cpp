@@ -174,6 +174,11 @@ namespace Logl
 		glUniform3f(Location(name), vec.x, vec.y, vec.z);
 	}
 
+	void Shader::SetUniform(const std::string& name, vec4 vec)
+	{
+		glUniform4f(Location(name), vec.x, vec.y, vec.z, vec.w);
+	}
+
 	int Shader::Location(const std::string& name)
 	{
 		auto it = m_uniforms.find(name);

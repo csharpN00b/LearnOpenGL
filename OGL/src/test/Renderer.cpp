@@ -8,15 +8,17 @@
 
 #include "GLFuncs.h"
 
+#include <algorithm>
+
 namespace Logl
 {
 #define BIND_FUNC(name) std::bind(&Renderer::name, this, std::placeholders::_1)
 
 
 	Renderer::Renderer(Window* window, bool bOrtho)
+		: m_Window(window), m_EnableTransparent(false), m_Running(true)
 	{
-		m_window = window;
-		m_window->SetEventCallback(BIND_FUNC(OnEvent));
+		m_Window->SetEventCallback(BIND_FUNC(OnEvent));
 
 		auto width = window->GetWidth();
 		auto height = window->GetHeight();
@@ -42,14 +44,12 @@ namespace Logl
 			auto position = vec3(0.0f, 0.0f, 5.0f);
 			m_Camera = new PerspectiveCamera(frustum, position);
 
-			m_window->SetCursorPos(m_window->GetWidth() * 0.5, m_window->GetHeight() * 0.5);
+			m_Window->SetCursorPos(m_Window->GetWidth() * 0.5, m_Window->GetHeight() * 0.5);
 			window->OnUpdate();
 		}
 
-		m_tmpParam.lastX = width / 2.0f;
-		m_tmpParam.lastY = height / 2.0f;
-
-		m_Running = false;
+		m_State.lastX = width / 2.0f;
+		m_State.lastY = height / 2.0f;
 	}
 
 	Renderer::~Renderer()
@@ -57,9 +57,18 @@ namespace Logl
 		delete m_Camera;
 	}
 
-	void Renderer::EnableDepthTest()
+	void Renderer::EnableDepthTest(GLenum func)
 	{
 		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(func);
+	}
+
+	void Renderer::EnableBlend(GLenum sfactor, GLenum dfactor)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(sfactor, dfactor);
+
+		m_EnableTransparent = true;
 	}
 
 	void Renderer::SetCameraPos(vec3 pos)
@@ -74,6 +83,15 @@ namespace Logl
 
 	void Renderer::AddObject(RenderObject& obj)
 	{
+		if (m_EnableTransparent)
+		{
+			if (obj.bTransparent)
+			{
+				obj.GetTransparentModels(m_TransparentList);
+				return;
+			}
+		}
+
 		m_Objects.push_back(&obj);
 	}
 
@@ -84,8 +102,8 @@ namespace Logl
 		DrawCallFunc drawcall;
 		auto drawElements = [](int count) { glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); };
 		auto drawArrays = drawcall = [](int count) { glDrawArrays(GL_TRIANGLES, 0, count); };
-		
-		if (m_Objects.size() == 0)
+
+		if (m_Objects.size() == 0 && m_TransparentList.size() == 0)
 			PRINT("no objects!");
 
 		// Loop
@@ -93,7 +111,7 @@ namespace Logl
 		while (m_Running)
 		{
 			float time = (float)glfwGetTime();
-			m_tmpParam.UpdateTime(time);
+			m_State.UpdateTime(time);
 
 			processInput();
 
@@ -103,7 +121,8 @@ namespace Logl
 			auto projection = m_Camera->GetProjectionMatrix();
 			auto view = m_Camera->GetViewMatrix();
 
-			for (auto obj : m_Objects)
+			// non-transparent objects
+			for (auto& obj : m_Objects)
 			{
 				drawcall = obj->vao->IsUsingIndex() ? drawElements : drawArrays;
 
@@ -120,11 +139,16 @@ namespace Logl
 				obj->vao->Bind();
 				if (obj->models.size())
 				{
-					for (int i=0;i< obj->models.size();i++)
+					for (int i = 0; i < obj->models.size(); i++)
 					{
 						obj->shader->SetUniform("model", obj->models[i].ValuePtr());
 						if (i < obj->colors.size())
-							obj->shader->SetUniform("color", obj->colors[i]);
+						{
+							if (obj->bTransparent)
+								obj->shader->SetUniform("color", obj->colors[i]);
+							else
+								obj->shader->SetUniform3f("color", obj->colors[i].r, obj->colors[i].g, obj->colors[i].b);
+						}
 
 						drawcall(obj->vao->GetCount());
 					}
@@ -133,23 +157,58 @@ namespace Logl
 					drawcall(obj->vao->GetCount());
 			}
 
-			m_window->OnUpdate();
+			// transparent models
+			if (m_EnableTransparent && m_TransparentList.size())
+			{
+				auto cameraPos = m_Camera->GetPosition();
+				std::sort(m_TransparentList.begin(), m_TransparentList.end(), [&cameraPos](TransparentModel& t1, TransparentModel& t2)
+					{
+						auto d1 = distance((*t1.transform) * vec3(), cameraPos);
+						auto d2 = distance((*t2.transform) * vec3(), cameraPos);
+						return d1 > d2;
+					});
+
+				for (auto& obj : m_TransparentList)
+				{
+					drawcall = obj.vao->IsUsingIndex() ? drawElements : drawArrays;
+
+					for (int i = 0; i < obj.textures.size(); i++)
+						obj.textures[i]->Bind(i);
+
+					obj.shader->Use();
+					obj.shader->SetUniform("projection", projection.ValuePtr());
+					obj.shader->SetUniform("view", view.ValuePtr());
+					obj.shader->SetUniform("model", obj.transform->ValuePtr());
+
+					if (obj.dynamicUniform)
+						obj.dynamicUniform(obj.shader, time, m_Camera);
+
+					if (obj.color)
+						obj.shader->SetUniform("color", *(obj.color));
+
+					obj.vao->Bind();
+					drawcall(obj.vao->GetCount());
+				}
+			}
+
+
+			m_Window->OnUpdate();
 		}
 	}
 
 	void Renderer::processInput()
 	{
 		//return;
-		auto window = m_window->GetNativeWindow();
+		auto window = m_Window->GetNativeWindow();
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			m_Camera->Move(MoveDirection::FORWARD, m_tmpParam.deltaTime);
+			m_Camera->Move(MoveDirection::FORWARD, m_State.deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			m_Camera->Move(MoveDirection::BACKWARD, m_tmpParam.deltaTime);
+			m_Camera->Move(MoveDirection::BACKWARD, m_State.deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			m_Camera->Move(MoveDirection::LEFT, m_tmpParam.deltaTime);
+			m_Camera->Move(MoveDirection::LEFT, m_State.deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			m_Camera->Move(MoveDirection::RIGHT, m_tmpParam.deltaTime);
+			m_Camera->Move(MoveDirection::RIGHT, m_State.deltaTime);
 	}
 
 
@@ -173,14 +232,14 @@ namespace Logl
 
 	bool Renderer::OnMouseMove(MouseMovedEvent event)
 	{
-		auto xold = m_tmpParam.lastX;
-		auto yold = m_window->GetHeight() - m_tmpParam.lastY; // window coordinates -> viewport coordinates
-		auto pair = m_tmpParam.UpdatePos(event.GetXPos(), event.GetYPos());
+		auto xold = m_State.lastX;
+		auto yold = m_Window->GetHeight() - m_State.lastY; // window coordinates -> viewport coordinates
+		auto pair = m_State.UpdatePos(event.GetXPos(), event.GetYPos());
 		m_Camera->Turn(pair.first, pair.second);
 		m_Camera->Move(pair.first, pair.second);
 
-		auto xnew = m_tmpParam.lastX;;
-		auto ynew = m_window->GetHeight() - m_tmpParam.lastY; // window coordinates -> viewport coordinates
+		auto xnew = m_State.lastX;;
+		auto ynew = m_Window->GetHeight() - m_State.lastY; // window coordinates -> viewport coordinates
 		m_Camera->Move(xold, yold, xnew, ynew);
 
 		return true;
@@ -190,11 +249,11 @@ namespace Logl
 	{
 		m_Camera->Scale(event.GetYOffset());
 
-		auto xpos = m_tmpParam.lastX;
-		auto ypos = (float)m_window->GetHeight() - m_tmpParam.lastY; // window coordinates -> viewport coordinates
+		auto xpos = m_State.lastX;
+		auto ypos = (float)m_Window->GetHeight() - m_State.lastY; // window coordinates -> viewport coordinates
 		m_Camera->Scale(event.GetYOffset(), xpos, ypos);
 
-		m_Camera->Scale(event.GetYOffset(), m_tmpParam.lastX, m_tmpParam.lastY, (float)m_window->GetWidth(), (float)m_window->GetHeight());
+		m_Camera->Scale(event.GetYOffset(), m_State.lastX, m_State.lastY, (float)m_Window->GetWidth(), (float)m_Window->GetHeight());
 
 		return true;
 	}
@@ -223,22 +282,22 @@ namespace Logl
 		}
 		case GLFW_KEY_W:
 		{
-			m_Camera->Move(MoveDirection::FORWARD, m_tmpParam.deltaTime);
+			m_Camera->Move(MoveDirection::FORWARD, m_State.deltaTime);
 			break;
 		}
 		case GLFW_KEY_S:
 		{
-			m_Camera->Move(MoveDirection::BACKWARD, m_tmpParam.deltaTime);
+			m_Camera->Move(MoveDirection::BACKWARD, m_State.deltaTime);
 			break;
 		}
 		case GLFW_KEY_A:
 		{
-			m_Camera->Move(MoveDirection::LEFT, m_tmpParam.deltaTime);
+			m_Camera->Move(MoveDirection::LEFT, m_State.deltaTime);
 			break;
 		}
 		case GLFW_KEY_D:
 		{
-			m_Camera->Move(MoveDirection::RIGHT, m_tmpParam.deltaTime);
+			m_Camera->Move(MoveDirection::RIGHT, m_State.deltaTime);
 			break;
 		}
 		default:

@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "Vector3f.h"
+#include "Vector4f.h"
 
 namespace Logl
 {
@@ -11,26 +11,6 @@ namespace Logl
 
 	class mat4
 	{
-	private:
-		struct vec4
-		{
-			float x, y, z, w;
-
-			vec4(float nx, float ny, float nz, float nw)
-				: x(nx), y(ny), z(nz), w(nw)
-			{
-			}
-
-			vec4(const vec3& vector)
-				: x(vector.x), y(vector.y), z(vector.z), w(1.0f)
-			{
-			}
-
-			float operator*(const vec4& v2)
-			{
-				return x * v2.x + y * v2.y + z * v2.z + w * v2.w;
-			}
-		};
 
 	public:
 		mat4()
@@ -56,6 +36,7 @@ namespace Logl
 			m_Data[12] = m14; m_Data[13] = m24; m_Data[14] = m34; m_Data[15] = m44;
 		}
 
+
 		void Identity()
 		{
 			SetRow(1, 1.0f, 0.0f, 0.0f, 0.0f);
@@ -75,9 +56,6 @@ namespace Logl
 		}
 
 		friend mat4 Inverse(mat4 matrix);
-
-		const float* ValuePtr() const { return &m_Data[0]; }
-
 
 	public:
 		static inline mat4 Rotate(float angle, const vec3& axis)
@@ -341,6 +319,7 @@ namespace Logl
 			return true;
 		}
 
+		const float* ValuePtr() const { return &m_Data[0]; }
 
 	private:
 		float m_Data[16]; // column-major ordering

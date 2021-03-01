@@ -251,8 +251,7 @@ namespace E12
         {
             auto model = mat4::Translate(pointLightPositions[i]);
             model = model * mat4::Scale(0.2f);
-            light.AddModel(model);
-            light.AddColors(pointLightColors[i]);
+            light.AddModel(model, pointLightColors[i]);
         }
         
 

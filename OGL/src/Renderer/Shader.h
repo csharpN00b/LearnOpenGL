@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Math/Vector3f.h"
+#include "Math/Vector4f.h"
 
 #include <unordered_map>
 
@@ -24,6 +24,7 @@ namespace Logl
 		void SetUniform(const std::string& name, const float* value);
 		void SetUniform3f(const std::string& name, float x, float y, float z);
 		void SetUniform(const std::string& name, vec3 vec);
+		void SetUniform(const std::string& name, vec4 vec);
 
 	private:
 		int Location(const std::string& name);

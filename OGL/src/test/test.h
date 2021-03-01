@@ -5,6 +5,7 @@
 #define DECLARE_RENDERER_FUNC(ns) namespace ns { void RenderScene(); }
 #define CALL_RENDERER_FUNC(ns) ns::RenderScene()
 
+DECLARE_RENDERER_FUNC(E15)
 DECLARE_RENDERER_FUNC(E14)
 DECLARE_RENDERER_FUNC(E13)
 DECLARE_RENDERER_FUNC(E12)
@@ -26,5 +27,6 @@ DECLARE_RENDER_FUNC(E2)
 DECLARE_RENDER_FUNC(E1)
 
 
+void TestRender();
 void TestLogl();
 void TestGLM();
