@@ -101,6 +101,7 @@
     <ClCompile Include="src\test\test13__Depth_tesing.cpp" />
     <ClCompile Include="src\test\test14__Blending.cpp" />
     <ClCompile Include="src\test\test15.cpp" />
+    <ClCompile Include="src\test\test16.cpp" />
     <ClCompile Include="src\test\test2___Textures.cpp" />
     <ClCompile Include="src\test\test3.cpp" />
     <ClCompile Include="src\test\test4.cpp" />
@@ -155,6 +156,8 @@
     <None Include="asserts\shaders\depth_testing_vs.glsl" />
     <None Include="asserts\shaders\depth_testing_fs.glsl" />
     <None Include="asserts\shaders\directional_light_fs.glsl" />
+    <None Include="asserts\shaders\framebuffers_screen_fs.glsl" />
+    <None Include="asserts\shaders\framebuffers_screen_vs.glsl" />
     <None Include="asserts\shaders\lighting_maps_fs.glsl" />
     <None Include="asserts\shaders\lighting_maps_vs.glsl" />
     <None Include="asserts\shaders\light_color_fs.glsl" />

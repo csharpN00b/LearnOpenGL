@@ -134,6 +134,31 @@ namespace Logl
 		m_Id = shaderProgram;
 	}
 
+	Shader::Shader(const char* vsCode, const char* fsCode, bool bUse)
+		: m_Id(0)
+	{
+		unsigned int vertexShader = CompileShader(GL_VERTEX_SHADER, vsCode);
+		unsigned int fragmentShader = CompileShader(GL_FRAGMENT_SHADER, fsCode);
+
+		unsigned int shaderProgram = glCreateProgram();
+		glAttachShader(shaderProgram, vertexShader);
+		glAttachShader(shaderProgram, fragmentShader);
+		glLinkProgram(shaderProgram);
+
+		glDetachShader(shaderProgram, vertexShader);
+		glDetachShader(shaderProgram, fragmentShader);
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragmentShader);
+
+		if (!CheckProgramLinkError(shaderProgram))
+			return;
+
+		m_Id = shaderProgram;
+
+		if(bUse)
+			glUseProgram(m_Id);
+	}
+
 	Shader::~Shader()
 	{
 		glDeleteShader(m_Id);

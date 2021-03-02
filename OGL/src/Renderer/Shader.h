@@ -11,6 +11,7 @@ namespace Logl
 	public:
 		Shader(const std::string& vsPath, const std::string& fsPath);
 		Shader(const std::string& vsPath, const std::string& fsPath, const std::string& gsPath);
+		Shader(const char* vsCode, const char* fsCode, bool bUse);
 		Shader(const Shader&) = delete;
 		~Shader();
 

@@ -14,7 +14,7 @@ int main()
 
 #if USE_RENEDERER
 
-	CALL_RENDERER_FUNC(E15);
+	CALL_RENDERER_FUNC(E16);
 
 #else
 

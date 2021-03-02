@@ -98,6 +98,8 @@ namespace Logl
 
 	void Renderer::Render(vec3 backgroudColor)
 	{
+		m_Running = true;
+
 		typedef void(*DrawCallFunc)(int);
 		DrawCallFunc drawcall;
 		auto drawElements = [](int count) { glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); };
@@ -107,7 +109,6 @@ namespace Logl
 			PRINT("no objects!");
 
 		// Loop
-		m_Running = true;
 		while (m_Running)
 		{
 			float time = (float)glfwGetTime();
@@ -115,7 +116,7 @@ namespace Logl
 
 			processInput();
 
-			glClearColor(backgroudColor.x, backgroudColor.y, backgroudColor.z, 1.0f);
+			glClearColor(backgroudColor.r, backgroudColor.g, backgroudColor.b, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			auto projection = m_Camera->GetProjectionMatrix();
@@ -194,6 +195,122 @@ namespace Logl
 
 			m_Window->OnUpdate();
 		}
+	}
+
+	void Renderer::RenderScreen(vec3 backgroudColor)
+	{
+		m_Running = true;
+
+		typedef void(*DrawCallFunc)(int);
+		DrawCallFunc drawcall;
+		auto drawElements = [](int count) { glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr); };
+		auto drawArrays = drawcall = [](int count) { glDrawArrays(GL_TRIANGLES, 0, count); };
+
+		if (m_Objects.size() == 0)
+			PRINT("no objects!");
+
+		unsigned int fbo{}, rbo{}, textureColorBuffer{};
+		glGenFramebuffers(1, &fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		
+		glGenTextures(1, &textureColorBuffer);
+		glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)m_Window->GetWidth(), (int)m_Window->GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		//glBindTexture(GL_TEXTURE_2D, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+		
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)m_Window->GetWidth(), (int)m_Window->GetHeight());
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
+		
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			PRINT("Framebuffer Status Error!");
+			return;
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		float quadVertices[] = {
+			// positions   // texCoords
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			-1.0f, -1.0f,  0.0f, 0.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+			 1.0f,  1.0f,  1.0f, 1.0f
+		};
+
+		VertexArray quadVao;
+		VertexBuffer quadVbo(quadVertices, sizeof(quadVertices), { {GL_FLOAT, 2}, {GL_FLOAT, 2} });
+		quadVao.AddVertexBuffer(quadVbo);
+
+		Shader screenShader("asserts/shaders/framebuffers_screen_vs.glsl", "asserts/shaders/framebuffers_screen_fs.glsl");
+		screenShader.Use();
+		screenShader.SetUniform("screenTexture", 0);
+
+		// draw as wireframe
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		PRINT("render loop begin!\n");
+		while (m_Running)
+		{
+			float time = (float)glfwGetTime();
+			m_State.UpdateTime(time);
+
+			processInput();
+
+			// bind to framebuffer and draw scene
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+			glEnable(GL_DEPTH_TEST);
+			glClearColor(backgroudColor.r, backgroudColor.g, backgroudColor.b, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			auto projection = m_Camera->GetProjectionMatrix();
+			auto view = m_Camera->GetViewMatrix();
+			for (auto& obj : m_Objects)
+			{
+				auto drawcall = obj->vao->IsUsingIndex() ? drawElements : drawArrays;
+
+				obj->shader->Use();
+				obj->shader->SetUniform("projection", projection.ValuePtr());
+				obj->shader->SetUniform("view", view.ValuePtr());
+
+				for(auto& texture : obj->textures)
+					texture->Bind(0);
+
+				obj->vao->Bind();
+				if (obj->models.size())
+				{
+					for (auto& m : obj->models)
+					{
+						obj->shader->SetUniform("model", m.ValuePtr());
+						drawcall(obj->vao->GetCount());
+					}
+				}
+				else
+					drawcall(obj->vao->GetCount());
+			}
+
+			// bind back to default framebuffer
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glDisable(GL_DEPTH_TEST);
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
+			
+			screenShader.Use();
+			
+			quadVao.Bind();
+			glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+			drawArrays(quadVao.GetCount());
+
+			m_Window->OnUpdate();
+		}
+		PRINT("render loop end!\n");
 	}
 
 	void Renderer::processInput()
