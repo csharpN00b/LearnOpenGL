@@ -5,10 +5,11 @@
 #include "Renderer/Shader.h"
 #include "Renderer/OrthographicCamera.h"
 #include "Renderer/PerspectiveCamera.h"
-
-#include "GLFuncs.h"
+#include "Renderer/FrameBuffer.h"
 
 #include <algorithm>
+
+#define BLUR 1
 
 namespace Logl
 {
@@ -16,7 +17,7 @@ namespace Logl
 
 
 	Renderer::Renderer(Window* window, bool bOrtho)
-		: m_Window(window), m_EnableTransparent(false), m_Running(true)
+		: m_Window(window), m_EnableDepthTesting(false), m_EnableBlending(false), m_Running(false)
 	{
 		m_Window->SetEventCallback(BIND_FUNC(OnEvent));
 
@@ -61,6 +62,8 @@ namespace Logl
 	{
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(func);
+
+		m_EnableDepthTesting = true;
 	}
 
 	void Renderer::EnableBlend(GLenum sfactor, GLenum dfactor)
@@ -68,7 +71,7 @@ namespace Logl
 		glEnable(GL_BLEND);
 		glBlendFunc(sfactor, dfactor);
 
-		m_EnableTransparent = true;
+		m_EnableBlending = true;
 	}
 
 	void Renderer::SetCameraPos(vec3 pos)
@@ -83,7 +86,7 @@ namespace Logl
 
 	void Renderer::AddObject(RenderObject& obj)
 	{
-		if (m_EnableTransparent)
+		if (m_EnableBlending)
 		{
 			if (obj.bTransparent)
 			{
@@ -108,6 +111,10 @@ namespace Logl
 		if (m_Objects.size() == 0 && m_TransparentList.size() == 0)
 			PRINT("no objects!");
 
+		unsigned int mask = GL_COLOR_BUFFER_BIT;
+		if (m_EnableDepthTesting)
+			mask |= GL_DEPTH_BUFFER_BIT;
+
 		// Loop
 		while (m_Running)
 		{
@@ -117,7 +124,7 @@ namespace Logl
 			processInput();
 
 			glClearColor(backgroudColor.r, backgroudColor.g, backgroudColor.b, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClear(mask);
 
 			auto projection = m_Camera->GetProjectionMatrix();
 			auto view = m_Camera->GetViewMatrix();
@@ -159,7 +166,7 @@ namespace Logl
 			}
 
 			// transparent models
-			if (m_EnableTransparent && m_TransparentList.size())
+			if (m_EnableBlending && m_TransparentList.size())
 			{
 				auto cameraPos = m_Camera->GetPosition();
 				std::sort(m_TransparentList.begin(), m_TransparentList.end(), [&cameraPos](TransparentModel& t1, TransparentModel& t2)
@@ -209,30 +216,16 @@ namespace Logl
 		if (m_Objects.size() == 0)
 			PRINT("no objects!");
 
-		unsigned int fbo{}, rbo{}, textureColorBuffer{};
-		glGenFramebuffers(1, &fbo);
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		
-		glGenTextures(1, &textureColorBuffer);
-		glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)m_Window->GetWidth(), (int)m_Window->GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		//glBindTexture(GL_TEXTURE_2D, 0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
-		
-		glGenRenderbuffers(1, &rbo);
-		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (int)m_Window->GetWidth(), (int)m_Window->GetHeight());
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
-		
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		// another FrameBuffer
+		FrameBuffer fbo;
+		fbo.Bind();
+		fbo.InitDefaultAttachment((int)m_Window->GetWidth(), (int)m_Window->GetHeight());
+		if (!fbo.IsComplete())
 		{
-			PRINT("Framebuffer Status Error!");
+			PRINT("Framebuffer is not complete!");
 			return;
 		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		fbo.Unbind();
 
 		float quadVertices[] = {
 			// positions   // texCoords
@@ -249,7 +242,11 @@ namespace Logl
 		VertexBuffer quadVbo(quadVertices, sizeof(quadVertices), { {GL_FLOAT, 2}, {GL_FLOAT, 2} });
 		quadVao.AddVertexBuffer(quadVbo);
 
+#if BLUR
+		Shader screenShader("asserts/shaders/framebuffers_screen_vs.glsl", "asserts/shaders/kernel_effects_blur_fs.glsl");
+#else
 		Shader screenShader("asserts/shaders/framebuffers_screen_vs.glsl", "asserts/shaders/framebuffers_screen_fs.glsl");
+#endif
 		screenShader.Use();
 		screenShader.SetUniform("screenTexture", 0);
 
@@ -265,7 +262,7 @@ namespace Logl
 			processInput();
 
 			// bind to framebuffer and draw scene
-			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+			fbo.Bind();
 			glEnable(GL_DEPTH_TEST);
 			glClearColor(backgroudColor.r, backgroudColor.g, backgroudColor.b, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -297,7 +294,7 @@ namespace Logl
 			}
 
 			// bind back to default framebuffer
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			fbo.Unbind();
 			glDisable(GL_DEPTH_TEST);
 			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -305,7 +302,7 @@ namespace Logl
 			screenShader.Use();
 			
 			quadVao.Bind();
-			glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+			glBindTexture(GL_TEXTURE_2D, fbo.GetDefalutColorAttachmentId());
 			drawArrays(quadVao.GetCount());
 
 			m_Window->OnUpdate();

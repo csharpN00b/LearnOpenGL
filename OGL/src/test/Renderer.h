@@ -52,7 +52,8 @@ namespace Logl
 	private:
 		Window* m_Window;
 		Camera* m_Camera;
-		bool m_EnableTransparent;
+		bool m_EnableDepthTesting;
+		bool m_EnableBlending;
 		bool m_Running;
 
 	private:

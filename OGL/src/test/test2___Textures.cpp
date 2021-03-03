@@ -1,15 +1,13 @@
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
-
-#include "stb/stb_image.h"
+#include "test_base.h"
 
 #include "Renderer/Shader.h"
 #include "Math/Matrix4f.h"
 
 using namespace Logl;
 
-namespace E2
+namespace E2_
 {
+
 	int SquareData(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO)
 	{
 		float vertices[] =
@@ -53,30 +51,6 @@ namespace E2
 
 	}
 
-	unsigned int LoadTexture(const char* filepath, int format)
-	{
-		int width{}, height{}, nrChannels{};
-		stbi_set_flip_vertically_on_load(1);
-		unsigned char* data = stbi_load(filepath, &width, &height, &nrChannels, 0);
-		if (data)
-		{
-			unsigned int texture;
-			glGenTextures(1, &texture);
-			glBindTexture(GL_TEXTURE_2D, texture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			stbi_image_free(data);
-			return texture;
-		}
-
-		return 0;
-	}
-
 	void processWindowInput(GLFWwindow* window)
 	{
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -85,8 +59,10 @@ namespace E2
 		}
 	}
 
-	void RenderScene(GLFWwindow* window)
+	void RenderScene()
 	{
+		GLFWwindow* window = CreateWindow();
+
 		// Shaders
 		Shader shaderProgram("asserts/shaders/tex_vs.glsl", "asserts/shaders/tex_fs.glsl");
 		if (!shaderProgram.IsValid())

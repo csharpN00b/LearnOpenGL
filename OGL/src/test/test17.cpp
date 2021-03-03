@@ -14,20 +14,20 @@
 
 #include "Renderer.h"
 
-namespace E4
+namespace E17
 {
 	void RenderScene()
 	{
 		Logl::Window window(800, 600);
-		Logl::Renderer renderer(&window, true);
+		Logl::Renderer renderer(&window, false);
 
 		float vertices[] = {
-			-0.5f, -0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
-			 0.5f, -0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-			 0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-			 0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-			-0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  -0.5f, 1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
 
 			-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  0.0f, 0.0f,
 			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
@@ -68,17 +68,17 @@ namespace E4
 		Logl::VertexArray vao;
 		Logl::VertexBuffer vbo(vertices, sizeof(vertices), { {GL_FLOAT, 3}, {GL_FLOAT, 3}, {GL_FLOAT, 2} });
 		vao.AddVertexBuffer(vbo);
-	
+
 		Logl::Shader shader("asserts/shaders/mvp_vs.glsl", "asserts/shaders/mvp_fs.glsl");
 
 		Logl::Texture2D texture1("asserts/textures/container.jpg");
 		Logl::Texture2D texture2("asserts/textures/awesomeface.png");
-		texture1.Bind(0);
-		texture2.Bind(1);
-		
+		texture1.Bind(1);
+		texture2.Bind(2);
+
 		shader.Use();
-		shader.SetUniform("texture1", 0);
-		shader.SetUniform("texture2", 1);
+		shader.SetUniform("texture1", 1);
+		shader.SetUniform("texture2", 2);
 
 		Logl::RenderObject object(vao, shader, nullptr);
 		renderer.AddObject(object);
@@ -104,6 +104,6 @@ namespace E4
 		}
 
 		renderer.EnableDepthTest();
-		renderer.Render();
+		renderer.RenderScreen();
 	}
 }

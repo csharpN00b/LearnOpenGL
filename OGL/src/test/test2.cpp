@@ -1,6 +1,6 @@
 #include "test_base.h"
 
-namespace E1
+namespace E2
 {
 	void processWindowInput(GLFWwindow* window)
 	{
@@ -20,15 +20,25 @@ namespace E1
 			// positions         // colors        
 			-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
 			 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-			 0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+			-0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f
+		};
+
+		unsigned int indices[] =
+		{
+			0, 1, 2,
+			2, 3, 0,
 		};
 
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
+		glGenBuffers(1, &ibo);
 
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
@@ -66,6 +76,9 @@ namespace E1
 		unsigned int shader = CreateShader(vs, fs);
 		int location = glGetUniformLocation(shader, "offset");
 
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		int indicesCount = sizeof(indices) / sizeof(indices[0]);
 		float speed = 0.5f, direction = 1.0f;
 		float offset = 0.0f;
 		float currentTime{}, lastTime{};
@@ -98,7 +111,7 @@ namespace E1
 			glUniform1f(location, offset);
 
 			glBindVertexArray(vao);
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();

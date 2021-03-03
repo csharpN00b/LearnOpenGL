@@ -1,6 +1,5 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <stb/stb_image.h>
+#include "test_base.h"
+
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
@@ -14,7 +13,6 @@
 #include "Renderer/PerspectiveCamera.h"
 #include "Renderer/OrthographicCamera.h"
 
-#include "GLFuncs.h"
 
 #define USE_PERSPECTIVE_CAMERA 1
 
@@ -28,6 +26,9 @@ namespace E3
 	void mousebutton_callback(GLFWwindow* window, int button, int action, int mods);
 
 	void processWindowInput(GLFWwindow* window);
+
+	const unsigned int SCR_WIDTH = 800;
+	const unsigned int SCR_HEIGHT = 600;
 
 	// timing
 	float deltaTime = 0.0f;	// time between current frame and last frame
@@ -155,8 +156,9 @@ namespace E3
 		return sizeof(vertices) / sizeof(vertices[0]) / 8;
 	}
 
-	void RenderScene(GLFWwindow* window)
+	void RenderScene()
 	{
+		GLFWwindow* window = CreateWindow();
 		SetOpenGL(window);
 
 #if USE_PERSPECTIVE_CAMERA

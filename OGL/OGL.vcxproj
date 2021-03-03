@@ -84,8 +84,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\GLFuncs.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Renderer\FrameBuffer.cpp" />
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Renderer\PerspectiveCamera.cpp" />
@@ -101,7 +101,9 @@
     <ClCompile Include="src\test\test13__Depth_tesing.cpp" />
     <ClCompile Include="src\test\test14__Blending.cpp" />
     <ClCompile Include="src\test\test15.cpp" />
-    <ClCompile Include="src\test\test16.cpp" />
+    <ClCompile Include="src\test\test16__FrameBuffer.cpp" />
+    <ClCompile Include="src\test\test17.cpp" />
+    <ClCompile Include="src\test\test2.cpp" />
     <ClCompile Include="src\test\test2___Textures.cpp" />
     <ClCompile Include="src\test\test3.cpp" />
     <ClCompile Include="src\test\test4.cpp" />
@@ -114,6 +116,7 @@
     <ClCompile Include="src\test\TestGLM.cpp" />
     <ClCompile Include="src\test\TestMath.cpp" />
     <ClCompile Include="src\test\TestRender.cpp" />
+    <ClCompile Include="src\test\test_base.cpp" />
     <ClCompile Include="src\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -131,19 +134,20 @@
     <ClInclude Include="src\Math\Matrix4f.h" />
     <ClInclude Include="src\Math\Vector4f.h" />
     <ClInclude Include="src\Renderer\Camera.h" />
+    <ClInclude Include="src\Renderer\FrameBuffer.h" />
     <ClInclude Include="src\Renderer\Frustum.h" />
     <ClInclude Include="src\Renderer\IndexBuffer.h" />
     <ClInclude Include="src\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\Renderer\PerspectiveCamera.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Math\Vector3f.h" />
-    <ClInclude Include="src\GLFuncs.h" />
     <ClInclude Include="src\Renderer\Texture.h" />
     <ClInclude Include="src\Renderer\VertexArray.h" />
     <ClInclude Include="src\Renderer\VertexBuffer.h" />
     <ClInclude Include="src\test\Renderer.h" />
     <ClInclude Include="src\test\RenderObject.h" />
     <ClInclude Include="src\test\test.h" />
+    <ClInclude Include="src\test\test_base.h" />
     <ClInclude Include="src\Window\Event.h" />
     <ClInclude Include="src\Window\KeyEvent.h" />
     <ClInclude Include="src\Window\MouseEvent.h" />
@@ -156,6 +160,7 @@
     <None Include="asserts\shaders\depth_testing_vs.glsl" />
     <None Include="asserts\shaders\depth_testing_fs.glsl" />
     <None Include="asserts\shaders\directional_light_fs.glsl" />
+    <None Include="asserts\shaders\kernel_effects_blur_fs.glsl" />
     <None Include="asserts\shaders\framebuffers_screen_fs.glsl" />
     <None Include="asserts\shaders\framebuffers_screen_vs.glsl" />
     <None Include="asserts\shaders\lighting_maps_fs.glsl" />
