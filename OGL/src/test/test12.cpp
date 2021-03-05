@@ -1,7 +1,7 @@
 #include "Renderer.h"
 
 #define HORROR 0
-#define BIOCHEMICAL_LAB 1
+#define BIOCHEMICAL_LAB 0
 
 #define SPOTLIGHT 0
 
@@ -200,7 +200,7 @@ namespace E12
         RenderObject light(lightVao, lightShader, mat4::Translate(env.pointLight.position) * mat4::Scale(0.2f));
         renderer.AddObject(light);
         lightShader.Use();
-        lightShader.SetUniform("color", env.pointLight.color);
+        lightShader.SetFloat3("color", env.pointLight.color);
 
 
         float cubeVertices[] = {
@@ -286,47 +286,47 @@ namespace E12
 
         cube.dynamicUniform = [](Shader* shader, float time, Camera* camera)
         {
-            shader->SetUniform("viewPos", camera->GetPosition());
+            shader->SetFloat3("viewPos", camera->GetPosition());
 
 #if SPOTLIGHT
-            shader->SetUniform("spotlight.position", camera->GetPosition());
-            shader->SetUniform("spotlight.direction", camera->GetFront());
+            shader->SetFloat3("spotlight.position", camera->GetPosition());
+            shader->SetFloat3("spotlight.direction", camera->GetFront());
 #endif
         };
 
         shader.Use();
-        shader.SetUniform("material.diffuse", 0);
-        shader.SetUniform("material.specular", 1);
-        shader.SetUniform("material.shininess", 32.0f);
+        shader.SetInt("material.diffuse", 0);
+        shader.SetInt("material.specular", 1);
+        shader.SetFloat("material.shininess", 32.0f);
 
         // Directional Light
-        shader.SetUniform3f("dirLight.direction", -0.2f, -1.0f, -0.3f);
-        shader.SetUniform("dirLight.ambient", env.directionalLight.ambient);
-        shader.SetUniform("dirLight.diffuse", env.directionalLight.diffuse);
-        shader.SetUniform("dirLight.specular", env.directionalLight.specular);
+        shader.SetFloat3("dirLight.direction", vec3(-0.2f, -1.0f, -0.3f));
+        shader.SetFloat3("dirLight.ambient", env.directionalLight.ambient);
+        shader.SetFloat3("dirLight.diffuse", env.directionalLight.diffuse);
+        shader.SetFloat3("dirLight.specular", env.directionalLight.specular);
 
 #if SPOTLIGHT
         // Spotlight
-        shader.SetUniform("spotlight.cutOff", cos(Radians(env.spotlight.cutOff)));
-        shader.SetUniform("spotlight.outerCutOff", cos(Radians(env.spotlight.outerCutOff)));
-        shader.SetUniform("spotlight.constant", env.spotlight.constant);
-        shader.SetUniform("spotlight.linear", env.spotlight.linear);
-        shader.SetUniform("spotlight.quadratic", env.spotlight.quadratic);
+        shader.SetFloat("spotlight.cutOff", cos(Radians(env.spotlight.cutOff)));
+        shader.SetFloat("spotlight.outerCutOff", cos(Radians(env.spotlight.outerCutOff)));
+        shader.SetFloat("spotlight.constant", env.spotlight.constant);
+        shader.SetFloat("spotlight.linear", env.spotlight.linear);
+        shader.SetFloat("spotlight.quadratic", env.spotlight.quadratic);
 
-        shader.SetUniform("spotlight.ambient", env.spotlight.ambient);
-        shader.SetUniform("spotlight.diffuse", env.spotlight.diffuse);
-        shader.SetUniform("spotlight.specular", env.spotlight.specular);
+        shader.SetFloat3("spotlight.ambient", env.spotlight.ambient);
+        shader.SetFloat3("spotlight.diffuse", env.spotlight.diffuse);
+        shader.SetFloat3("spotlight.specular", env.spotlight.specular);
 #endif
         // Point Lights
-        shader.SetUniform("pointLight.position", env.pointLight.position);
+        shader.SetFloat3("pointLight.position", env.pointLight.position);
 
-        shader.SetUniform("pointLight.constant", env.pointLight.constant);
-        shader.SetUniform("pointLight.linear", env.pointLight.linear);
-        shader.SetUniform("pointLight.quadratic", env.pointLight.quadratic);
+        shader.SetFloat("pointLight.constant", env.pointLight.constant);
+        shader.SetFloat("pointLight.linear", env.pointLight.linear);
+        shader.SetFloat("pointLight.quadratic", env.pointLight.quadratic);
 
-        shader.SetUniform("pointLight.ambient", env.pointLight.color * 0.1);
-        shader.SetUniform("pointLight.diffuse", env.pointLight.color /** 0.5*/);
-        shader.SetUniform("pointLight.specular", env.pointLight.color);
+        shader.SetFloat3("pointLight.ambient", env.pointLight.color * 0.1);
+        shader.SetFloat3("pointLight.diffuse", env.pointLight.color /** 0.5*/);
+        shader.SetFloat3("pointLight.specular", env.pointLight.color);
 
 
         renderer.EnableDepthTest();

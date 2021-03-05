@@ -65,7 +65,7 @@ namespace E9
         VertexBuffer lightVbo(lightVertices, sizeof(lightVertices), { {GL_FLOAT, 3} });
         lightVao.AddVertexBuffer(lightVbo);
 
-        Shader lightShader("asserts/shaders/light_vs.glsl", "asserts/shaders/light_fs.glsl");
+        Shader lightShader("asserts/shaders/mvp.glsl");
 
 #if LIGHT_MOVING
         auto dynamicUniform = [](Shader* shader, float time, Camera* camera)
@@ -76,7 +76,7 @@ namespace E9
 
             auto lightModel = mat4::Translate(lightPos);
             lightModel = lightModel * mat4::Scale(0.2f);
-            shader->SetUniform("model", lightModel.ValuePtr());
+            shader->SetMat4("model", lightModel);
         };
 
         RenderObject light(lightVao, lightShader, dynamicUniform);
@@ -143,7 +143,7 @@ namespace E9
 
         obj.dynamicUniform = [](Shader* shader, float time, Camera* camera)
         {
-            shader->SetUniform("viewPos", camera->GetPosition());
+            shader->SetFloat3("viewPos", camera->GetPosition());
 
 #if LIGHT_COLOR_CHANGING
             vec3 lightColor;
@@ -154,46 +154,46 @@ namespace E9
             vec3 diffuseColor = lightColor * vec3(0.5f);
             vec3 ambientColor = diffuseColor * vec3(0.2f);
 
-            shader->SetUniform("light.ambient", ambientColor);
-            shader->SetUniform("light.diffuse", diffuseColor);
-            shader->SetUniform3f("light.specular", 1.0f, 1.0f, 1.0f);
+            shader->SetFloat3("light.ambient", ambientColor);
+            shader->SetFloat3("light.diffuse", diffuseColor);
+            shader->SetFloat3("light.specular", vec3(1.0f, 1.0f, 1.0f));
 #endif
 
 #if LIGHT_MOVING 
             vec3 lightPos(1.2f, 1.0f, 2.0f);
             lightPos.x = 1.0f + sin(time) * 2.0f;
             lightPos.y = sin(time / 2.0f) * 1.0f;
-            shader->SetUniform("light.position", lightPos);
+            shader->SetFloat3("light.position", lightPos);
 
-            shader->SetUniform("viewPos", camera->GetPosition());
+            shader->SetFloat3("viewPos", camera->GetPosition());
 #endif
         };
 
         shader.Use();
-        shader.SetUniform("light.position", lightPos);
+        shader.SetFloat3("light.position", lightPos);
       
 #if CYAN_PLASTIC
 
         // light properties
-        shader.SetUniform3f("light.ambient", 1.0f, 1.0f, 1.0f); // note that all light colors are set at full intensity
-        shader.SetUniform3f("light.diffuse", 1.0f, 1.0f, 1.0f);
-        shader.SetUniform3f("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat3("light.ambient", vec3(1.0f, 1.0f, 1.0f)); // note that all light colors are set at full intensity
+        shader.SetFloat3("light.diffuse", vec3(1.0f, 1.0f, 1.0f));
+        shader.SetFloat3("light.specular", vec3(1.0f, 1.0f, 1.0f));
 
         // material properties
-        shader.SetUniform3f("material.ambient", 0.0f, 0.1f, 0.06f);
-        shader.SetUniform3f("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
-        shader.SetUniform3f("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
-        shader.SetUniform("material.shininess", 32.0f);
+        shader.SetFloat3("material.ambient", vec3(0.0f, 0.1f, 0.06f));
+        shader.SetFloat3("material.diffuse", vec3(0.0f, 0.50980392f, 0.50980392f));
+        shader.SetFloat3("material.specular", vec3(0.50196078f, 0.50196078f, 0.50196078f));
+        shader.SetFloat("material.shininess", 32.0f);
 
 #else
-        shader.SetUniform3f("light.ambient", 0.2f, 0.2f, 0.2f); // decrease the influence
-        shader.SetUniform3f("light.diffuse", 0.5f, 0.5f, 0.5f); // low influence
-        shader.SetUniform3f("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat3("light.ambient", vec3(0.2f, 0.2f, 0.2f)); // decrease the influence
+        shader.SetFloat3("light.diffuse", vec3(0.5f, 0.5f, 0.5f)); // low influence
+        shader.SetFloat3("light.specular", vec3(1.0f, 1.0f, 1.0f));
 
-        shader.SetUniform3f("material.ambient", 1.0f, 0.5f, 0.31f);
-        shader.SetUniform3f("material.diffuse", 1.0f, 0.5f, 0.31f);
-        shader.SetUniform3f("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
-        shader.SetUniform("material.shininess", 32.0f);
+        shader.SetFloat3("material.ambient", vec3(1.0f, 0.5f, 0.31f));
+        shader.SetFloat3("material.diffuse", vec3(1.0f, 0.5f, 0.31f));
+        shader.SetFloat3("material.specular", vec3(0.5f, 0.5f, 0.5f)); // specular lighting doesn't have full effect on this object's material
+        shader.SetFloat("material.shininess", 32.0f);
 #endif
 
         renderer.EnableDepthTest();

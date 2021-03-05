@@ -121,11 +121,11 @@ namespace E14
         //windowTexture.Bind(2);  // window
 
         shader.Use();
-        shader.SetUniform("texture1", 0);
+        shader.SetInt("texture1", 0);
         shader1.Use();
-        shader1.SetUniform("texture1", 1);
+        shader1.SetInt("texture1", 1);
         shaderTransparent.Use();
-        shaderTransparent.SetUniform("texture1", 2);
+        shaderTransparent.SetInt("texture1", 2);
 
         renderer.AddObject(cube);
         renderer.AddObject(plane);

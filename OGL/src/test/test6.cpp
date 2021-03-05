@@ -58,10 +58,10 @@ namespace E6
 		Logl::VertexArray objectVao;
         objectVao.AddVertexBuffer(vbo);
 
-        Logl::Shader objectShader("asserts/shaders/object_vs.glsl", "asserts/shaders/object_fs.glsl");
+        Logl::Shader objectShader("asserts/shaders/mvp_vs.glsl", "asserts/shaders/colors_fs.glsl");
         objectShader.Use();
-        objectShader.SetUniform3f("objectColor", 1.0f, 0.5f, 0.31f);
-        objectShader.SetUniform3f("lightColor", 1.0f, 1.0f, 1.0f); // 0.0f, 1.0f, 0.0f
+        objectShader.SetFloat3("objectColor", Logl::vec3(1.0f, 0.5f, 0.31f));
+        objectShader.SetFloat3("lightColor", Logl::vec3(1.0f, 1.0f, 1.0f)); // 0.0f, 1.0f, 0.0f
 
         Logl::RenderObject object(objectVao, objectShader, Logl::mat4());
         renderer.AddObject(object);
@@ -71,7 +71,7 @@ namespace E6
         Logl::VertexArray lightVao;
         lightVao.AddVertexBuffer(vbo);
 
-        Logl::Shader lightShader("asserts/shaders/object_vs.glsl", "asserts/shaders/light_fs.glsl");
+        Logl::Shader lightShader("asserts/shaders/mvp.glsl");
 
         auto lightModel = Logl::mat4::Translate(Logl::vec3(1.2f, 1.0f, 2.0f));
         lightModel = lightModel * Logl::mat4::Scale(0.2f);

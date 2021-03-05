@@ -8,7 +8,7 @@ int main()
 	//__debugbreak();
 
 	// 1 2 4 12 15 17
-	CALL_TEST_FUNC(E12);
+	CALL_TEST_FUNC(E17);
 
 	glfwTerminate();
 	return 0;

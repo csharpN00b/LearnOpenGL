@@ -19,7 +19,7 @@ void TestBlend()
 	Logl::VertexBuffer vbo(vertices, sizeof(vertices), { {GL_FLOAT, 3} });
 	vao.AddVertexBuffer(vbo);
 
-	Logl::Shader shader("asserts/shaders/object_vs.glsl", "asserts/shaders/object_rgba_fs.glsl");
+	Logl::Shader shader("asserts/shaders/mvp_vs.glsl", "asserts/shaders/color_rgba_fs.glsl");
 	Logl::RenderObject object(vao, shader, nullptr);
 	object.AddModel(Logl::mat4(), Logl::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	//object.AddModel(Logl::mat4(), Logl::vec4(0.0f, 1.0f, 0.0f, 1.0f));

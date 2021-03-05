@@ -73,7 +73,7 @@ namespace E16
 
         Shader shader("asserts/shaders/depth_testing_vs.glsl", "asserts/shaders/depth_testing_fs.glsl");
         shader.Use();
-        shader.SetUniform("texture1", 0);
+        shader.SetInt("texture1", 0);
 
         Texture2D cubeTexture("asserts/textures/container.jpg");
         Texture2D floorTexture("asserts/textures/metal.png");

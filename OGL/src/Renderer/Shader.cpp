@@ -175,34 +175,29 @@ namespace Logl
 		glUseProgram(m_Id); 
 	}
 
-	void Shader::SetUniform(const std::string& name, float value) 
-	{ 
-		glUniform1f(Location(name), value); 
-	}
-
-	void Shader::SetUniform(const std::string& name, int value) 
+	void Shader::SetInt(const std::string& name, int value) 
 	{
 		glUniform1i(Location(name), value); 
 	}
 
-	void Shader::SetUniform(const std::string& name, const mat4& mat) 
+	void Shader::SetFloat(const std::string& name, float value) 
 	{ 
-		glUniformMatrix4fv(Location(name), 1, GL_FALSE, mat.ValuePtr()); 
+		glUniform1f(Location(name), value); 
 	}
 
-	void Shader::SetUniform3f(const std::string& name, float x, float y, float z)
-	{
-		glUniform3f(Location(name), x, y, z);
-	}
-
-	void Shader::SetUniform(const std::string& name, const vec3& vec)
+	void Shader::SetFloat3(const std::string& name, const vec3& vec)
 	{
 		glUniform3f(Location(name), vec.x, vec.y, vec.z);
 	}
 
-	void Shader::SetUniform(const std::string& name, const vec4& vec)
+	void Shader::SetFloat4(const std::string& name, const vec4& vec)
 	{
 		glUniform4f(Location(name), vec.x, vec.y, vec.z, vec.w);
+	}
+
+	void Shader::SetMat4(const std::string& name, const mat4& mat)
+	{ 
+		glUniformMatrix4fv(Location(name), 1, GL_FALSE, mat.ValuePtr()); 
 	}
 
 

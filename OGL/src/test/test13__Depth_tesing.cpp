@@ -88,7 +88,7 @@ namespace E13
         plane.AddTexture(&floorTexture);
 
         shader.Use();
-        shader.SetUniform("texture1", 0);
+        shader.SetInt("texture1", 0);
 #else
         // use two shaders, bind textures to different texture units (bind before the loop starts)
 
@@ -107,9 +107,9 @@ namespace E13
         floorTexture.Bind(1);
 
         shader.Use();
-        shader.SetUniform("texture1", 0);
+        shader.SetInt("texture1", 0);
         shader1.Use();
-        shader1.SetUniform("texture1", 1);
+        shader1.SetInt("texture1", 1);
 #endif
 
         renderer.AddObject(cube);

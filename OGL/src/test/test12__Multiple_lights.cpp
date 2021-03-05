@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-#define DESERT 0
+#define DESERT 1
 #define FACTORY 0
 #define HORROR 0
 #define BIOCHEMICAL_LAB 0
@@ -243,7 +243,7 @@ namespace E12_
         VertexBuffer lightVbo(lightVertices, sizeof(lightVertices), { {GL_FLOAT, 3} });
         lightVao.AddVertexBuffer(lightVbo);
 
-        Shader lightShader("asserts/shaders/light_vs.glsl", "asserts/shaders/light_color_fs.glsl");
+        Shader lightShader("asserts/shaders/mvp_color.glsl");
         RenderObject light(lightVao, lightShader, nullptr);
         renderer.AddObject(light);
 
@@ -338,46 +338,46 @@ namespace E12_
 
         cube.dynamicUniform = [](Shader* shader, float time, Camera* camera)
         {
-            shader->SetUniform("viewPos", camera->GetPosition());
+            shader->SetFloat3("viewPos", camera->GetPosition());
 
-            shader->SetUniform("spotlight.position", camera->GetPosition());
-            shader->SetUniform("spotlight.direction", camera->GetFront());
+            shader->SetFloat3("spotlight.position", camera->GetPosition());
+            shader->SetFloat3("spotlight.direction", camera->GetFront());
         };
 
         shader.Use();
-        shader.SetUniform("material.diffuse", 0);
-        shader.SetUniform("material.specular", 1);
-        shader.SetUniform("material.shininess", 32.0f);
+        shader.SetInt("material.diffuse", 0);
+        shader.SetInt("material.specular", 1);
+        shader.SetFloat("material.shininess", 32.0f);
 
         // Directional Light
-        shader.SetUniform3f("dirLight.direction", -0.2f, -1.0f, -0.3f);
-        shader.SetUniform("dirLight.ambient", lightEnv.dirLightA);
-        shader.SetUniform("dirLight.diffuse", lightEnv.dirLightD);
-        shader.SetUniform("dirLight.specular", lightEnv.dirLightS);
+        shader.SetFloat3("dirLight.direction", vec3(-0.2f, -1.0f, -0.3f));
+        shader.SetFloat3("dirLight.ambient", lightEnv.dirLightA);
+        shader.SetFloat3("dirLight.diffuse", lightEnv.dirLightD);
+        shader.SetFloat3("dirLight.specular", lightEnv.dirLightS);
 
         // Spotlight
-        shader.SetUniform("spotlight.cutOff", cos(Radians(lightEnv.cutOff)));
-        shader.SetUniform("spotlight.outerCutOff", cos(Radians(lightEnv.outerCutOff)));
-        shader.SetUniform("spotlight.constant", 1.0f);
-        shader.SetUniform("spotlight.linear", lightEnv.linear2);
-        shader.SetUniform("spotlight.quadratic", lightEnv.quadratic2);
+        shader.SetFloat("spotlight.cutOff", cos(Radians(lightEnv.cutOff)));
+        shader.SetFloat("spotlight.outerCutOff", cos(Radians(lightEnv.outerCutOff)));
+        shader.SetFloat("spotlight.constant", 1.0f);
+        shader.SetFloat("spotlight.linear", lightEnv.linear2);
+        shader.SetFloat("spotlight.quadratic", lightEnv.quadratic2);
 
-        shader.SetUniform("spotlight.ambient", lightEnv.spotlightA);
-        shader.SetUniform("spotlight.diffuse", lightEnv.spotlightD);
-        shader.SetUniform("spotlight.specular", lightEnv.spotlightS);
+        shader.SetFloat3("spotlight.ambient", lightEnv.spotlightA);
+        shader.SetFloat3("spotlight.diffuse", lightEnv.spotlightD);
+        shader.SetFloat3("spotlight.specular", lightEnv.spotlightS);
 
         // Point Lights
         for (int i = 0; i < 4; i++)
         {
-            shader.SetUniform(fmt::format("pointLights[{}].position", i), pointLightPositions[i]);
+            shader.SetFloat3(fmt::format("pointLights[{}].position", i), pointLightPositions[i]);
 
-            shader.SetUniform(fmt::format("pointLights[{}].constant", i), 1.0f);
-            shader.SetUniform(fmt::format("pointLights[{}].linear", i), lightEnv.linear1);
-            shader.SetUniform(fmt::format("pointLights[{}].quadratic", i), lightEnv.quadratic1);
+            shader.SetFloat(fmt::format("pointLights[{}].constant", i), 1.0f);
+            shader.SetFloat(fmt::format("pointLights[{}].linear", i), lightEnv.linear1);
+            shader.SetFloat(fmt::format("pointLights[{}].quadratic", i), lightEnv.quadratic1);
 
-            shader.SetUniform(fmt::format("pointLights[{}].ambient", i), pointLightColors[i] * 0.1);
-            shader.SetUniform(fmt::format("pointLights[{}].diffuse", i), pointLightColors[i] /** 0.5*/);
-            shader.SetUniform(fmt::format("pointLights[{}].specular", i), pointLightColors[i]);
+            shader.SetFloat3(fmt::format("pointLights[{}].ambient", i), pointLightColors[i] * 0.1);
+            shader.SetFloat3(fmt::format("pointLights[{}].diffuse", i), pointLightColors[i] /** 0.5*/);
+            shader.SetFloat3(fmt::format("pointLights[{}].specular", i), pointLightColors[i]);
         }
 
 

@@ -18,12 +18,11 @@ namespace Logl
 		Shader& operator=(const Shader&) = delete;
 
 		void Use() const;
-		void SetUniform(const std::string& name, float value);
-		void SetUniform(const std::string& name, int value);
-		void SetUniform(const std::string& name, const mat4& mat);
-		void SetUniform3f(const std::string& name, float x, float y, float z);
-		void SetUniform(const std::string& name, const vec3& vec);
-		void SetUniform(const std::string& name, const vec4& vec);
+		void SetInt(const std::string& name, int value);
+		void SetFloat(const std::string& name, float value);
+		void SetFloat3(const std::string& name, const vec3& vec);
+		void SetFloat4(const std::string& name, const vec4& vec);
+		void SetMat4(const std::string& name, const mat4& mat);
 
 	private:
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);

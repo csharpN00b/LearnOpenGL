@@ -30,7 +30,7 @@ namespace E5
 		vao.AddVertexBuffer(vbo);
 		vao.SetIndexBuffer(ibo);
 
-		Logl::Shader shader("asserts/shaders/basic_vs.glsl", "asserts/shaders/basic_fs.glsl");
+		Logl::Shader shader("asserts/shaders/color_mvp.glsl");
 		Logl::RenderObject object(vao, shader, Logl::mat4());
 		renderer.AddObject(object);
 

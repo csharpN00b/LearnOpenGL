@@ -66,7 +66,7 @@ namespace E11
         VertexBuffer lightVbo(lightVertices, sizeof(lightVertices), { {GL_FLOAT, 3} });
         lightVao.AddVertexBuffer(lightVbo);
 
-        Shader lightShader("asserts/shaders/light_vs.glsl", "asserts/shaders/light_fs.glsl");
+        Shader lightShader("asserts/shaders/mvp.glsl");
 
         auto lightModel = mat4::Translate(lightPos);
         lightModel = lightModel * mat4::Scale(0.2f);
@@ -164,38 +164,38 @@ namespace E11
 
         obj.dynamicUniform = [](Shader* shader, float time, Camera* camera)
         {
-            shader->SetUniform("viewPos", camera->GetPosition());
+            shader->SetFloat3("viewPos", camera->GetPosition());
 #if SPOTLIGHT
             // Flashlight
-            shader->SetUniform("light.position", camera->GetPosition());
-            shader->SetUniform("light.direction", camera->GetFront());
+            shader->SetFloat3("light.position", camera->GetPosition());
+            shader->SetFloat3("light.direction", camera->GetFront());
 #endif
         };
 
         shader.Use();
-        shader.SetUniform("material.diffuse", 0);
-        shader.SetUniform("material.specular", 1);
-        shader.SetUniform("material.shininess", 32.0f);
+        shader.SetInt("material.diffuse", 0);
+        shader.SetInt("material.specular", 1);
+        shader.SetFloat("material.shininess", 32.0f);
 
-        shader.SetUniform3f("light.ambient", 0.2f, 0.2f, 0.2f);
-        shader.SetUniform3f("light.diffuse", 0.5f, 0.5f, 0.5f);
-        shader.SetUniform3f("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat3("light.ambient", vec3(0.2f, 0.2f, 0.2f));
+        shader.SetFloat3("light.diffuse", vec3(0.5f, 0.5f, 0.5f));
+        shader.SetFloat3("light.specular", vec3(1.0f, 1.0f, 1.0f));
 
 #if SPOTLIGHT
-        shader.SetUniform("light.cutOff", cos(Radians(12.5f)));
-        shader.SetUniform("light.outerCutOff", cos(Radians(17.5f)));
+        shader.SetFloat("light.cutOff", cos(Radians(12.5f)));
+        shader.SetFloat("light.outerCutOff", cos(Radians(17.5f)));
 
-        shader.SetUniform("light.constant", 1.0f);
-        shader.SetUniform("light.linear", 0.09f);
-        shader.SetUniform("light.quadratic", 0.032f);
+        shader.SetFloat("light.constant", 1.0f);
+        shader.SetFloat("light.linear", 0.09f);
+        shader.SetFloat("light.quadratic", 0.032f);
 #elif POINT_LIGHT
-        shader.SetUniform("light.position", lightPos);
+        shader.SetFloat3("light.position", lightPos);
 
-        shader.SetUniform("light.constant", 1.0f);
-        shader.SetUniform("light.linear", 0.09f);
-        shader.SetUniform("light.quadratic", 0.032f);
+        shader.SetFloat("light.constant", 1.0f);
+        shader.SetFloat("light.linear", 0.09f);
+        shader.SetFloat("light.quadratic", 0.032f);
 #else
-        shader.SetUniform3f("light.direction", -0.2f, -1.0f, -0.3f);
+        shader.SetFloat3("light.direction", vec3(-0.2f, -1.0f, -0.3f));
 #endif
 
         renderer.EnableDepthTest();

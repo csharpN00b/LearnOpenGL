@@ -61,7 +61,7 @@ namespace E10
         VertexBuffer lightVbo(lightVertices, sizeof(lightVertices), { {GL_FLOAT, 3} });
         lightVao.AddVertexBuffer(lightVbo);
 
-        Shader lightShader("asserts/shaders/light_vs.glsl", "asserts/shaders/light_fs.glsl");
+        Shader lightShader("asserts/shaders/mvp.glsl");
 
         auto lightModel = mat4::Translate(lightPos);
         lightModel = lightModel * mat4::Scale(0.2f);
@@ -135,20 +135,20 @@ namespace E10
 
         obj.dynamicUniform = [](Shader* shader, float time, Camera* camera)
         {
-            shader->SetUniform("viewPos", camera->GetPosition());
+            shader->SetFloat3("viewPos", camera->GetPosition());
         };
 
         shader.Use();
-        shader.SetUniform("light.position", lightPos);
+        shader.SetFloat3("light.position", lightPos);
 
-        shader.SetUniform3f("light.ambient", 0.2f, 0.2f, 0.2f); // decrease the influence
-        shader.SetUniform3f("light.diffuse", 0.5f, 0.5f, 0.5f); // low influence
-        shader.SetUniform3f("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat3("light.ambient", vec3(0.2f, 0.2f, 0.2f)); // decrease the influence
+        shader.SetFloat3("light.diffuse", vec3(0.5f, 0.5f, 0.5f)); // low influence
+        shader.SetFloat3("light.specular", vec3(1.0f, 1.0f, 1.0f));
 
-        shader.SetUniform("material.diffuse", 0);
-        shader.SetUniform("material.specular", 1);
-        shader.SetUniform("material.emission", 2);
-        shader.SetUniform("material.shininess", 32.0f);
+        shader.SetInt("material.diffuse", 0);
+        shader.SetInt("material.specular", 1);
+        shader.SetInt("material.emission", 2);
+        shader.SetInt("material.shininess", 32.0f);
 
         renderer.EnableDepthTest();
         renderer.Render(vec3(0.1f, 0.1f, 0.1f));
@@ -219,7 +219,7 @@ namespace E10
         VertexBuffer lightVbo(lightVertices, sizeof(lightVertices), { {GL_FLOAT, 3} });
         lightVao.AddVertexBuffer(lightVbo);
 
-        Shader lightShader("asserts/shaders/light_vs.glsl", "asserts/shaders/light_fs.glsl");
+        Shader lightShader("asserts/shaders/mvp.glsl");
 
 #if LIGHT_MOVING
         auto dynamicUniform = [](Shader* shader, float time, Camera* camera)
@@ -230,7 +230,7 @@ namespace E10
 
             auto lightModel = mat4::Translate(lightPos);
             lightModel = lightModel * mat4::Scale(0.2f);
-            shader->SetUniform("model", lightModel.ValuePtr());
+            shader->SetFloat3("model", lightModel.ValuePtr());
         };
 
         RenderObject light(lightVao, lightShader, dynamicUniform);
@@ -309,7 +309,7 @@ namespace E10
 
         obj.dynamicUniform = [](Shader* shader, float time, Camera* camera)
         {
-            shader->SetUniform("viewPos", camera->GetPosition());
+            shader->SetFloat3("viewPos", camera->GetPosition());
 
 #if LIGHT_COLOR_CHANGING
             vec3 lightColor;
@@ -320,32 +320,32 @@ namespace E10
             vec3 diffuseColor = lightColor * vec3(0.5f);
             vec3 ambientColor = diffuseColor * vec3(0.2f);
 
-            shader->SetUniform("light.ambient", ambientColor);
-            shader->SetUniform("light.diffuse", diffuseColor);
-            shader->SetUniform3f("light.specular", 1.0f, 1.0f, 1.0f);
+            shader->SetFloat3("light.ambient", ambientColor);
+            shader->SetFloat3("light.diffuse", diffuseColor);
+            shader->SetFloat3("light.specular", vec3(1.0f, 1.0f, 1.0f));
 #endif
 
 #if LIGHT_MOVING 
             vec3 lightPos(1.2f, 1.0f, 2.0f);
             lightPos.x = 1.0f + sin(time) * 2.0f;
             lightPos.y = sin(time / 2.0f) * 1.0f;
-            shader->SetUniform("light.position", lightPos);
+            shader->SetFloat3("light.position", lightPos);
 
-            shader->SetUniform("viewPos", camera->GetPosition());
+            shader->SetFloat3("viewPos", camera->GetPosition());
 #endif
         };
 
         shader.Use();
-        shader.SetUniform("light.position", lightPos);
+        shader.SetFloat3("light.position", lightPos);
 
-        shader.SetUniform3f("light.ambient", 0.2f, 0.2f, 0.2f); // decrease the influence
-        shader.SetUniform3f("light.diffuse", 0.5f, 0.5f, 0.5f); // low influence
-        shader.SetUniform3f("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.SetFloat3("light.ambient", vec3(0.2f, 0.2f, 0.2f)); // decrease the influence
+        shader.SetFloat3("light.diffuse", vec3(0.5f, 0.5f, 0.5f)); // low influence
+        shader.SetFloat3("light.specular", vec3(1.0f, 1.0f, 1.0f));
 
-        shader.SetUniform("material.diffuse", 0);
-        shader.SetUniform("material.specular", 1);
-        shader.SetUniform("material.emission", 2);
-        shader.SetUniform("material.shininess", 32.0f);
+        shader.SetInt("material.diffuse", 0);
+        shader.SetInt("material.specular", 1);
+        shader.SetInt("material.emission", 2);
+        shader.SetInt("material.shininess", 32.0f);
 
         renderer.EnableDepthTest();
         renderer.Render(vec3(0.1f, 0.1f, 0.1f));

@@ -78,7 +78,7 @@ namespace E15
 		texture.Bind(0);
 
 		shader.Use();
-		shader.SetUniform("texture1", 0);
+		shader.SetInt("texture1", 0);
 
 		Logl::RenderObject object(vao, shader, nullptr, true);
 

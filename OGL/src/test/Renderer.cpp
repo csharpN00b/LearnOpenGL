@@ -138,8 +138,8 @@ namespace Logl
 					obj->textures[i]->Bind(i);
 
 				obj->shader->Use();
-				obj->shader->SetUniform("projection", projection);
-				obj->shader->SetUniform("view", view);
+				obj->shader->SetMat4("projection", projection);
+				obj->shader->SetMat4("view", view);
 
 				if (obj->dynamicUniform)
 					obj->dynamicUniform(obj->shader, time, m_Camera);
@@ -149,13 +149,13 @@ namespace Logl
 				{
 					for (int i = 0; i < obj->models.size(); i++)
 					{
-						obj->shader->SetUniform("model", obj->models[i]);
+						obj->shader->SetMat4("model", obj->models[i]);
 						if (i < obj->colors.size())
 						{
 							if (obj->bTransparent)
-								obj->shader->SetUniform("color", obj->colors[i]);
+								obj->shader->SetFloat4("color", obj->colors[i]);
 							else
-								obj->shader->SetUniform3f("color", obj->colors[i].r, obj->colors[i].g, obj->colors[i].b);
+								obj->shader->SetFloat3("color", vec3(obj->colors[i].r, obj->colors[i].g, obj->colors[i].b));
 						}
 
 						drawcall(obj->vao->GetCount());
@@ -184,15 +184,15 @@ namespace Logl
 						obj.textures[i]->Bind(i);
 
 					obj.shader->Use();
-					obj.shader->SetUniform("projection", projection);
-					obj.shader->SetUniform("view", view);
-					obj.shader->SetUniform("model", *obj.transform);
+					obj.shader->SetMat4("projection", projection);
+					obj.shader->SetMat4("view", view);
+					obj.shader->SetMat4("model", *obj.transform);
 
 					if (obj.dynamicUniform)
 						obj.dynamicUniform(obj.shader, time, m_Camera);
 
 					if (obj.color)
-						obj.shader->SetUniform("color", *(obj.color));
+						obj.shader->SetFloat4("color", *(obj.color));
 
 					obj.vao->Bind();
 					drawcall(obj.vao->GetCount());
@@ -248,7 +248,7 @@ namespace Logl
 		Shader screenShader("asserts/shaders/framebuffers_screen_vs.glsl", "asserts/shaders/framebuffers_screen_fs.glsl");
 #endif
 		screenShader.Use();
-		screenShader.SetUniform("screenTexture", 0);
+		screenShader.SetInt("screenTexture", 0);
 
 		// draw as wireframe
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -274,8 +274,8 @@ namespace Logl
 				auto drawcall = obj->vao->IsUsingIndex() ? drawElements : drawArrays;
 
 				obj->shader->Use();
-				obj->shader->SetUniform("projection", projection);
-				obj->shader->SetUniform("view", view);
+				obj->shader->SetMat4("projection", projection);
+				obj->shader->SetMat4("view", view);
 
 				for(auto& texture : obj->textures)
 					texture->Bind(0);
@@ -285,7 +285,7 @@ namespace Logl
 				{
 					for (auto& m : obj->models)
 					{
-						obj->shader->SetUniform("model", m);
+						obj->shader->SetMat4("model", m);
 						drawcall(obj->vao->GetCount());
 					}
 				}
