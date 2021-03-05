@@ -165,6 +165,8 @@ namespace Logl
 					drawcall(obj->vao->GetCount());
 			}
 
+			glDepthMask(GL_FALSE);
+
 			// transparent models
 			if (m_EnableBlending && m_TransparentList.size())
 			{
@@ -199,6 +201,7 @@ namespace Logl
 				}
 			}
 
+			glDepthMask(GL_TRUE);
 
 			m_Window->OnUpdate();
 		}
