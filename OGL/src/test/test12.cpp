@@ -1,12 +1,53 @@
 #include "Renderer.h"
 
-#define DESERT 0
-#define FACTORY 0
 #define HORROR 0
-#define BIOCHEMICAL_LAB 0
+#define BIOCHEMICAL_LAB 1
 
-namespace E12_
+#define SPOTLIGHT 0
+
+namespace E12
 {
+    struct DirectionalLight
+    {
+        Logl::vec3 direction;
+
+        Logl::vec3 ambient;
+        Logl::vec3 diffuse;
+        Logl::vec3 specular;
+    };
+
+    struct PointLight
+    {
+        Logl::vec3 position;
+        Logl::vec3 color;
+
+        float constant;
+        float linear;
+        float quadratic;
+    };
+
+    struct Spotlight
+    {
+        Logl::vec3 ambient;
+        Logl::vec3 diffuse;
+        Logl::vec3 specular;
+
+        float constant;
+        float linear;
+        float quadratic;
+
+        float cutOff;
+        float outerCutOff;
+    };
+
+    struct LightEnv
+    {
+        Logl::vec3 backcolor;
+        DirectionalLight directionalLight;
+        PointLight pointLight;
+        Spotlight spotlight;
+    };
+
     void RenderScene()
     {
         using namespace Logl;
@@ -19,169 +60,88 @@ namespace E12_
 
 #pragma region Light Enviroment
 
-        struct LightEnv
-        {
-            vec3 dirLightA;
-            vec3 dirLightD;
-            vec3 dirLightS;
-
-            vec3 spotlightA;
-            vec3 spotlightD;
-            vec3 spotlightS;
-
-            float linear1;    // point light
-            float quadratic1; // point light
-
-            float linear2;    // spotlight
-            float quadratic2; // spotlight
-
-            float cutOff;
-            float outerCutOff;
-        };
-
-#if DESERT
-        vec3 env(0.75f, 0.52f, 0.3f);
-
-        vec3 pointLightColors[] = {
-            vec3(1.0f, 0.6f, 0.0f),
-            vec3(1.0f, 0.0f, 0.0f),
-            vec3(1.0f, 1.0, 0.0),
-            vec3(0.2f, 0.2f, 1.0f)
-        };
-
-        LightEnv lightEnv = {
-           vec3(0.3f, 0.24f, 0.14f),
-           vec3(0.7f, 0.42f, 0.26f),
-           vec3(0.5f),
-
-           vec3(0.0f),
-           vec3(0.8f, 0.8f, 0.0f),
-           vec3(0.8f, 0.8f, 0.0f),
-
-           0.09f,
-           0.032f,
-
-           0.09f,
-           0.032f,
-
-           12.5f,
-           13.0f
-        };
-
-#elif FACTORY
-        vec3 env(0.1f, 0.1f, 0.1f);
-
-        vec3 pointLightColors[] = {
-            vec3(0.2f, 0.2f, 0.6f),
-            vec3(0.3f, 0.3f, 0.7f),
-            vec3(0.0f, 0.0f, 0.3f),
-            vec3(0.4f, 0.4f, 0.4f)
-        };
-
-        LightEnv lightEnv = {
-           vec3(0.05f, 0.05f, 0.1f),
-           vec3(0.2f, 0.2f, 0.7),
-           vec3(0.7f),
-
-           vec3(0.0f),
-           vec3(1.0f),
-           vec3(1.0f),
-
-           0.09f,
-           0.032f,
-
-           0.009f,
-           0.0032f,
-
-           10.0f,
-           12.5f
-        };
-
-#elif HORROR
-        vec3 env(0.0f, 0.0f, 0.0f);
-
-        vec3 pointLightColors[] = {
-            vec3(0.1f, 0.1f, 0.1f),
-            vec3(0.1f, 0.1f, 0.1f),
-            vec3(0.1f, 0.1f, 0.1f),
-            vec3(0.3f, 0.1f, 0.1f)
-        };
-
-        LightEnv lightEnv = {
-           vec3(0.0f),
-           vec3(0.05f),
-           vec3(0.2f),
-
-           vec3(0.0f),
-           vec3(1.0f),
-           vec3(1.0f),
-
-           0.14f,
-           0.07f,
-
-           0.09f,
-           0.032f,
-
-           10.0f,
-           15.0f
+#if HORROR
+        LightEnv env = {
+            vec3(0.0f),
+            {
+                vec3(-0.2f, -1.0f, -0.3f),
+                vec3(0.0f),
+                vec3(0.05f),
+                vec3(0.2f),
+            },
+            {
+                vec3(1.2f, 1.0f, 2.0f),
+                vec3(0.3f, 0.1f, 0.1f),
+                1.0,
+                0.14f,
+                0.07f,
+            },
+            {
+                vec3(0.0f),
+                vec3(1.0f),
+                vec3(1.0f),
+                1.0f,
+                0.09f,
+                0.032f,
+                10.0f,
+                15.0f
+            }
         };
 
 #elif BIOCHEMICAL_LAB
-        vec3 env(0.9f, 0.9f, 0.9f);
-
-        vec3 pointLightColors[] = {
-            vec3(0.4f, 0.7f, 0.1f),
-            vec3(0.4f, 0.7f, 0.1f),
-            vec3(0.4f, 0.7f, 0.1f),
-            vec3(0.4f, 0.7f, 0.1f)
-        };
-
-        LightEnv lightEnv = {
-           vec3(0.5f),
-           vec3(1.0f),
-           vec3(1.0f),
-
-           vec3(0.0f),
-           vec3(0.0f, 1.0f, 0.0f),
-           vec3(0.0f, 1.0f, 0.0f),
-
-           0.07,
-           0.017,
-
-           0.07f,
-           0.017f,
-
-           7.0f,
-           10.0f
+        LightEnv env = {
+            vec3(0.9f),
+            {
+                vec3(-0.2f, -1.0f, -0.3f),
+                vec3(0.5f),
+                vec3(1.0f),
+                vec3(1.0f),
+            },
+            {
+                vec3(1.2f, 1.0f, 2.0f),
+                vec3(0.4f, 0.7f, 0.1f),
+                1.0,
+                0.07,
+                0.017,
+            },
+            {
+                vec3(0.0f),
+                vec3(0.0f, 1.0f, 0.0f),
+                vec3(0.0f, 1.0f, 0.0f),
+                1.0f,
+                0.07f,
+                0.017f,
+                7.0f,
+                10.0f
+            }
         };
 
 #else
-        vec3 env(0.1f, 0.1f, 0.1f);
-
-        vec3 pointLightColors[] = {
-            vec3(1.0f, 1.0f, 1.0f),
-            vec3(1.0f, 1.0f, 1.0f),
-            vec3(1.0f, 1.0f, 1.0f),
-            vec3(1.0f, 1.0f, 1.0f)
-        };
-
-        LightEnv lightEnv = {
-            vec3(0.2f),
-            vec3(0.5f),
-            vec3(1.0f),
-
-            vec3(0.2f),
-            vec3(0.5f),
-            vec3(1.0f),
-
-            0.09f,
-            0.032f,
-
-            0.09f,
-            0.032f,
-
-            12.5f,
-            17.5f
+        LightEnv env = {
+            vec3(0.1f),
+            {
+                vec3(-0.2f, -1.0f, -0.3f),
+                vec3(0.2f),
+                vec3(0.5f),
+                vec3(1.0f),
+            },
+            {
+                vec3(1.2f, 1.0f, 2.0f),
+                vec3(1.0f, 1.0f, 1.0f),
+                1.0,
+                0.09f,
+                0.032f,
+            },
+            {
+                vec3(0.2f),
+                vec3(0.5f),
+                vec3(1.0f),
+                1.0f,
+                0.09f,
+                0.032f,
+                12.5f,
+                17.5f
+            }
         };
 #endif
 
@@ -232,28 +192,16 @@ namespace E12_
            -0.5f,  0.5f, -0.5f,
         };
 
-        vec3 pointLightPositions[4] = {
-           vec3(0.7f,  0.2f,  2.0f),
-           vec3(2.3f, -3.3f, -4.0f),
-           vec3(-4.0f,  2.0f, -12.0f),
-           vec3(0.0f,  0.0f, -3.0f)
-        };
-
         VertexArray lightVao;
         VertexBuffer lightVbo(lightVertices, sizeof(lightVertices), { {GL_FLOAT, 3} });
         lightVao.AddVertexBuffer(lightVbo);
 
-        Shader lightShader("asserts/shaders/light_vs.glsl", "asserts/shaders/light_color_fs.glsl");
-        RenderObject light(lightVao, lightShader, nullptr);
+        Shader lightShader("asserts/shaders/mvp_color.glsl");
+        RenderObject light(lightVao, lightShader, mat4::Translate(env.pointLight.position) * mat4::Scale(0.2f));
         renderer.AddObject(light);
+        lightShader.Use();
+        lightShader.SetUniform("color", env.pointLight.color);
 
-        for (int i = 0; i < 4; i++)
-        {
-            auto model = mat4::Translate(pointLightPositions[i]);
-            model = model * mat4::Scale(0.2f);
-            light.AddModel(model, pointLightColors[i]);
-        }
-        
 
         float cubeVertices[] = {
             // positions          // normals           // texture coords
@@ -317,7 +265,7 @@ namespace E12_
         VertexBuffer vbo(cubeVertices, sizeof(cubeVertices), { {GL_FLOAT, 3}, {GL_FLOAT, 3}, {GL_FLOAT, 2} });
         vao.AddVertexBuffer(vbo);
 
-        Shader shader("asserts/shaders/lighting_maps_vs.glsl", "asserts/shaders/multiple_lights_fs.glsl");
+        Shader shader("asserts/shaders/LightSceneObject.glsl");
         RenderObject cube(vao, shader, nullptr);
         renderer.AddObject(cube);
 
@@ -334,14 +282,16 @@ namespace E12_
         cube.AddTexture(&diffuseMap);
         cube.AddTexture(&specularMap);
 
-       
+
 
         cube.dynamicUniform = [](Shader* shader, float time, Camera* camera)
         {
             shader->SetUniform("viewPos", camera->GetPosition());
 
+#if SPOTLIGHT
             shader->SetUniform("spotlight.position", camera->GetPosition());
             shader->SetUniform("spotlight.direction", camera->GetFront());
+#endif
         };
 
         shader.Use();
@@ -351,37 +301,35 @@ namespace E12_
 
         // Directional Light
         shader.SetUniform3f("dirLight.direction", -0.2f, -1.0f, -0.3f);
-        shader.SetUniform("dirLight.ambient", lightEnv.dirLightA);
-        shader.SetUniform("dirLight.diffuse", lightEnv.dirLightD);
-        shader.SetUniform("dirLight.specular", lightEnv.dirLightS);
+        shader.SetUniform("dirLight.ambient", env.directionalLight.ambient);
+        shader.SetUniform("dirLight.diffuse", env.directionalLight.diffuse);
+        shader.SetUniform("dirLight.specular", env.directionalLight.specular);
 
+#if SPOTLIGHT
         // Spotlight
-        shader.SetUniform("spotlight.cutOff", cos(Radians(lightEnv.cutOff)));
-        shader.SetUniform("spotlight.outerCutOff", cos(Radians(lightEnv.outerCutOff)));
-        shader.SetUniform("spotlight.constant", 1.0f);
-        shader.SetUniform("spotlight.linear", lightEnv.linear2);
-        shader.SetUniform("spotlight.quadratic", lightEnv.quadratic2);
+        shader.SetUniform("spotlight.cutOff", cos(Radians(env.spotlight.cutOff)));
+        shader.SetUniform("spotlight.outerCutOff", cos(Radians(env.spotlight.outerCutOff)));
+        shader.SetUniform("spotlight.constant", env.spotlight.constant);
+        shader.SetUniform("spotlight.linear", env.spotlight.linear);
+        shader.SetUniform("spotlight.quadratic", env.spotlight.quadratic);
 
-        shader.SetUniform("spotlight.ambient", lightEnv.spotlightA);
-        shader.SetUniform("spotlight.diffuse", lightEnv.spotlightD);
-        shader.SetUniform("spotlight.specular", lightEnv.spotlightS);
-
+        shader.SetUniform("spotlight.ambient", env.spotlight.ambient);
+        shader.SetUniform("spotlight.diffuse", env.spotlight.diffuse);
+        shader.SetUniform("spotlight.specular", env.spotlight.specular);
+#endif
         // Point Lights
-        for (int i = 0; i < 4; i++)
-        {
-            shader.SetUniform(fmt::format("pointLights[{}].position", i), pointLightPositions[i]);
+        shader.SetUniform("pointLight.position", env.pointLight.position);
 
-            shader.SetUniform(fmt::format("pointLights[{}].constant", i), 1.0f);
-            shader.SetUniform(fmt::format("pointLights[{}].linear", i), lightEnv.linear1);
-            shader.SetUniform(fmt::format("pointLights[{}].quadratic", i), lightEnv.quadratic1);
+        shader.SetUniform("pointLight.constant", env.pointLight.constant);
+        shader.SetUniform("pointLight.linear", env.pointLight.linear);
+        shader.SetUniform("pointLight.quadratic", env.pointLight.quadratic);
 
-            shader.SetUniform(fmt::format("pointLights[{}].ambient", i), pointLightColors[i] * 0.1);
-            shader.SetUniform(fmt::format("pointLights[{}].diffuse", i), pointLightColors[i] /** 0.5*/);
-            shader.SetUniform(fmt::format("pointLights[{}].specular", i), pointLightColors[i]);
-        }
+        shader.SetUniform("pointLight.ambient", env.pointLight.color * 0.1);
+        shader.SetUniform("pointLight.diffuse", env.pointLight.color /** 0.5*/);
+        shader.SetUniform("pointLight.specular", env.pointLight.color);
 
 
         renderer.EnableDepthTest();
-        renderer.Render(env);
+        renderer.Render(env.backcolor);
     }
 }

@@ -71,7 +71,7 @@ namespace E8
 
             auto lightModel = mat4::Translate(lightPos);
             lightModel = lightModel * mat4::Scale(0.2f);
-            shader->SetUniform("model", lightModel.ValuePtr());
+            shader->SetUniform("model", lightModel);
         };
 
         RenderObject light(lightVao, lightShader, dynamicUniform);

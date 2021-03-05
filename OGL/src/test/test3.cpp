@@ -168,11 +168,6 @@ namespace E3
 
 		// Shaders
 		Shader shaderProgram("asserts/shaders/mvp_vs.glsl", "asserts/shaders/mvp_fs.glsl");
-		if (!shaderProgram.IsValid())
-		{
-			__debugbreak();
-			return;
-		}
 
 		// Vertex
 		unsigned int vao{}, vbo{}, ebo{};
@@ -231,11 +226,11 @@ namespace E3
 
 			//  projection matrix
 			auto projection = camera.GetProjectionMatrix();
-			shaderProgram.SetUniform("projection", projection.ValuePtr());
+			shaderProgram.SetUniform("projection", projection);
 
 			// camera/view transformation
 			auto view = camera.GetViewMatrix();
-			shaderProgram.SetUniform("view", view.ValuePtr());
+			shaderProgram.SetUniform("view", view);
 
 			// render boxes
 			glBindVertexArray(vao);
@@ -245,7 +240,7 @@ namespace E3
 				auto model = mat4::Translate(cubePositions[i]);
 				float angle = 20.0f * i;
 				model = model * mat4::Rotate(Radians(angle), vec3(1.0f, 0.3f, 0.5f));
-				shaderProgram.SetUniform("model", model.ValuePtr());
+				shaderProgram.SetUniform("model", model);
 
 				glDrawArrays(GL_TRIANGLES, 0, count);
 			}

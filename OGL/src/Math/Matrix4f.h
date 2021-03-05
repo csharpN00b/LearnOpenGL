@@ -18,7 +18,7 @@ namespace Logl
 			Identity();
 		}
 
-		mat4(const float array[])
+		explicit mat4(const float array[])
 		{
 			for (int i = 0; i < 16; i++)
 				m_Data[i] = array[i];

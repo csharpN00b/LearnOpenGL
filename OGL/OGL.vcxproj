@@ -93,10 +93,11 @@
     <ClCompile Include="src\Renderer\Texture.cpp" />
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
-    <ClCompile Include="src\STB.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\test\test1.cpp" />
     <ClCompile Include="src\test\test10__Lighting_maps.cpp" />
     <ClCompile Include="src\test\test11.cpp" />
+    <ClCompile Include="src\test\test12.cpp" />
     <ClCompile Include="src\test\test12__Multiple_lights.cpp" />
     <ClCompile Include="src\test\test13__Depth_tesing.cpp" />
     <ClCompile Include="src\test\test14__Blending.cpp" />
@@ -104,7 +105,6 @@
     <ClCompile Include="src\test\test16__FrameBuffer.cpp" />
     <ClCompile Include="src\test\test17.cpp" />
     <ClCompile Include="src\test\test2.cpp" />
-    <ClCompile Include="src\test\test2___Textures.cpp" />
     <ClCompile Include="src\test\test3.cpp" />
     <ClCompile Include="src\test\test4.cpp" />
     <ClCompile Include="src\test\test5___IndexBuffer.cpp" />
@@ -155,6 +155,7 @@
     <ClInclude Include="src\Window\WindowEvent.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="asserts\shaders\Basic.glsl" />
     <None Include="asserts\shaders\basic_fs.glsl" />
     <None Include="asserts\shaders\blending_fs.glsl" />
     <None Include="asserts\shaders\depth_testing_vs.glsl" />
@@ -165,10 +166,12 @@
     <None Include="asserts\shaders\framebuffers_screen_vs.glsl" />
     <None Include="asserts\shaders\lighting_maps_fs.glsl" />
     <None Include="asserts\shaders\lighting_maps_vs.glsl" />
+    <None Include="asserts\shaders\LightSceneObject.glsl" />
     <None Include="asserts\shaders\light_color_fs.glsl" />
     <None Include="asserts\shaders\light_fs.glsl" />
     <None Include="asserts\shaders\light_vs.glsl" />
     <None Include="asserts\shaders\multiple_lights_fs.glsl" />
+    <None Include="asserts\shaders\mvp_texture.glsl" />
     <None Include="asserts\shaders\object_fs.glsl" />
     <None Include="asserts\shaders\object_rgba_fs.glsl" />
     <None Include="asserts\shaders\object_vs.glsl" />
@@ -177,10 +180,9 @@
     <None Include="asserts\shaders\phong_material_fs.glsl" />
     <None Include="asserts\shaders\phong_fs.glsl" />
     <None Include="asserts\shaders\phong_vs.glsl" />
+    <None Include="asserts\shaders\mvp_color.glsl" />
     <None Include="asserts\shaders\point_light_fs.glsl" />
     <None Include="asserts\shaders\spotlight_fs.glsl" />
-    <None Include="asserts\shaders\tex_fs.glsl" />
-    <None Include="asserts\shaders\tex_vs.glsl" />
     <None Include="asserts\shaders\basic_vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

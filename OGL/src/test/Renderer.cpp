@@ -138,8 +138,8 @@ namespace Logl
 					obj->textures[i]->Bind(i);
 
 				obj->shader->Use();
-				obj->shader->SetUniform("projection", projection.ValuePtr());
-				obj->shader->SetUniform("view", view.ValuePtr());
+				obj->shader->SetUniform("projection", projection);
+				obj->shader->SetUniform("view", view);
 
 				if (obj->dynamicUniform)
 					obj->dynamicUniform(obj->shader, time, m_Camera);
@@ -149,7 +149,7 @@ namespace Logl
 				{
 					for (int i = 0; i < obj->models.size(); i++)
 					{
-						obj->shader->SetUniform("model", obj->models[i].ValuePtr());
+						obj->shader->SetUniform("model", obj->models[i]);
 						if (i < obj->colors.size())
 						{
 							if (obj->bTransparent)
@@ -184,9 +184,9 @@ namespace Logl
 						obj.textures[i]->Bind(i);
 
 					obj.shader->Use();
-					obj.shader->SetUniform("projection", projection.ValuePtr());
-					obj.shader->SetUniform("view", view.ValuePtr());
-					obj.shader->SetUniform("model", obj.transform->ValuePtr());
+					obj.shader->SetUniform("projection", projection);
+					obj.shader->SetUniform("view", view);
+					obj.shader->SetUniform("model", *obj.transform);
 
 					if (obj.dynamicUniform)
 						obj.dynamicUniform(obj.shader, time, m_Camera);
@@ -274,8 +274,8 @@ namespace Logl
 				auto drawcall = obj->vao->IsUsingIndex() ? drawElements : drawArrays;
 
 				obj->shader->Use();
-				obj->shader->SetUniform("projection", projection.ValuePtr());
-				obj->shader->SetUniform("view", view.ValuePtr());
+				obj->shader->SetUniform("projection", projection);
+				obj->shader->SetUniform("view", view);
 
 				for(auto& texture : obj->textures)
 					texture->Bind(0);
@@ -285,7 +285,7 @@ namespace Logl
 				{
 					for (auto& m : obj->models)
 					{
-						obj->shader->SetUniform("model", m.ValuePtr());
+						obj->shader->SetUniform("model", m);
 						drawcall(obj->vao->GetCount());
 					}
 				}
