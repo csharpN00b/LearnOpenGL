@@ -1,8 +1,8 @@
 #pragma once
 
+#include <functional>
 #include "Math/Matrix4f.h"
 
-#include <functional>
 
 namespace Logl
 {

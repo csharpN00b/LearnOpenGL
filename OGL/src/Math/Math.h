@@ -4,15 +4,9 @@
 
 namespace Logl
 {
-#ifdef PI
-#undef PI
-#undef RPA
-#undef APR
-#endif
-
-#define PI 3.1415926f
-#define RPA 0.0174533f
-#define APR 57.295780f
+	const float PI = 3.1415926f;
+	const float RPA = 0.0174533f; // PI/180
+	const float APR = 57.295780f; // 180/PI
 
 	inline bool IsEqual(float a, float b) { return fabs(a - b) < 0.00001f; }
 

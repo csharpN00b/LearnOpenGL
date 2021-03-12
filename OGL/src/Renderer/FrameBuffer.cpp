@@ -2,7 +2,6 @@
 #include "FrameBuffer.h"
 
 
-
 namespace Logl
 {
 	FrameBuffer::FrameBuffer()

@@ -1,14 +1,12 @@
 #pragma once
 
 #include <algorithm>
-
 #include "Vector4f.h"
-
-namespace Logl
-{
 
 #define MAT4_VALUE(matrix, i, j) matrix.m_Data[4*(i)+(j)]
 
+namespace Logl
+{
 	class mat4
 	{
 
@@ -397,3 +395,5 @@ namespace Logl
 		return matrix;
 	}
 }
+
+#undef MAT4_VALUE
